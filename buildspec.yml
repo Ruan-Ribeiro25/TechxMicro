@@ -1,0 +1,14 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto21 # Define o Java 21 da AWS para compilar
+  build:
+    commands:
+      - echo Compilando o projeto VidaPlus...
+      - mvn clean install -DskipTests # Pula os testes para evitar erros de banco no deploy
+artifacts:
+  files:
+    - target/*.jar # Pega o arquivo gerado para enviar ao servidor
+  discard-paths: yes

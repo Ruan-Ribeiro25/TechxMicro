@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Completar Cadastro Médico - VidaPlus</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <style>
+        body { background: #f0f2f5; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .form-card { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 400px; border-top: 5px solid #20c997; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .btn { background: #20c997; color: white; width: 100%; padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        h2 { color: #333; text-align: center; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="form-card">
+        <h2>Dados Profissionais</h2>
+        <p style="text-align: center; color: #666;">Olá, precisamos dessas informações para ativar seu painel médico.</p>
+
+        <form th:action="@{/perfil/salvar-profissional}" method="post">
+            <label>CRM (Conselho Regional):</label>
+            <input type="text" name="crm" placeholder="Ex: 12345-SP" required>
+
+            <label>Matrícula Interna:</label>
+            <input type="text" name="matricula" placeholder="Ex: MED-2025-01" required>
+
+            <label>Especialidade / Atuação:</label>
+            <input type="text" name="atuacao" placeholder="Ex: Cardiologia" required>
+
+            <button type="submit" class="btn">Salvar e Acessar</button>
+        </form>
+    </div>
+</body>
+</html>

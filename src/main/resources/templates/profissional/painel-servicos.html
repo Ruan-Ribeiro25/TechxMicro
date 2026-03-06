@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Serviços Gerais - VidaPlus</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <main style="padding: 20px;">
+        <div class="page-header" style="margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
+            <h2><i class="fas fa-broom"></i> Serviços Gerais</h2>
+            <div class="user-info d-flex align-items-center">
+                <div class="me-3"><img src="/img/avatar-default.png" class="profile-pic-header-small" style="width: 50px; height: 50px; border-radius: 50%;"></div>
+                <div class="d-flex flex-column align-items-end">
+                    <span th:text="${profissional.nome}" class="fw-bold">Nome</span>
+                    <span class="tag-enf" style="background-color: #7f8c8d;">SERVIÇOS</span>
+                </div>
+            </div>
+        </div>
+
+        <section class="main-content" style="max-width: 1000px; margin: 0 auto;">
+            <div class="welcome-card-doctor mb-30 p-4" style="background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%); border-radius: 15px; color: white;">
+                <h3>Status das Atividades</h3>
+                <p>Tarefas do dia.</p>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card-box p-4 bg-white rounded shadow-sm border mb-4">
+                        <h4 class="mb-3 text-secondary"><i class="fas fa-check-square me-2"></i>Limpeza</h4>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Recepção <input type="checkbox" class="float-end"></li>
+                            <li class="list-group-item">Consultórios <input type="checkbox" class="float-end"></li>
+                            <li class="list-group-item">Banheiros <input type="checkbox" class="float-end"></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card-box p-4 bg-white rounded shadow-sm border mb-4">
+                        <h4 class="mb-3 text-danger"><i class="fas fa-tools me-2"></i>Manutenção</h4>
+                        <div class="alert alert-warning">Ar Condicionado - Sala 3</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer th:replace="~{fragments/footer :: rodape}"></footer>
+</body>
+</html>

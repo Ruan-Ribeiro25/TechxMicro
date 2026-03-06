@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo Agendamento - VidaPlus</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/material_green.css">
+</head>
+<body>
+
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <main>
+        <div class="card-container login-size">
+            <div class="text-center mb-20" style="margin-bottom: 20px;">
+                <h2 style="margin-bottom: 5px;">Marcar Consulta</h2>
+                <p class="text-gray" style="font-size: 0.9rem;">Preencha os dados do atendimento.</p>
+            </div>
+            
+            <div th:if="${erroAgendamento}" class="alert-box alert-error">
+                <i class="fas fa-exclamation-circle"></i> <span th:text="${erroAgendamento}">Erro aqui</span>
+            </div>
+            
+            <form th:action="@{/agendamentos/salvar}" method="post" th:object="${agendamento}">
+                
+                <div class="form-group">
+                    <label class="label-bold">Especialidade / Procedimento</label>
+                    <div class="input-group-icon">
+                        <i class="fas fa-stethoscope icon-field-left icon-green"></i>
+                        
+                        <select id="selectEspecialidade" th:field="*{procedimento}" class="form-control input-with-icon" required onchange="carregarProfissionais()">
+                            <option value="" disabled selected>Selecione a área médica...</option>
+                            <option th:each="esp : ${listaEspecialidades}" 
+                                    th:value="${esp}" 
+                                    th:text="${esp}">Cardiologia</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label-bold">Profissional (Opcional)</label>
+                    <div class="input-group-icon">
+                        <i class="fas fa-user-md icon-field-left icon-blue"></i>
+                        
+                        <select name="profissionalId" id="selectProfissional" class="form-control input-with-icon" disabled>
+                            <option value="">Selecione a especialidade primeiro...</option>
+                        </select>
+                    </div>
+                    <small id="loading-msg" class="loading-text">
+                        <i class="fas fa-spinner fa-spin"></i> Buscando médicos disponíveis no seu polo...
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label class="label-bold">Data e Hora</label>
+                    <div class="calendar-icon-wrapper">
+                        <input type="text" id="datetime-picker" th:field="*{dataHora}" class="form-control date-input" placeholder="Selecione data e horário..." required>
+                        <i class="far fa-calendar-alt calendar-icon"></i>
+                    </div>
+                    
+                    <small class="text-hint">
+                        <i class="far fa-clock"></i> Horário: Seg-Sex, 08:00 às 18:00
+                    </small>
+                </div>
+
+                <button type="submit" class="btn-custom mt-15">
+                    <i class="fas fa-check"></i> Confirmar Agendamento
+                </button>
+            </form>
+
+            <div class="form-links">
+                <a th:href="@{/agendamentos}" class="btn-cancel">
+                    <i class="fas fa-arrow-left"></i> Cancelar e Voltar
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: rodape}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/pt.js"></script>
+
+    <script>
+        // CONFIGURAÇÃO DO CALENDÁRIO PROFISSIONAL
+        flatpickr("#datetime-picker", {
+            enableTime: true,           
+            dateFormat: "Y-m-dTH:i",    
+            altInput: true,             
+            altFormat: "d/m/Y H:i",     
+            minDate: "today",           
+            time_24hr: true,            
+            minuteIncrement: 30,        
+            minTime: "08:00",           
+            maxTime: "18:00",           
+            disable: [
+                function(date) {
+                    return (date.getDay() === 0 || date.getDay() === 6);
+                }
+            ],
+            locale: "pt",               
+            allowInput: false,          
+            disableMobile: "true"       
+        });
+
+        // FUNÇÃO DE BUSCA DE MÉDICOS
+        function carregarProfissionais() {
+            const especialidade = document.getElementById('selectEspecialidade').value;
+            const selectProf = document.getElementById('selectProfissional');
+            const loading = document.getElementById('loading-msg');
+
+            selectProf.innerHTML = '<option value="">Carregando...</option>';
+            selectProf.disabled = true;
+            loading.style.display = 'block';
+
+            fetch(`/api/profissionais-por-especialidade?especialidade=${encodeURIComponent(especialidade)}`)
+                .then(response => response.json())
+                .then(data => {
+                    selectProf.innerHTML = '<option value="">Qualquer profissional disponível</option>';
+                    if (data.length > 0) {
+                        data.forEach(medico => {
+                            const option = document.createElement('option');
+                            option.value = medico.id;
+                            option.text = "Dr(a). " + medico.nome;
+                            selectProf.appendChild(option);
+                        });
+                        selectProf.disabled = false;
+                        selectProf.focus();
+                    } else {
+                        const option = document.createElement('option');
+                        option.text = "Nenhum especialista encontrado neste polo.";
+                        selectProf.appendChild(option);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    selectProf.innerHTML = '<option value="">Erro ao buscar médicos</option>';
+                })
+                .finally(() => {
+                    loading.style.display = 'none';
+                });
+        }
+    </script>
+
+</body>
+</html>

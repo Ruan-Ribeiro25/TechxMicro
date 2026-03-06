@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <nav th:fragment="navbar" id="main-navbar" class="navbar" style="background: white; padding: 15px 50px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; font-family: 'Segoe UI', sans-serif;">
+        
+        <div class="logo">
+            <a th:href="@{/home}" style="text-decoration: none; font-size: 1.5rem; font-weight: bold; color: #20c997; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-heartbeat"></i> VidaPlus
+            </a>
+        </div>
+
+        <div class="menu" style="display: flex; align-items: center; gap: 25px;">
+            
+            <a th:href="@{/home}" style="text-decoration: none; color: white; background-color: #20c997; padding: 6px 25px; border-radius: 50px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; transition: 0.3s; box-shadow: 0 2px 5px rgba(32, 201, 151, 0.3);">
+                <i class="fas fa-home"></i> Home
+            </a>
+
+            <span style="color: #666; font-size: 1rem; font-weight: 500;">
+                Olá, <strong th:text="${usuario != null ? usuario.nome : (paciente != null ? paciente.nome : 'Visitante')}" style="color: #333;">Usuário</strong>
+            </span>
+
+            <a th:href="@{/logout}" style="text-decoration: none; color: #e74c3c; font-weight: 600; border: 1px solid #e74c3c; padding: 6px 25px; border-radius: 50px; transition: 0.3s; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-sign-out-alt"></i> Sair
+            </a>
+
+        </div>
+
+        <script th:inline="javascript">
+            document.addEventListener("DOMContentLoaded", function() {
+                // Verifica se o navegador suporta geolocalização e se o usuário está logado (pela presença do nome)
+                // O check é feito apenas uma vez no carregamento para não consumir bateria
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        const dadosGeo = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude
+                        };
+
+                        // Envia silenciosamente para o backend processar o bairro/cidade
+                        fetch('/api/geo/check-in', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(dadosGeo)
+                        })
+                        .then(response => response.text())
+                        .then(msg => {
+                            // Se o backend responder que atualizou o polo (UPDATE), recarrega a página
+                            if(msg && msg.startsWith("UPDATE")) {
+                                console.log("VidaPlus: Novo polo detectado. Atualizando contexto...");
+                                window.location.reload();
+                            }
+                        })
+                        .catch(err => console.warn("VidaPlus Geo: Acesso à localização ignorado ou erro de API.", err));
+                    }, function(error) {
+                        console.log("VidaPlus: Geolocalização não permitida pelo usuário.");
+                    });
+                }
+            });
+        </script>
+
+        <script>
+            // Atualiza o conteúdo visual da navbar a cada 1 segundo sem piscar
+            setInterval(async function() {
+                try {
+                    // Evita atualização se o usuário estiver clicando ou selecionando algo
+                    if (document.querySelector('.menu:hover')) return;
+
+                    const response = await fetch(window.location.href);
+                    if (response.ok) {
+                        const html = await response.text();
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        
+                        const novaNavbar = doc.getElementById('main-navbar');
+                        const navbarAtual = document.getElementById('main-navbar');
+
+                        // Atualiza apenas o conteúdo interno da div .menu (onde fica o nome) para não quebrar links
+                        if (novaNavbar && navbarAtual) {
+                            const novoMenu = novaNavbar.querySelector('.menu');
+                            const menuAtual = navbarAtual.querySelector('.menu');
+                            if (novoMenu && menuAtual && novoMenu.innerHTML !== menuAtual.innerHTML) {
+                                menuAtual.innerHTML = novoMenu.innerHTML;
+                            }
+                        }
+                    }
+                } catch (e) { 
+                    // Silencia erros de rede momentâneos 
+                }
+            }, 1000);
+        </script>
+    </nav>
+</body>
+</html>

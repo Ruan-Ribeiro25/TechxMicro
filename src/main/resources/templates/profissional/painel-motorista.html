@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel de Frota - VidaPlus</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+<body>
+
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <main style="padding: 20px;">
+        <div class="page-header" style="margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
+            <h2><i class="fas fa-ambulance"></i> Painel de Frota</h2> 
+            <div class="user-info d-flex align-items-center">
+                <div class="me-3">
+                    <img th:src="${profissional.usuario.fotoPerfil != null} ? 'data:image/jpeg;base64,' + ${profissional.usuario.fotoPerfil} : '/img/avatar-default.png'" 
+                         class="profile-pic-header-small" alt="Perfil" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                </div>
+                <div class="d-flex flex-column align-items-end">
+                    <span th:text="${profissional.nome}" class="fw-bold">Nome</span>
+                    <span class="tag-enf" style="background-color: #2c3e50;">MOTORISTA</span> 
+                </div>
+            </div>
+        </div>
+
+        <div class="dash-container" style="display: flex; gap: 20px;">
+            <aside class="sidebar" style="width: 300px; flex-shrink: 0; opacity: 0.6;">
+                <h3 class="sidebar-title"><i class="fas fa-users"></i> Pacientes</h3>
+                <div class="p-3 bg-light text-center text-muted">
+                    <small>Acesso apenas para consulta</small>
+                </div>
+            </aside>
+
+            <section class="main-content" style="flex-grow: 1;">
+                
+                <div id="painel-frota-conteudo">
+                    
+                    <div th:if="${meuCarro == null}" class="welcome-card-doctor mb-4 p-5" 
+                         style="background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%); border-radius: 15px; color: #fff; text-align: center;">
+                        <h2 class="fw-bold mb-4"><i class="fas fa-key me-2"></i> Iniciar Expediente</h2>
+                        <form th:action="@{/profissional/assumir-viatura}" method="post" class="d-flex gap-3 align-items-center justify-content-center">
+                            <select name="idAmbulancia" class="form-control" style="width: 400px; height: 50px; border-radius: 25px; padding-left: 20px; font-size: 1.1rem;" required>
+                                <option value="" selected disabled>Selecione a Viatura...</option>
+                                <option th:each="amb : ${ambulanciasDisponiveis}" th:value="${amb.id}" th:text="${amb.placa} + ' - ' + ${amb.modelo}"></option>
+                            </select>
+                            <button type="submit" class="btn-custom" style="background: #2c3e50; color: #fff; height: 50px; padding: 0 40px; border-radius: 25px; font-weight: bold; border: 2px solid rgba(255,255,255,0.3);">
+                                ASSUMIR VIATURA
+                            </button>
+                        </form>
+                    </div>
+
+                    <div th:if="${meuCarro != null}">
+                        
+                        <div class="welcome-card-doctor mb-4 p-4 d-flex justify-content-between align-items-center" 
+                             style="background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%); border-radius: 15px; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+                            <div>
+                                <h2 class="m-0 fw-bold">
+                                    <i class="fas me-2" th:classappend="${meuCarro.status == 'DISPONIVEL' ? 'fa-wifi' : 'fa-ambulance'}"></i>
+                                    Viatura [[${meuCarro.placa}]]
+                                    <span th:if="${meuCarro.status == 'DISPONIVEL'}">- ONLINE</span>
+                                    <span th:if="${meuCarro.status == 'SOLICITADO'}">- ACIONADA</span>
+                                    <span th:if="${meuCarro.status == 'EM_CHAMADO'}">- EM OPERAÇÃO</span>
+                                </h2>
+                                <p class="m-0 opacity-90 mt-2 fs-5" th:if="${meuCarro.status == 'DISPONIVEL'}">Aguardando chamados da central...</p>
+                                <p class="m-0 opacity-90 mt-2 fs-5" th:if="${meuCarro.status != 'DISPONIVEL'}">Missão em andamento. Detalhes abaixo.</p>
+                            </div>
+                            
+                            <form action="/profissional/liberar-viatura" method="post">
+                                <input type="hidden" name="idAmbulancia" th:value="${meuCarro.id}">
+                                <button class="btn btn-outline-light rounded-pill fw-bold px-5 py-2">ENCERRAR TURNO</button>
+                            </form>
+                        </div>
+
+                        <div id="area-missao-alerta">
+                            <div th:if="${meuCarro.status == 'SOLICITADO' or meuCarro.status == 'EM_CHAMADO'}" 
+                                 th:with="dados=${meuCarro.previsaoLiberacao != null ? #strings.arraySplit(meuCarro.previsaoLiberacao, '|') : new String[0]}"
+                                 class="card-acionamento bg-white rounded-3 shadow-sm border overflow-hidden mb-40">
+                                
+                                <div class="p-3 border-bottom d-flex align-items-center justify-content-between" 
+                                     th:style="${meuCarro.status == 'SOLICITADO'} ? 'background: #fff3cd; color: #856404;' : 'background: #e8f5e9; color: #0f5132;'">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-file-medical-alt fa-2x me-3"></i>
+                                        <div>
+                                            <h4 class="m-0 fw-bold" th:text="${meuCarro.status == 'SOLICITADO'} ? 'NOVA SOLICITAÇÃO DE RESGATE' : 'MISSÃO EM CURSO'"></h4>
+                                            <small>Prioridade Imediata</small>
+                                        </div>
+                                    </div>
+                                    <span class="badge bg-dark fs-6" th:text="${meuCarro.status}"></span>
+                                </div>
+
+                                <div class="p-5">
+                                    <div class="row mb-5" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                                        <div>
+                                            <label class="form-label fw-bold text-muted text-uppercase small mb-2">Paciente</label>
+                                            <div class="p-3 bg-light border rounded fw-bold text-dark fs-4" th:text="${dados.length > 0 ? dados[0] : '-'}"></div>
+                                        </div>
+                                        <div>
+                                            <label class="form-label fw-bold text-muted text-uppercase small mb-2">Médico Solicitante</label>
+                                            <div class="p-3 bg-light border rounded fw-bold text-dark fs-4" th:text="${dados.length > 1 ? dados[1] : '-'}"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-5" style="display: grid; grid-template-columns: 1fr; gap: 30px;">
+                                        <div>
+                                            <label class="form-label fw-bold text-warning text-uppercase small mb-2"><i class="fas fa-map-marker-alt me-1"></i> Local de Coleta (Origem)</label>
+                                            <div class="p-4 border rounded fw-bold fs-4 text-dark" style="background: #fffbf2; border-color: #ffe082 !important; border-left: 5px solid #ffc107 !important; word-wrap: break-word;" 
+                                                 th:text="${dados.length > 2 ? dados[2] : '-'}"></div>
+                                        </div>
+                                        <div>
+                                            <label class="form-label fw-bold text-success text-uppercase small mb-2"><i class="fas fa-flag-checkered me-1"></i> Destino Final</label>
+                                            <div class="p-4 border rounded fw-bold fs-4 text-dark" style="background: #f0fff4; border-color: #bbf7d0 !important; border-left: 5px solid #28a745 !important; word-wrap: break-word;" 
+                                                 th:text="${dados.length > 3 ? dados[3] : '-'}"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-end gap-3 pt-4 border-top">
+                                        <form th:if="${meuCarro.status == 'SOLICITADO'}" th:action="@{/profissional/aceitar-missao}" method="post">
+                                            <input type="hidden" name="idAmbulancia" th:value="${meuCarro.id}">
+                                            <button type="submit" class="btn btn-success btn-lg fw-bold px-5 py-3 rounded-pill shadow fs-5">
+                                                <i class="fas fa-check-circle me-2"></i> ACEITAR CHAMADO
+                                            </button>
+                                        </form>
+
+                                        <form th:if="${meuCarro.status == 'EM_CHAMADO'}" th:action="@{/profissional/concluir-missao}" method="post">
+                                            <input type="hidden" name="idAmbulancia" th:value="${meuCarro.id}">
+                                            <button type="submit" class="btn btn-primary btn-lg fw-bold px-5 py-3 rounded-pill shadow fs-5">
+                                                <i class="fas fa-flag-checkered me-2"></i> CONCLUIR MISSÃO
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 class="section-title mb-25 mt-4" style="font-weight: 700; color: #2c3e50;">
+                            <i class="fas fa-tachometer-alt me-2" style="color: #17a2b8;"></i> Telemetria & Indicadores
+                        </h3>
+
+                        <div class="kpi-grid mb-40" style="display: flex; flex-wrap: wrap; gap: 20px;">
+                            <div class="kpi-card border-green" style="flex: 1 1 200px;">
+                                <span class="kpi-label">Missões Realizadas</span>
+                                <h3 class="kpi-value text-green">148</h3>
+                            </div>
+                            <div class="kpi-card border-blue" style="flex: 1 1 200px;">
+                                <span class="kpi-label">KM Rodados (Mês)</span>
+                                <h3 class="kpi-value text-blue">2.450</h3>
+                            </div>
+                            <div class="kpi-card border-yellow" style="flex: 1 1 200px;">
+                                <span class="kpi-label">Manutenções</span>
+                                <h3 class="kpi-value text-yellow">3</h3>
+                            </div>
+                            <div class="kpi-card border-red" style="border-left: 4px solid #e74c3c; flex: 1 1 200px;">
+                                <span class="kpi-label">Acidentes/Avarias</span>
+                                <h3 class="kpi-value" style="color: #e74c3c;">0</h3>
+                            </div>
+                        </div>
+
+                        <div class="row-graficos-responsive">
+                            <div class="card-grafico-item">
+                                <h4 style="margin-bottom: 20px; font-weight: 700; color: #333;">Status da Frota Hoje</h4>
+                                <div style="height: 250px; position: relative;">
+                                    <canvas id="chartStatusFrota"></canvas>
+                                </div>
+                            </div>
+                            <div class="card-grafico-item">
+                                <h4 style="margin-bottom: 20px; font-weight: 700; color: #333;">Progresso Diário</h4>
+                                <div style="height: 250px; position: relative;">
+                                    <canvas id="chartProgresso"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row-graficos-responsive">
+                            <div class="card-grafico-item">
+                                <h4 style="margin-bottom: 20px; font-weight: 700; color: #333;">Histórico de Atendimentos</h4>
+                                <div style="height: 250px; position: relative;">
+                                    <canvas id="chartHistorico"></canvas>
+                                </div>
+                            </div>
+                            <div class="card-grafico-item">
+                                <h4 style="margin-bottom: 20px; font-weight: 700; color: #333;">Satisfação / Eficiência</h4>
+                                <div style="height: 250px; position: relative; display: flex; align-items: center; justify-content: center;">
+                                    <canvas id="chartSatisfacao"></canvas>
+                                    <div style="position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                                        <h2 style="font-size: 2.5rem; color: #20c997; margin: 0;">4.9</h2>
+                                        <small style="color: #999;">EXCELENTE</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+                </div> 
+            </section>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/footer :: rodape}"></footer>
+
+    <script th:inline="javascript">
+        // --- LÓGICA DE ATUALIZAÇÃO SILENCIOSA (1 SEGUNDO) ---
+        async function atualizarMotoristaRealtime() {
+            try {
+                const response = await fetch(window.location.href);
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                const novoConteudo = doc.getElementById('painel-frota-conteudo');
+                const conteudoAtual = document.getElementById('painel-frota-conteudo');
+
+                if (novoConteudo && conteudoAtual) {
+                    // Atualiza apenas se houver mudança de conteúdo para evitar reconstrução desnecessária
+                    if (novoConteudo.innerHTML !== conteudoAtual.innerHTML) {
+                        conteudoAtual.innerHTML = novoConteudo.innerHTML;
+                        initCharts(); // Redesenha os gráficos se o HTML mudar
+                    }
+                }
+            } catch (err) {
+                console.warn("Erro no transporte de dados realtime:", err);
+            }
+        }
+
+        // Executa a cada 1000ms (1 segundo)
+        setInterval(atualizarMotoristaRealtime, 1000);
+
+        // --- LÓGICA DOS GRÁFICOS (CHART.JS) ---
+        const chartIds = ['chartStatusFrota', 'chartProgresso', 'chartHistorico', 'chartSatisfacao'];
+
+        function initCharts() {
+            const commonOptions = { responsive: true, maintainAspectRatio: false, animation: false };
+
+            // Limpa instâncias anteriores
+            chartIds.forEach(id => {
+                const existing = Chart.getChart(id);
+                if (existing) existing.destroy();
+            });
+
+            // 1. Status Frota
+            const ctxStatus = document.getElementById('chartStatusFrota');
+            if(ctxStatus) {
+                new Chart(ctxStatus, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Disponível', 'Em Uso', 'Oficina', 'Atrasado/Acidente'],
+                        datasets: [{ data: [12, 5, 2, 1], backgroundColor: ['#20c997', '#3498db', '#f1c40f', '#e74c3c'], borderWidth: 0 }]
+                    },
+                    options: { ...commonOptions, cutout: '70%', plugins: { legend: { position: 'bottom' } } }
+                });
+            }
+
+            // 2. Progresso Diário
+            const ctxProgresso = document.getElementById('chartProgresso');
+            if(ctxProgresso) {
+                new Chart(ctxProgresso, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                        datasets: [{ label: 'Missões', data: [8, 12, 10, 15, 9, 5, 3], backgroundColor: '#17a2b8', borderRadius: 5 }]
+                    },
+                    options: commonOptions
+                });
+            }
+
+            // 3. Histórico
+            const ctxHistorico = document.getElementById('chartHistorico');
+            if(ctxHistorico) {
+                new Chart(ctxHistorico, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                        datasets: [{
+                            label: 'Total KM', data: [2100, 2300, 1900, 2500, 2800, 2400, 2600, 2900, 3100, 2800, 2450, 0],
+                            borderColor: '#34495e', backgroundColor: 'rgba(52, 73, 94, 0.1)', fill: true, tension: 0.4
+                        }]
+                    },
+                    options: commonOptions
+                });
+            }
+
+            // 4. Satisfação
+            const ctxSatisfacao = document.getElementById('chartSatisfacao');
+            if(ctxSatisfacao) {
+                new Chart(ctxSatisfacao, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Satisfação', 'Restante'],
+                        datasets: [{ data: [4.9, 0.1], backgroundColor: ['#20c997', '#ecf0f1'], borderWidth: 0 }]
+                    },
+                    options: { ...commonOptions, circumference: 180, rotation: 270, cutout: '85%', plugins: { legend: { display: false } } }
+                });
+            }
+        }
+
+        // Primeira carga inicial
+        document.addEventListener("DOMContentLoaded", initCharts);
+    </script>
+</body>
+</html>

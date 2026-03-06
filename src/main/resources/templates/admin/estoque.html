@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestão de Estoque - VidaPlus</title>
+    
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    
+    <link rel="stylesheet" th:href="@{/css/estoque.css}"> 
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <main>
+        <div class="page-sheet">
+            
+            <div class="internal-header">
+                <div class="header-left">
+                    <a href="/home" class="btn-circle-back" title="Voltar"><i class="fas fa-arrow-left"></i></a>
+                    <div>
+                        <h2 style="margin:0;">Gestão de Estoque</h2>
+                        <span style="color:#94a3b8; font-size:0.9rem;">Hospital VidaPlus - Central Unificada</span>
+                    </div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="background:#e0f2fe; color:#0284c7; padding:6px 15px; border-radius:20px; font-weight:600; font-size:0.85rem;">
+                        <i class="fas fa-user-circle me-1"></i> 
+                        Logado como: <span id="user-display" th:text="${#authentication != null ? #authentication.name : 'Visitante'}">Usuário</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="kpi-container">
+                <div class="kpi-box" style="border-left: 4px solid var(--primary-color);">
+                    <div class="kpi-data"><h3 th:text="${#lists.size(produtos)}">0</h3><span>Itens Totais</span></div>
+                    <i class="fas fa-boxes kpi-icon-bg" style="color: var(--primary-color);"></i>
+                </div>
+                <div class="kpi-box" style="border-left: 4px solid #3498db;">
+                    <div class="kpi-data"><h3>R$ --</h3><span>Valor Patrimonial</span></div>
+                    <i class="fas fa-file-invoice-dollar kpi-icon-bg" style="color: #3498db;"></i>
+                </div>
+                <div class="kpi-box" style="border-left: 4px solid #f1c40f;">
+                    <div class="kpi-data"><h3 th:text="${#lists.size(produtos.?[quantidade <= quantidadeMinima])}">0</h3><span>Estoque Baixo</span></div>
+                    <i class="fas fa-exclamation-triangle kpi-icon-bg" style="color: #f1c40f;"></i>
+                </div>
+                <div class="kpi-box" style="border-left: 4px solid #e74c3c;">
+                    <div class="kpi-data"><h3 th:text="${#lists.size(produtos.?[quantidade == 0])}">0</h3><span>Crítico / Zerado</span></div>
+                    <i class="fas fa-ban kpi-icon-bg" style="color: #e74c3c;"></i>
+                </div>
+            </div>
+
+            <div class="scanner-area">
+                <div class="input-group-col col-grow">
+                    <label class="lbl-custom"><i class="fas fa-barcode text-muted"></i> Leitor de Código de Barras (EAN/QR)</label>
+                    <input type="text" id="barcode-input" class="inp-control" placeholder="Aguardando leitura do scanner..." autofocus autocomplete="off">
+                </div>
+
+                <div class="input-group-col col-fixed">
+                    <label class="lbl-custom"><i class="fas fa-times text-muted"></i> Mult.</label>
+                    <input type="number" id="multiplier-input" class="inp-control" style="text-align: center;" value="1" min="1">
+                </div>
+
+                <div class="input-group-col">
+                    <button onclick="processarEntrada()" class="btn-control-stock btn-green">
+                        <i class="fas fa-plus-circle"></i> Entrada Rápida
+                    </button>
+                </div>
+
+                <div class="input-group-col">
+                    <button onclick="abrirModalRetirada()" class="btn-control-stock btn-red">
+                        <i class="fas fa-minus-circle"></i> Registrar Saída
+                    </button>
+                </div>
+            </div>
+
+            <div class="filters-row">
+                <button class="filter-btn active" onclick="filtrarTabela('todos', this)"><i class="fas fa-list me-1"></i> Todos</button>
+                <button class="filter-btn" onclick="filtrarTabela('Farmacia', this)"><i class="fas fa-pills me-1"></i> Farmácia</button>
+                <button class="filter-btn" onclick="filtrarTabela('Almoxarifado', this)"><i class="fas fa-box-open me-1"></i> Almoxarifado</button>
+                <button class="filter-btn" onclick="filtrarTabela('EPI', this)"><i class="fas fa-head-side-mask me-1"></i> EPIs</button>
+                <button class="filter-btn" onclick="filtrarTabela('Cirurgico', this)"><i class="fas fa-scalpel me-1"></i> Cirúrgico</button>
+                <button class="filter-btn" onclick="filtrarTabela('Higiene', this)"><i class="fas fa-pump-soap me-1"></i> Higiene</button>
+            </div>
+
+            <div style="overflow-x:auto;">
+                <table class="table-stock-full" id="stock-table">
+                    <thead>
+                        <tr>
+                            <th>Cód. Barras</th>
+                            <th>Item / Descrição</th>
+                            <th>Categoria</th>
+                            <th>Lote / Validade</th>
+                            <th>Estoque Atual</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${produtos}" th:data-cat="${p.categoria}" th:id="'row-' + ${p.ean}">
+                            <td style="font-family:monospace; font-weight:bold; color:#64748b;">
+                                <i class="fas fa-barcode"></i> <span th:text="${p.ean}">789...</span>
+                            </td>
+                            <td>
+                                <strong th:text="${p.nome}">Nome Produto</strong>
+                                <br><small class="text-muted" th:text="${p.descricao}">Desc</small>
+                            </td>
+                            <td>
+                                <span style="background:#f1f5f9; padding:4px 8px; border-radius:6px; font-size:0.8rem; font-weight:600; color:#475569;" th:text="${p.categoria}">CAT</span>
+                            </td>
+                            <td>
+                                <div style="line-height:1.2">
+                                    <small style="font-weight:bold;" th:text="${p.lote}">LOTE</small><br>
+                                    <small style="color:#94a3b8;" th:text="${p.dataValidade}">VAL</small>
+                                </div>
+                            </td>
+                            <td class="text-center" style="font-size:1.1rem; font-weight:800; color:#333;">
+                                <span th:id="'qtd-' + ${p.ean}" th:text="${p.quantidade}">0</span>
+                            </td>
+                            <td class="text-center">
+                                <span th:if="${p.quantidade <= 0}" class="badge-status b-crit">ZERADO</span>
+                                <span th:if="${p.quantidade > 0 and p.quantidade <= p.quantidadeMinima}" class="badge-status b-low">BAIXO</span>
+                                <span th:if="${p.quantidade > p.quantidadeMinima}" class="badge-status b-ok">NORMAL</span>
+                            </td>
+                            <td>
+                                <a href="#" style="color:#3498db; font-size:1.1rem;"><i class="fas fa-edit"></i></a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(produtos)}">
+                            <td colspan="7" style="text-align:center; padding: 30px; color: #999;">
+                                <i class="fas fa-box-open fa-2x"></i><br>Nenhum item encontrado.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: rodape}"></div>
+
+    <div id="modalRetirada" class="modal-backdrop-custom">
+        <div class="modal-window">
+            <h3 style="color:#e74c3c; margin-top:0;"><i class="fas fa-hand-holding me-2"></i> Saída de Material</h3>
+            
+            <div style="margin-top:20px;">
+                <label style="display:block; font-weight:700; margin-bottom:5px; color:#555;">Responsável</label>
+                <input type="text" id="responsavel-saida" class="inp-control" 
+                       th:value="${#authentication != null ? #authentication.name : 'Visitante'}" 
+                       readonly style="background:#f8fafc; border-color:#e2e8f0;">
+            </div>
+
+            <div style="margin-top:15px;">
+                <label style="display:block; font-weight:700; margin-bottom:5px; color:#555;">Código do Item</label>
+                <input type="text" id="retirada-barcode" class="inp-control" placeholder="Escaneie o item...">
+            </div>
+
+            <div style="margin-top:15px; margin-bottom:25px;">
+                <label style="display:block; font-weight:700; margin-bottom:5px; color:#555;">Quantidade</label>
+                <input type="number" id="retirada-qtd" class="inp-control" value="1" min="1">
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <button onclick="fecharModalRetirada()" class="btn-control-stock" style="background:#94a3b8; flex:1;">Cancelar</button>
+                <button onclick="confirmarRetirada()" class="btn-control-stock btn-red" style="flex:1;">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const barcodeInput = document.getElementById('barcode-input');
+            if(barcodeInput) {
+                barcodeInput.focus();
+                barcodeInput.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') processarEntrada();
+                });
+            }
+        });
+
+        function processarEntrada() {
+            const barcode = document.getElementById('barcode-input').value;
+            const mult = document.getElementById('multiplier-input').value;
+
+            if (!barcode) return;
+
+            fetch('/admin/estoque/api/entrada', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ 'ean': barcode, 'quantidade': mult })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    atualizarLinhaTabela(barcode, data.novaQuantidade);
+                    console.log("Entrada registrada!");
+                } else {
+                    alert("Erro: " + (data.message || "Produto não encontrado."));
+                }
+            })
+            .catch(err => console.error(err));
+
+            document.getElementById('barcode-input').value = '';
+            document.getElementById('multiplier-input').value = '1';
+            document.getElementById('barcode-input').focus();
+        }
+
+        function confirmarRetirada() {
+            const barcode = document.getElementById('retirada-barcode').value;
+            const qtd = document.getElementById('retirada-qtd').value;
+            const resp = document.getElementById('responsavel-saida').value;
+
+            fetch('/admin/estoque/api/saida', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ 'ean': barcode, 'quantidade': qtd, 'responsavel': resp })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    atualizarLinhaTabela(barcode, data.novaQuantidade);
+                    fecharModalRetirada();
+                    console.log("Saída registrada!");
+                } else {
+                    alert("Erro: " + data.message);
+                }
+            })
+            .catch(err => alert("Erro ao processar saída."));
+        }
+
+        function atualizarLinhaTabela(ean, novaQtd) {
+            const spanQtd = document.getElementById('qtd-' + ean);
+            if (spanQtd) {
+                spanQtd.innerText = novaQtd;
+                const row = spanQtd.closest('tr');
+                row.style.backgroundColor = "#d1fae5";
+                setTimeout(() => row.style.backgroundColor = "", 1000);
+            } else {
+                location.reload();
+            }
+        }
+
+        function abrirModalRetirada() {
+            document.getElementById('modalRetirada').style.display = 'flex';
+            setTimeout(() => document.getElementById('retirada-barcode').focus(), 100);
+        }
+
+        function fecharModalRetirada() {
+            document.getElementById('modalRetirada').style.display = 'none';
+            document.getElementById('retirada-barcode').value = '';
+        }
+
+        function filtrarTabela(categoria, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const rows = document.querySelectorAll('#stock-table tbody tr');
+            rows.forEach(row => {
+                if (categoria === 'todos' || row.getAttribute('data-cat') === categoria) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!-- Arquivo: src/main/resources/templates/profissional/lista.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Profissionais</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header>
+    <nav>
+        <a th:href="@{/home}">Home</a>
+        <a th:href="@{/profissional/cadastro}">Novo Profissional</a>
+        <a th:href="@{/logout}">Sair</a>
+    </nav>
+</header>
+
+<div class="container">
+    <h2>Lista de Profissionais</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Especialidade</th>
+                <th>Email</th>
+                <th>Telefone</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="profissional : ${profissionais}">
+                <td th:text="${profissional.id}"></td>
+                <td th:text="${profissional.nome}"></td>
+                <td th:text="${profissional.especialidade}"></td>
+                <td th:text="${profissional.email}"></td>
+                <td th:text="${profissional.telefone}"></td>
+                <td>
+                    <a th:href="@{'/profissional/editar/' + ${profissional.id}}">Editar</a> |
+                    <a th:href="@{'/profissional/excluir/' + ${profissional.id}}" 
+                       onclick="return confirm('Deseja realmente excluir?');">Excluir</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+<script th:src="@{/js/script.js}"></script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+/* ============================================================
+   ARQUIVO: telemedicina.css (v7 - Desktop Vertical / Mobile Intacto)
+   DESCRIÇÃO: 
+   - Desktop: Câmeras lado a lado (Vertical)
+   - Mobile: Layout de 2 Colunas com câmeras empilhadas (Preservado)
+   ============================================================ */
+
+/* 1. VARIÁVEIS E FUNDAMENTOS */
+:root {
+    --primary-color: #20c997;
+    --secondary-color: #3498db;
+    --danger-color: #e74c3c;
+    --text-color: #333;
+    --tele-bg-dark: #0f172a;
+    --tele-panel-bg: #1e293b;
+    --tele-primary: #0ea5e9;
+    --tele-border: #334155;
+    --tele-text-main: #f8fafc;
+    --tele-text-muted: #94a3b8;
+    --tele-success: #10b981;
+    --tele-danger: #ef4444;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
+
+html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+
+body.page-telemedicina {
+    background: #0f172a;
+    display: flex; flex-direction: column; color: var(--tele-text-main);
+}
+
+a { text-decoration: none; color: inherit; } ul { list-style: none; }
+
+/* 2. HEADER COMPACTO */
+nav {
+    background: #1e293b; color: white; padding: 0 10px;
+    border-bottom: 1px solid var(--tele-border);
+    display: flex; justify-content: space-between; align-items: center;
+    height: 50px; flex-shrink: 0; z-index: 100;
+}
+nav h1 { font-size: 1rem; font-weight: 700; margin: 0; }
+.user-info { font-size: 0.75rem; display: flex; align-items: center; gap: 8px; }
+.btn-sair {
+    background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 20px;
+    font-size: 0.7rem; border: 1px solid rgba(255,255,255,0.2);
+}
+.profile-pic-header { width: 28px; height: 28px; border-radius: 50%; }
+
+/* ============================================================
+   3. ESTRUTURA PRINCIPAL (GRID)
+   ============================================================ */
+main.tele-main {
+    flex: 1; 
+    height: calc(100vh - 50px - 35px);
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+/* GRID GLOBAL */
+.tele-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px; 
+    width: 100%;
+    height: 100%;
+}
+
+/* ============================================================
+   4. ÁREA DE VÍDEO (DESKTOP: LADO A LADO / VERTICAL)
+   ============================================================ */
+.video-stage {
+    display: flex;
+    /* ALTERAÇÃO DESKTOP: Mudado de column para row (Lado a Lado) */
+    flex-direction: row; 
+    background: #000;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    border-right: 1px solid var(--tele-border);
+}
+
+.availability-bar {
+    position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+    background: rgba(16, 185, 129, 0.9); color: white;
+    padding: 3px 10px; border-radius: 20px; font-size: 0.7rem;
+    z-index: 50; box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    white-space: nowrap; pointer-events: none;
+}
+
+/* Vídeos: 50% Largura cada (Lado a Lado) */
+.main-video-container, 
+.my-video-pip {
+    flex: 1; 
+    width: 50% !important; /* Força 50% no Desktop */
+    height: 100% !important; /* Altura total no Desktop */
+    position: relative !important;
+    background: #111;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 0 !important;
+    bottom: auto !important; right: auto !important; 
+    box-shadow: none !important;
+}
+
+/* Borda vertical separadora no Desktop */
+.main-video-container { 
+    border-right: 1px solid #333; 
+    border-bottom: none; /* Remove borda inferior antiga */
+}
+.my-video-pip { background: #222; }
+
+.main-video-container video,
+.my-video-pip video { 
+    width: 100%; height: 100%; object-fit: cover; 
+}
+.my-video-pip video { transform: scaleX(-1); }
+
+.placeholder-content { text-align: center; color: #666; }
+.placeholder-content i { font-size: 2.5rem; margin-bottom: 5px; display: block; }
+.placeholder-content h3 { font-size: 1rem; margin: 5px 0; }
+.placeholder-content p { font-size: 0.75rem; }
+
+/* CONTROLES (Centralizados) */
+.controls-bar {
+    position: absolute;
+    bottom: 20px; /* No Desktop vertical, fica melhor embaixo */
+    left: 50%;
+    top: auto; /* Reseta o top do mobile */
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.9);
+    padding: 5px 15px; 
+    border-radius: 50px;
+    display: flex; gap: 10px;
+    border: 1px solid rgba(255,255,255,0.2);
+    z-index: 60;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.btn-control {
+    width: 35px; height: 35px; border-radius: 50%; border: none;
+    background: rgba(255,255,255,0.15); color: white; font-size: 0.9rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.btn-control:hover { background: rgba(255,255,255,0.3); }
+.btn-danger { background: var(--tele-danger); }
+.btn-danger:hover { background: #dc2626; }
+
+/* ============================================================
+   5. PAINEL LATERAL (DIREITA)
+   ============================================================ */
+.chat-panel {
+    background: var(--tele-panel-bg);
+    display: flex; flex-direction: column;
+    height: 100%;
+    min-width: 0;
+}
+
+.chat-header {
+    padding: 8px 10px;
+    background: rgba(0,0,0,0.2);
+    border-bottom: 1px solid var(--tele-border);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-shrink: 0;
+}
+.chat-header h4 { font-size: 0.85rem; margin: 0; color: white; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.tele-tabs { display: flex; background: rgba(0,0,0,0.3); padding: 4px; gap: 4px; flex-shrink: 0; }
+.tele-tab-btn {
+    flex: 1; background: transparent; border: none; color: #94a3b8;
+    padding: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+.tele-tab-btn.active { color: var(--tele-primary); border-bottom-color: var(--tele-primary); background: rgba(14, 165, 233, 0.1); }
+
+/* CHAT */
+#teleChatContainer { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+.chat-messages { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+.msg { padding: 8px 12px; border-radius: 10px; font-size: 0.8rem; max-width: 95%; color: white; line-height: 1.3; }
+.msg-in { background: #334155; align-self: flex-start; }
+.msg-out { background: var(--tele-primary); align-self: flex-end; }
+.msg-time { font-size: 0.65rem; opacity: 0.7; display: block; text-align: right; margin-top: 3px; }
+
+.chat-input-area { padding: 8px; background: rgba(0,0,0,0.2); border-top: 1px solid var(--tele-border); flex-shrink: 0; }
+.input-box { display: flex; align-items: center; background: rgba(255,255,255,0.05); border-radius: 25px; padding: 4px 8px; border: 1px solid rgba(255,255,255,0.1); }
+.input-field { flex: 1; background: transparent; border: none; color: white; padding: 6px; outline: none; font-size: 0.8rem; }
+.btn-chat-icon { background: none; border: none; color: #94a3b8; font-size: 1rem; cursor: pointer; padding: 4px; }
+.btn-send { color: var(--tele-primary); }
+.emoji-bar { display: none; }
+
+/* PRONTUÁRIO */
+.prontuario-tele-area { padding: 10px; flex: 1; overflow-y: auto; display: none; flex-direction: column; gap: 10px; }
+.prontuario-tele-area.active { display: flex; }
+.tele-input-group label { color: #ccc; font-size: 0.75rem; margin-bottom: 3px; display: block; font-weight: 600; }
+.tele-form-control { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #475569; color: white; padding: 8px; border-radius: 6px; font-size: 0.8rem; }
+.tele-btn-save { background: var(--tele-success); color: white; border: none; padding: 8px; border-radius: 6px; font-weight: bold; width: 100%; cursor: pointer; font-size: 0.85rem; }
+.tele-timeline-item { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; border-left: 3px solid var(--tele-primary); margin-bottom: 8px; }
+.tele-timeline-cid { font-weight: bold; color: var(--tele-primary); font-size: 0.8rem; }
+.tele-timeline-text { font-size: 0.8rem; margin-top: 4px; color: #ddd; }
+
+/* 6. RODAPÉ */
+footer {
+    background: #1e293b; color: #94a3b8; text-align: center;
+    padding: 8px; font-size: 0.7rem; height: 35px; flex-shrink: 0;
+    border-top: 1px solid var(--tele-border);
+}
+
+/* ============================================================
+   7. RESPONSIVIDADE MOBILE (INTACTA - PRESERVANDO V6)
+   ============================================================ */
+@media (max-width: 900px) {
+    
+    .tele-grid {
+        grid-template-columns: 1fr 1fr; /* 50% Vídeo (Esq) | 50% Chat (Dir) */
+        grid-template-rows: 100%; 
+    }
+
+    .chat-panel {
+        border-left: 1px solid var(--tele-border);
+        border-top: none;
+    }
+
+    /* REVERSÃO PARA O MOBILE: VOLTA A SER COLUMN (EMPILHADO) DENTRO DA COLUNA */
+    .video-stage {
+        flex-direction: column !important; /* Força empilhado no mobile */
+        border-right: 1px solid var(--tele-border);
+        border-bottom: none;
+    }
+
+    /* REVERSÃO WIDTH PARA MOBILE */
+    .main-video-container, 
+    .my-video-pip {
+        width: 100% !important; /* Ocupa largura total da coluna */
+        height: auto !important; /* Altura automática (flex grow) */
+        flex: 1; /* Crescem iguais */
+        border-right: none; /* Remove borda lateral desktop */
+    }
+    .main-video-container { border-bottom: 1px solid #333; }
+
+    /* CONTROLES MOBILE (VOLTA AO CENTRO) */
+    .controls-bar {
+        bottom: auto; 
+        top: 50%; 
+        transform: translate(-50%, -50%);
+        padding: 4px 10px; gap: 5px;
+    }
+
+    /* Ajustes Gerais */
+    .placeholder-content i { font-size: 1.8rem; }
+    .placeholder-content h3 { font-size: 0.8rem; }
+    .chat-header h4 { font-size: 0.75rem; }
+    .user-info span { display: none; }
+    nav { padding: 0 5px; }
+    .btn-control { width: 30px; height: 30px; font-size: 0.8rem; }
+    .input-box { padding: 2px 5px; gap: 2px; }
+    .input-field { font-size: 0.75rem; padding: 5px 2px; }
+    .btn-chat-icon { font-size: 0.9rem; padding: 2px; }
+}

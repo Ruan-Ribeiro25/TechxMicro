@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # 1. BANCO DE DADOS
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: vidaplus_db
+      MYSQL_USER: user_dev
+      MYSQL_PASSWORD: user_dev
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+    # O truque: cria um apelido para o banco também, por segurança
+    networks:
+      default:
+        aliases:
+          - vidaplus-db
+
+  # 2. BACKEND (AQUI ESTÁ A CORREÇÃO DO SITE)
+  app:
+    build: .
+    restart: always
+    ports:
+      - "80:8080"
+    depends_on:
+      - db
+    environment:
+      # O backend acessa o banco pelo nome do SERVIÇO 'db'
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/vidaplus_db?allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=admin
+    # O truque: dizemos ao Docker "Este container também atende por vidaplus-app"
+    networks:
+      default:
+        aliases:
+          - vidaplus-app
+
+  # 3. TÚNEL CLOUDFLARE
+  tunnel:
+    image: cloudflare/cloudflared
+    restart: always
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=eyJhIjoiYjQ1MTU1MjdjNjI2MmZiNzUzZTRhMmYxODEwMTk0ZjciLCJ0IjoiMzFkODBmN2QtZmM0OS00MzhmLWE1NGYtY2FjNjQ3ODQzYTQyIiwicyI6Ik5qYzJNMk0wTURjdE5UbG1OeTAwTXpRMUxXRTNZV1l0TldNNU1HSXpNR0ZtTkRSaiJ9
+
+  # 4. MONITORAMENTO
+  prometheus:
+    image: prom/prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      default:
+        aliases:
+          - vidaplus-prometheus
+
+  # 5. DASHBOARD
+  grafana:
+    image: grafana/grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      default:
+        aliases:
+          - vidaplus-grafana
+
+volumes:
+  db_data:
+  grafana_data:

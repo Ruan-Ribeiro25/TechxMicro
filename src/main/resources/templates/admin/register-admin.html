@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro Profissional - VidaPlus</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <main>
+        <div class="register-size border-top-blue">
+            
+            <div class="login-header text-center">
+                <h2 class="theme-blue"><i class="fas fa-user-md"></i> Ativação de Perfil Profissional</h2>
+                <p class="text-gray">Vincule suas credenciais à sua conta existente</p>
+            </div>
+
+            <div th:if="${error}" class="alert-box alert-error">
+                <span th:text="${error}"></span>
+            </div>
+
+            <form th:action="@{/register-professional}" th:object="${usuario}" method="post">
+                
+                <div class="role-selector">
+                    <div class="role-option">
+                        <input type="radio" name="tipoProfissional" id="tipoMedico" value="MEDICO" checked onclick="mudarTipo('MEDICO')">
+                        <label for="tipoMedico"><i class="fas fa-user-md"></i> Médico</label>
+                    </div>
+                    <div class="role-option">
+                        <input type="radio" name="tipoProfissional" id="tipoEnfermeiro" value="ENFERMEIRO" onclick="mudarTipo('ENFERMEIRO')">
+                        <label for="tipoEnfermeiro"><i class="fas fa-user-nurse"></i> Enfermeiro</label>
+                    </div>
+                    <div class="role-option">
+                        <input type="radio" name="tipoProfissional" id="tipoMotorista" value="MOTORISTA" onclick="mudarTipo('MOTORISTA')">
+                        <label for="tipoMotorista"><i class="fas fa-ambulance"></i> Motorista</label>
+                    </div>
+                    <div class="role-option">
+                        <input type="radio" name="tipoProfissional" id="tipoRecepcao" value="RECEPCAO" onclick="mudarTipo('RECEPCAO')">
+                        <label for="tipoRecepcao"><i class="fas fa-headset"></i> Recepção</label>
+                    </div>
+                    <div class="role-option">
+                        <input type="radio" name="tipoProfissional" id="tipoServicos" value="SERVICOS_GERAIS" onclick="mudarTipo('SERVICOS_GERAIS')">
+                        <label for="tipoServicos"><i class="fas fa-broom"></i> Serv. Gerais</label>
+                    </div>
+                </div>
+
+                <h4 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; color: #888;">
+                    Seus Dados (Confirmados)
+                </h4>
+                
+                <div class="form-group">
+                    <label>Nome Completo</label>
+                    <input type="text" th:field="*{nome}" class="form-control input-locked" readonly>
+                </div>
+
+                <div class="row-aligned">
+                    <div class="col-half">
+                        <label>CPF</label>
+                        <input type="text" th:field="*{cpf}" class="form-control input-locked" readonly>
+                    </div>
+                    <div class="col-half">
+                        <label>Data de Nascimento</label>
+                        <input type="date" th:field="*{dataNascimento}" class="form-control input-locked" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>E-mail Institucional</label>
+                    <input type="email" th:field="*{email}" class="form-control input-locked" readonly>
+                </div>
+
+                <div class="form-group mt-15">
+                    <label>Cidade / Polo de Atuação (Vinculado)</label>
+                    <input type="text" th:field="*{cidade}" class="form-control input-locked" style="font-weight: bold; color: #2c3e50;" readonly>
+                    <small style="color: #666; font-style: italic;">* Este dado vem do seu cadastro principal.</small>
+                </div>
+
+                <h4 style="border-bottom: 2px solid var(--secondary-color); padding-bottom: 10px; margin: 30px 0 20px 0; color: var(--secondary-color);">
+                    <i class="fas fa-id-card-alt"></i> Dados Profissionais (Completar)
+                </h4>
+
+                <div class="row-aligned">
+                    <div class="col-half">
+                        <label id="labelRegistro" style="color: var(--secondary-color);">CRM (Conselho Regional)</label>
+                        <input type="text" name="registroConselho" id="inputRegistro" class="form-control" placeholder="CRM/UF 12345" required style="border-left: 4px solid var(--secondary-color);">
+                    </div>
+                    <div class="col-half">
+                        <label>Matrícula Interna</label>
+                        <input type="text" name="matricula" class="form-control" placeholder="Matrícula" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Data da Matrícula (Admissão)</label>
+                    <input type="date" name="dataMatricula" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Especialidade / Setor</label>
+                    <select name="especialidade" id="especialidadeSelect" class="form-control" required>
+                        <option value="" disabled selected>Selecione a Especialidade...</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-custom btn-blue mt-20" style="width: 100%; padding: 16px; font-size: 1.1rem;">
+                    Confirmar Vínculo Profissional
+                </button>
+            </form>
+
+            <div class="footer-links text-center mt-3">
+                <a th:href="@{/home}" class="theme-blue" style="font-weight: bold; text-decoration: none;">
+                    <i class="fas fa-arrow-left"></i> Cancelar e Voltar
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: rodape}"></div>
+
+    <script>
+        const especialidadesMedico = [
+            "Anestesiologia", "Cardiologia", "Cirurgia Geral", "Clínica Médica",
+            "Dermatologia", "Endocrinologia", "Gastroenterologia", "Ginecologia e Obstetrícia",
+            "Neurologia", "Oftalmologia", "Ortopedia e Traumatologia", "Otorrinolaringologia",
+            "Pediatria", "Psiquiatria", "Radiologia", "Triagem", "Urologia", "UTI Adulto", "UTI Pediátrica"
+        ];
+
+        const especialidadesEnfermeiro = [
+            "Enfermagem Geral", "Centro Cirúrgico", "Controle de Infecção (CCIH)",
+            "Enfermagem do Trabalho", "Enfermagem Obstétrica", "Saúde da Família",
+            "Triagem / Classificação de Risco", "Urgência e Emergência", "UTI Adulto", "UTI Neonatal"
+        ];
+
+        const especialidadesMotorista = [
+            "Condutor Socorrista (UTI)", "Condutor de Ambulância Básica", 
+            "Transporte de Pacientes", "Transporte Administrativo"
+        ];
+
+        const especialidadesRecepcao = [
+            "Recepção Central", "Recepção Pronto Socorro", "Call Center / Agendamento", 
+            "Faturamento", "Arquivo Médico (SAME)"
+        ];
+
+        const especialidadesServicos = [
+            "Limpeza Hospitalar", "Manutenção Predial", "Copa e Cozinha", 
+            "Lavanderia", "Segurança Patrimonial"
+        ];
+
+        function mudarTipo(tipo) {
+            const label = document.getElementById('labelRegistro');
+            const input = document.getElementById('inputRegistro');
+            const select = document.getElementById('especialidadeSelect');
+            
+            let lista = [];
+
+            if (tipo === 'MEDICO') {
+                label.innerText = 'CRM (Conselho Regional de Medicina)';
+                input.placeholder = 'Ex: CRM/UF 12345';
+                lista = especialidadesMedico;
+            } else if (tipo === 'ENFERMEIRO') {
+                label.innerText = 'COREN (Conselho Regional de Enfermagem)';
+                input.placeholder = 'Ex: COREN-UF 000.000';
+                lista = especialidadesEnfermeiro;
+            } else if (tipo === 'MOTORISTA') {
+                label.innerText = 'CNH (Carteira Nacional de Habilitação)';
+                input.placeholder = 'Ex: Nº CNH com Categoria D/E';
+                lista = especialidadesMotorista;
+            } else if (tipo === 'RECEPCAO' || tipo === 'SERVICOS_GERAIS') {
+                label.innerText = 'RG ou Documento Funcional';
+                input.placeholder = 'Ex: RG ou ID do Crachá';
+                lista = (tipo === 'RECEPCAO') ? especialidadesRecepcao : especialidadesServicos;
+            }
+
+            select.innerHTML = '<option value="" disabled selected>Selecione a Especialidade/Setor...</option>';
+            
+            lista.forEach(esp => {
+                const option = document.createElement('option');
+                option.value = esp;
+                option.text = esp;
+                select.appendChild(option);
+            });
+        }
+
+        window.onload = function() {
+            mudarTipo('MEDICO');
+        };
+    </script>
+</body>
+</html>

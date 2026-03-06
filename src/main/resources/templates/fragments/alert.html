@@ -1,0 +1,5 @@
+<!-- Arquivo: src/main/resources/templates/fragments/alert.html -->
+<div th:if="${msg != null}" 
+     th:class="'alert ' + ${alertType}" 
+     th:text="${msg}">
+</div>

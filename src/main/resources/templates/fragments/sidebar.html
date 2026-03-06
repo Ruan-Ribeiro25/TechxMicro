@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+    <div th:fragment="sidebar" id="sidebar-wrapper">
+        
+        <div class="sidebar-heading">
+            <i class="fas fa-heartbeat me-2"></i>VidaPlus
+        </div>
+        
+        <div class="list-group list-group-flush flex-grow-1" th:if="${usuario != null}">
+            
+            <a th:href="@{/home}" class="list-group-item list-group-item-action">
+                <i class="fas fa-home"></i> <span>Home</span>
+            </a>
+
+            <a th:if="${#strings.contains(usuario.perfil, 'RECEPCAO') or #strings.contains(usuario.perfil, 'ADMIN')}"
+               th:href="@{/profissional/painel}" class="list-group-item list-group-item-action active">
+                <i class="fas fa-calendar-check"></i> <span>Recepção</span>
+            </a>
+
+            <a th:if="${#strings.contains(usuario.perfil, 'MEDICO')}"
+               th:href="@{/profissional/painel}" class="list-group-item list-group-item-action">
+                <i class="fas fa-user-md"></i> <span>Painel Médico</span>
+            </a>
+
+            <a th:if="${#strings.contains(usuario.perfil, 'ENFERMEIRO') or #strings.contains(usuario.perfil, 'TECNICO')}"
+               th:href="@{/profissional/painel}" class="list-group-item list-group-item-action">
+                <i class="fas fa-user-nurse"></i> <span>Enfermagem</span>
+            </a>
+
+        </div>
+
+        <a th:href="@{/logout}" class="list-group-item list-group-item-action menu-sair">
+            <i class="fas fa-sign-out-alt"></i> <span>Sair com segurança</span>
+        </a>
+
+    </div>
+
+</body>
+</html>

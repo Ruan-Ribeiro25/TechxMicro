@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro Profissional - SpeedMedical</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<header>
+    <h1>Cadastro Profissional</h1>
+</header>
+
+<div class="container">
+
+    <h2>Dados Profissionais</h2>
+
+    <form th:action="@{/profissional/cadastrar}" method="post">
+
+        <label for="crm">CRM / Registro Profissional</label>
+        <input type="text" id="crm" name="crm" required placeholder="Ex: CRM-MG 123456">
+
+        <label for="matricula">Matrícula Interna</label>
+        <input type="text" id="matricula" name="matricula" required>
+
+        <label for="atuacao">Área de Atuação</label>
+        <select id="atuacao" name="atuacao" required>
+            <option value="">Selecione a especialidade</option>
+
+            <!-- CLÍNICAS -->
+            <option value="CLINICA_GERAL">Clínica Geral</option>
+            <option value="MEDICINA_DA_FAMILIA">Medicina da Família</option>
+            <option value="GERIATRIA">Geriatria</option>
+            <option value="PEDIATRIA">Pediatria</option>
+
+            <!-- ESPECIALIDADES -->
+            <option value="CARDIOLOGIA">Cardiologia</option>
+            <option value="DERMATOLOGIA">Dermatologia</option>
+            <option value="ENDOCRINOLOGIA">Endocrinologia</option>
+            <option value="GASTROENTEROLOGIA">Gastroenterologia</option>
+            <option value="HEMATOLOGIA">Hematologia</option>
+            <option value="INFECTOLOGIA">Infectologia</option>
+            <option value="NEFROLOGIA">Nefrologia</option>
+            <option value="NEUROLOGIA">Neurologia</option>
+            <option value="ONCOLOGIA">Oncologia</option>
+            <option value="PNEUMOLOGIA">Pneumologia</option>
+            <option value="REUMATOLOGIA">Reumatologia</option>
+
+            <!-- CIRÚRGICAS -->
+            <option value="CIRURGIA_GERAL">Cirurgia Geral</option>
+            <option value="CIRURGIA_PLASTICA">Cirurgia Plástica</option>
+            <option value="CIRURGIA_CARDIOVASCULAR">Cirurgia Cardiovascular</option>
+            <option value="NEUROCIRURGIA">Neurocirurgia</option>
+            <option value="ORTOPEDIA">Ortopedia e Traumatologia</option>
+            <option value="UROLOGIA">Urologia</option>
+
+            <!-- SAÚDE DA MULHER -->
+            <option value="GINECOLOGIA">Ginecologia</option>
+            <option value="OBSTETRICIA">Obstetrícia</option>
+            <option value="MASTOLOGIA">Mastologia</option>
+
+            <!-- SAÚDE MENTAL -->
+            <option value="PSIQUIATRIA">Psiquiatria</option>
+            <option value="PSICOLOGIA">Psicologia</option>
+
+            <!-- DIAGNÓSTICO -->
+            <option value="RADIOLOGIA">Radiologia</option>
+            <option value="PATOLOGIA">Patologia</option>
+            <option value="MEDICINA_NUCLEAR">Medicina Nuclear</option>
+
+            <!-- OUTRAS -->
+            <option value="ANESTESIOLOGIA">Anestesiologia</option>
+            <option value="MEDICINA_DO_TRABALHO">Medicina do Trabalho</option>
+            <option value="MEDICINA_ESPORTIVA">Medicina Esportiva</option>
+            <option value="MEDICINA_INTENSIVA">Medicina Intensiva (UTI)</option>
+            <option value="TELEMEDICINA">Telemedicina</option>
+        </select>
+
+        <label for="polo">Polo de Atuação</label>
+        <select id="polo" name="poloId" required>
+            <option value="">Selecione o polo</option>
+            <option th:each="p : ${polos}"
+                    th:value="${p.id}"
+                    th:text="${p.nome}">
+            </option>
+        </select>
+
+        <button type="submit">Finalizar Cadastro</button>
+    </form>
+
+    <div th:if="${erro}" class="alert alert-danger" th:text="${erro}"></div>
+    <div th:if="${sucesso}" class="alert alert-success" th:text="${sucesso}"></div>
+
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+</body>
+</html>

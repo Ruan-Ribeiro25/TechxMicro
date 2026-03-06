@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel de Enfermagem - VidaPlus</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    
+    <link rel="stylesheet" th:href="@{/css/painel-enfermeiro.css}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <main>
+        <div class="page-header">
+            <h2><i class="fas fa-user-nurse text-primary me-2"></i> Painel de Enfermagem</h2>
+            
+            <div class="header-actions">
+                <div class="btn-notif-circle" data-bs-toggle="modal" data-bs-target="#modalNotificacoes" title="Ver Avisos">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge-notif-count" th:if="${notificacoes != null && !notificacoes.isEmpty()}" th:text="${#lists.size(notificacoes)}">0</span>
+                </div>
+
+                <div class="user-info">
+                    <div class="user-details">
+                        <span class="user-name" th:text="${profissional.nome}">Enf. Nome</span>
+                        <span class="user-role">ENFERMEIRO</span>
+                    </div>
+                    <img th:src="${profissional.usuario.fotoPerfil != null} ? 'data:image/jpeg;base64,' + ${profissional.usuario.fotoPerfil} : '/img/avatar-default.png'" 
+                         class="profile-pic-header" alt="Perfil">
+                </div>
+            </div>
+        </div>
+
+        <div class="dash-container">
+            <aside class="sidebar">
+                <h3 class="sidebar-title"><i class="fas fa-clipboard-list text-primary"></i> Fila de Triagem</h3>
+                <form th:action="@{/profissional/painel}" method="get" class="search-box">
+                    <div class="input-group">
+                        <input type="text" name="busca" placeholder="Buscar paciente..." class="form-control" th:value="${buscaAtual}">
+                        <button type="submit" class="btn btn-light border"><i class="fas fa-search"></i></button>
+                    </div>
+                </form>
+                <div class="patient-list-scroll">
+                    <div th:if="${#lists.isEmpty(resultados)}" class="text-center text-muted py-3">Nenhum paciente na fila.</div>
+                    
+                    <a th:each="p : ${resultados}" th:href="@{/profissional/painel(idPaciente=${p.id})}" class="patient-card-item">
+                        <div class="avatar-initials">
+                            [[${#strings.substring(p.nome,0,1)}]]
+                        </div>
+                        <div style="flex-grow: 1;">
+                            <div style="font-weight: 600;">[[${p.nome}]]</div>
+                            <small style="color: #888;">SUS: [[${p.cartaoSus}]]</small>
+                        </div>
+                        <i class="fas fa-chevron-right text-muted small"></i>
+                    </a>
+                </div>
+            </aside>
+
+            <section class="main-content">
+                
+                <div th:if="${pacienteSelecionado != null}">
+                    <div class="patient-header-banner">
+                        <div class="d-flex align-items-center" style="gap: 20px;">
+                            <img th:src="${pacienteSelecionado.fotoPerfil != null} ? 'data:image/jpeg;base64,' + ${pacienteSelecionado.fotoPerfil} : '/img/avatar-paciente.png'" 
+                                 style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+                            <div>
+                                <h2 style="margin: 0; color: #2c3e50; font-size: 1.8rem;" th:text="${pacienteSelecionado.nome}"></h2>
+                                <div class="text-muted">CPF: [[${pacienteSelecionado.cpf}]]</div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex align-items-center gap-3">
+                            <form th:if="${missaoAtiva == null}" th:action="@{/profissional/solicitar-ambulancia}" method="post" class="d-flex gap-2">
+                                <input type="hidden" name="idPaciente" th:value="${pacienteSelecionado.id}">
+                                <input type="text" name="destino" class="form-control" placeholder="Destino (Ex: UPA)" style="width: 180px;" required>
+                                <button type="submit" class="btn-emergency">
+                                    <i class="fas fa-ambulance"></i> SAMU
+                                </button>
+                            </form>
+                            <div th:if="${missaoAtiva != null}" class="text-success fw-bold"><i class="fas fa-check-circle"></i> SAMU Acionado</div>
+                            
+                            <a th:href="@{/profissional/painel}" class="btn btn-outline-secondary rounded-pill">
+                                <i class="fas fa-times me-1"></i> Fechar
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="diagnosis-form-area">
+                        <h4 class="mb-4 text-primary fw-bold"><i class="fas fa-heartbeat me-2"></i>Registrar Sinais Vitais</h4>
+                        <form th:action="@{/profissional/salvar-triagem}" method="post">
+                            <input type="hidden" name="idPaciente" th:value="${pacienteSelecionado.id}">
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <label class="form-label">Pressão Sistólica</label>
+                                    <input type="number" name="sistolica" class="form-control" placeholder="Ex: 120" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Pressão Diastólica</label>
+                                    <input type="number" name="diastolica" class="form-control" placeholder="Ex: 80" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Temperatura (°C)</label>
+                                    <input type="number" step="0.1" name="temperatura" class="form-control" placeholder="Ex: 36.5">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Glicemia (mg/dL)</label>
+                                    <input type="number" name="glicemia" class="form-control" placeholder="Ex: 90">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label">Queixa Principal / Observações</label>
+                                <textarea name="queixa" class="form-control" rows="3" placeholder="Descreva os sintomas relatados pelo paciente..."></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn-custom w-100 justify-content-center">
+                                <i class="fas fa-save"></i> Salvar Triagem
+                            </button>
+                        </form>
+                    </div>
+
+                    <h5 class="mb-3 text-secondary fw-bold">Histórico de Medições</h5>
+                    <div class="timeline">
+                        <div th:each="sv : ${historicoTriagem}" class="card-box p-3 mb-3 border-start border-4 border-info">
+                            <div class="d-flex justify-content-between">
+                                <strong><i class="far fa-clock me-2"></i>[[${#temporals.format(sv.dataHora, 'dd/MM/yyyy HH:mm')}]]</strong>
+                                <span class="badge bg-light text-dark border">Enf. Responsável</span>
+                            </div>
+                            <div class="row mt-2 text-muted small">
+                                <div class="col"><strong>PA:</strong> [[${sv.pressaoSistolica}]]/[[${sv.pressaoDiastolica}]] mmHg</div>
+                                <div class="col"><strong>Temp:</strong> [[${sv.temperatura}]]°C</div>
+                                <div class="col"><strong>Glic:</strong> [[${sv.glicemia}]] mg/dL</div>
+                            </div>
+                            <p class="mt-2 mb-0 fst-italic">"[[${sv.queixa}]]"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${pacienteSelecionado == null}">
+                    <div class="welcome-card-nurse">
+                        <div class="welcome-avatar-container">
+                            <img th:src="${profissional.usuario.fotoPerfil != null} ? 'data:image/jpeg;base64,' + ${profissional.usuario.fotoPerfil} : '/img/avatar-pro.png'" 
+                                 class="welcome-avatar-img">
+                            
+                            <form th:action="@{/perfil/upload-foto}" method="post" enctype="multipart/form-data">
+                                <label class="btn-upload-icon" title="Alterar Foto">
+                                    <i class="fas fa-camera"></i>
+                                    <input type="file" name="image" onchange="this.form.submit()" style="display: none;">
+                                </label>
+                            </form>
+                        </div>
+
+                        <div style="flex-grow: 1;">
+                            <h3 style="margin: 0; font-weight: 700; font-size: 1.8rem;">Olá, [[${profissional.nome}]]!</h3>
+                            <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 1.1rem;">Acompanhe o fluxo de triagens e indicadores.</p>
+                        </div>
+                        <div style="font-size: 3rem; opacity: 0.2;"><i class="fas fa-user-nurse"></i></div>
+                    </div>
+
+                    <div class="kpi-grid">
+                        <div class="kpi-card border-blue">
+                            <span class="kpi-label">Triagens Hoje</span>
+                            <h3 class="kpi-value text-primary" th:text="${kpiTriagensHoje}">0</h3>
+                        </div>
+                        <div class="kpi-card border-green">
+                            <span class="kpi-label">Total Mês</span>
+                            <h3 class="kpi-value text-success" th:text="${kpiTotalMensal}">0</h3>
+                        </div>
+                        <div class="kpi-card border-red">
+                            <span class="kpi-label">Em Observação</span>
+                            <h3 class="kpi-value text-danger" th:text="${kpiEmObservacao}">0</h3>
+                        </div>
+                        <div class="kpi-card border-yellow">
+                            <span class="kpi-label">Tempo Médio</span>
+                            <h3 class="kpi-value text-warning" th:text="${kpiMediaTempo}">0 min</h3>
+                        </div>
+                    </div>
+
+                    <div class="row-graficos-responsive">
+                        <div class="card-grafico-item">
+                            <h5 class="mb-3 fw-bold text-secondary">Volume de Triagens</h5>
+                            <div style="height: 250px;"><canvas id="chartTriagens"></canvas></div>
+                        </div>
+                        <div class="card-grafico-item">
+                            <h5 class="mb-3 fw-bold text-secondary">Evolução Anual</h5>
+                            <div style="height: 250px;"><canvas id="chartAnual"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="modal fade modal-notification" id="modalNotificacoes" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-bell me-2"></i>Avisos Enfermagem</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group list-group-flush" th:if="${notificacoes != null && !notificacoes.isEmpty()}">
+                        <li th:each="msg : ${notificacoes}" class="list-group-item">
+                            <i class="fas fa-info-circle me-2"></i> <span th:text="${msg}">Msg</span>
+                        </li>
+                    </ul>
+                    <div th:if="${notificacoes == null or #lists.isEmpty(notificacoes)}" class="text-center p-4 text-muted">
+                        <i class="far fa-bell-slash fa-2x mb-2 opacity-50"></i><br>
+                        Nenhuma notificação nova.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/footer :: rodape}"></footer>
+
+    <script th:inline="javascript">
+        /* DADOS DOS GRÁFICOS (Vindos do Controller) */
+        /*<![CDATA[*/
+        var meses = /*[[${graficoMeses}]]*/ [];
+        var dadosTriagem = /*[[${graficoAtendimentos}]]*/ [];
+        var dadosObs = /*[[${graficoObservacao}]]*/ [];
+        var anos = /*[[${graficoAnos}]]*/ [];
+        var totalAnual = /*[[${graficoTotalAnual}]]*/ [];
+        /*]]>*/
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var ctxTriagens = document.getElementById('chartTriagens');
+            var ctxAnual = document.getElementById('chartAnual');
+
+            if(ctxTriagens) {
+                new Chart(ctxTriagens, {
+                    type: 'bar',
+                    data: {
+                        labels: meses,
+                        datasets: [
+                            { label: 'Triagens', data: dadosTriagem, backgroundColor: '#3498db' },
+                            { label: 'Em Observação', data: dadosObs, backgroundColor: '#e74c3c' }
+                        ]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+
+            if(ctxAnual) {
+                new Chart(ctxAnual, {
+                    type: 'line',
+                    data: {
+                        labels: anos,
+                        datasets: [{ label: 'Total Anual', data: totalAnual, borderColor: '#3498db', fill: true, backgroundColor: 'rgba(52, 152, 219, 0.1)' }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

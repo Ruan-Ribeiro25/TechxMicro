@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Profissional - SpeedMedical</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<header>
+    <h1>Dashboard do Profissional</h1>
+    <p th:text="'Bem-vindo(a), ' + ${profissional.usuario.nome}"></p>
+</header>
+
+<div class="container">
+
+    <!-- DADOS DO PROFISSIONAL -->
+    <section class="card">
+        <h2>Meu Perfil Profissional</h2>
+
+        <p><strong>Especialidade:</strong> <span th:text="${profissional.atuacao}"></span></p>
+        <p><strong>CRM:</strong> <span th:text="${profissional.crm}"></span></p>
+        <p><strong>Polo Atual:</strong> <span th:text="${polo.nome}"></span></p>
+        <p><strong>Status:</strong> <span class="status-aprovado">Ativo</span></p>
+    </section>
+
+    <!-- PAINEL GRÁFICO -->
+    <section class="card">
+        <h2>Desempenho Mensal</h2>
+
+        <div class="grafico-container">
+            <!-- gráfico será renderizado via JS -->
+            <canvas id="graficoAtendimentos"></canvas>
+        </div>
+
+        <ul class="indicadores">
+            <li>Atendimentos realizados: <strong th:text="${totalAtendimentosMes}">0</strong></li>
+            <li>Pacientes atendidos: <strong th:text="${totalPacientesMes}">0</strong></li>
+            <li>Atendimentos finalizados: <strong th:text="${finalizadosMes}">0</strong></li>
+        </ul>
+    </section>
+
+    <!-- LISTA DE PACIENTES DO POLO -->
+    <section class="card">
+        <h2>Pacientes do Polo</h2>
+
+        <input type="text" placeholder="Pesquisar paciente..." id="buscaPaciente">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>CPF</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="paciente : ${pacientes}">
+                    <td th:text="${paciente.usuario.nome}"></td>
+                    <td th:text="${paciente.usuario.cpf}"></td>
+                    <td>
+                        <a th:href="@{/profissional/paciente/{id}(id=${paciente.id})}" class="btn">Acessar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- REGISTRO CLÍNICO / DOCUMENTOS -->
+    <section class="card">
+        <h2>Adicionar Registro ao Paciente</h2>
+
+        <form th:action="@{/profissional/registro/salvar}" method="post" enctype="multipart/form-data">
+
+            <label for="pacienteId">Paciente</label>
+            <select name="pacienteId" required>
+                <option value="">Selecione o paciente</option>
+                <option th:each="p : ${pacientes}"
+                        th:value="${p.id}"
+                        th:text="${p.usuario.nome}">
+                </option>
+            </select>
+
+            <label for="descricao">Descrição do Atendimento</label>
+            <textarea name="descricao" rows="5" required
+                      placeholder="Descreva o atendimento, observações, orientações médicas..."></textarea>
+
+            <label for="documento">Anexar Documento (PDF, JPG, PNG)</label>
+            <input type="file" name="documento">
+
+            <button type="submit">Salvar Registro</button>
+        </form>
+    </section>
+
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+<!-- SCRIPT DO GRÁFICO -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('graficoAtendimentos');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Atendimentos'],
+            datasets: [{
+                label: 'Quantidade',
+                data: [/* valor injetado via backend */],
+            }]
+        }
+    });
+</script>
+
+</body>
+</html>

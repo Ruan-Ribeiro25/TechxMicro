@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar Conta - VidaPlus</title>
+    
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <main>
+        <div class="card-container login-size">
+            <h2>Ativação de Conta</h2>
+            
+            <p style="text-align: center; margin-bottom: 20px; color: #555;">
+                Digite o código enviado para o seu e-mail<span th:if="${email}" th:text="' (' + ${email} + ')'"></span>.
+            </p>
+
+            <div th:if="${mensagem}" style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 6px; margin-bottom: 20px; text-align: center; border: 1px solid #c3e6cb;">
+                <span th:text="${mensagem}"></span>
+            </div>
+
+            <div th:if="${param.error}" class="error" style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 20px; text-align: center; border: 1px solid #f5c6cb;">
+                Código inválido ou expirado. Tente novamente.
+            </div>
+
+            <form th:action="@{/verificar-conta}" method="post">
+                <div class="form-group">
+                    <label for="codigo">Código de Verificação:</label>
+                    <input type="text" id="codigo" name="codigo" th:value="${param.codigo}" 
+                           placeholder="Ex: 34F237" required autofocus
+                           style="text-align: center; letter-spacing: 4px; font-size: 20px; text-transform: uppercase;">
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">Ativar Conta</button>
+            </form>
+            
+            <div class="links" style="margin-top: 20px; text-align: center;">
+                 <a th:href="@{/login}" style="color: #666; text-decoration: none; font-size: 0.9rem;">
+                    <i class="fas fa-arrow-left"></i> Voltar para Login
+                 </a>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: rodape}"></div>
+
+</body>
+</html>

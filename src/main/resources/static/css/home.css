@@ -1,0 +1,101 @@
+/* ============================================================
+   ARQUIVO: home.css
+   DESCRIÇÃO: Dashboard principal (Painel de Controle)
+   ============================================================ */
+
+/* --- ESTILO DESKTOP (PADRÃO) --- */
+.welcome-section {
+    background: rgba(255, 255, 255, 0.95); 
+    padding: 30px; 
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05); 
+    margin-bottom: 40px; /* Espaço padrão no desktop */
+    border-left: 6px solid var(--primary-color); 
+    display: flex; 
+    align-items: center;
+    justify-content: space-between; 
+    width: 100%; 
+    backdrop-filter: blur(5px);
+}
+
+.welcome-text h2 { 
+    margin: 0 0 10px 0; 
+    color: #2c3e50; /* Texto escuro no desktop (fundo branco) */
+    text-align: left; 
+    font-size: 1.8rem;
+}
+
+.welcome-text p {
+    margin: 0;
+    color: #666;
+}
+
+/* Grid de Cards */
+.dashboard-grid {
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px; 
+    width: 100%;
+}
+
+/* ============================================================
+   CORREÇÃO MOBILE (AJUSTE DE CORES E ESPAÇAMENTO)
+   ============================================================ */
+@media (max-width: 768px) {
+    
+    /* 1. Ajuste do Container de Boas-vindas */
+    .welcome-section { 
+        flex-direction: column; 
+        text-align: center; 
+        gap: 15px;
+        
+        /* Remove o fundo branco no celular para ficar transparente no degradê */
+        background: transparent !important; 
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        
+        /* CORREÇÃO DO ESPAÇAMENTO VERTICAL (DESCOLA DO CARD) */
+        margin-bottom: 40px !important; 
+        margin-top: 10px !important;
+    }
+
+    /* Esconde o ícone decorativo grande no mobile para limpar a tela */
+    .welcome-section i.far, 
+    .welcome-section i.fas { 
+        display: none; 
+    }
+
+    /* 2. Ajuste do Texto (Cor e Tamanho) */
+    .welcome-text h2 { 
+        /* CORREÇÃO DA COR: Branco para ler no fundo verde */
+        color: #ffffff !important; 
+        font-size: 1.8rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3); /* Sombra para leitura */
+        margin-bottom: 5px;
+    }
+
+    .welcome-text p {
+        color: rgba(255, 255, 255, 0.9) !important; /* Texto de apoio branco */
+        font-size: 1rem;
+    }
+
+    /* 3. Grid de 2 colunas no celular (para não ficar tudo linguiça) */
+    .dashboard-grid { 
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 15px; 
+    }
+}
+
+@media (max-width: 480px) {
+    /* Ajuste fino para telas muito pequenas */
+    .dashboard-grid { 
+        grid-template-columns: repeat(2, 1fr); /* Mantém 2 colunas */
+        gap: 12px; 
+    }
+    
+    /* Se o nome do usuário for muito longo, ajusta a fonte */
+    .welcome-text h2 {
+        font-size: 1.5rem;
+    }
+}

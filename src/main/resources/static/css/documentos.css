@@ -1,0 +1,49 @@
+/* ============================================================
+   ARQUIVO: documentos.css
+   DESCRIÇÃO: Lista de exames e laudos
+   ============================================================ */
+
+/* Reusa a grid da agenda */
+.agenda-grid { 
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+    gap: 25px; width: 100%; margin-top: 10px; 
+}
+
+/* Card Base */
+.agenda-card { 
+    background: rgba(255, 255, 255, 0.95); border-radius: 12px; padding: 25px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 6px solid #ccc; 
+    transition: transform 0.3s ease; 
+}
+.agenda-card:hover { transform: translateY(-5px); }
+
+/* Cores por Tipo de Arquivo */
+.card-doc-pdf { border-left-color: #e74c3c !important; } 
+.card-doc-img { border-left-color: #3498db !important; } 
+.card-doc-outros { border-left-color: #95a5a6 !important; }
+
+/* Ícones e Infos */
+.doc-icon { font-size: 2.5rem; margin-right: 15px; }
+.icon-pdf { color: #e74c3c; }
+.icon-img { color: #3498db; }
+.icon-file { color: #95a5a6; }
+
+.card-top { display: flex; align-items: center; margin-bottom: 15px; }
+.proc-info h3 { font-size: 1rem; margin: 0; word-break: break-all; }
+.proc-info p { font-size: 0.8rem; margin-top: 4px; color: #777; }
+
+.card-bottom { 
+    border-top: 1px solid #f0f2f5; padding-top: 15px; margin-top: 15px; 
+    display: flex; justify-content: space-between; align-items: center; 
+}
+
+.btn-download { 
+    background-color: #e9ecef; color: #333; padding: 6px 15px; border-radius: 50px; 
+    text-decoration: none; font-size: 0.85rem; font-weight: 600; 
+    display: flex; align-items: center; gap: 6px; transition: 0.3s; 
+}
+.btn-download:hover { background-color: var(--primary-color); color: white; }
+
+@media (max-width: 480px) {
+    .agenda-grid { grid-template-columns: 1fr; }
+}

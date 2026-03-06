@@ -1,0 +1,20 @@
+{
+  "name": "VidaPlus",
+  "short_name": "VidaPlus",
+  "start_url": "/login", 
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#b4b4b4",
+  "icons": [
+    {
+      "src": "/img/logo1.png?v=2",   
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/img/logo1.png?v=2",   
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

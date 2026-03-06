@@ -1,0 +1,194 @@
+/* ============================================================
+   ARQUIVO: agendamentos.css
+   DESCRIÇÃO: Estilos específicos da tela de agendamentos
+   ============================================================ */
+
+/* --- LAYOUT GERAL --- */
+body {
+    background-color: #f4f7f6; /* Garante fundo claro na página */
+}
+
+.agenda-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+    gap: 25px; 
+    width: 100%; 
+    margin-top: 20px; 
+}
+
+/* --- CARDS DE AGENDAMENTO --- */
+.agenda-card { 
+    background: #ffffff; 
+    border-radius: 12px; 
+    padding: 25px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+    border-left: 6px solid #ccc; 
+    transition: transform 0.3s ease, box-shadow 0.3s ease; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between;
+}
+.agenda-card:hover { 
+    transform: translateY(-5px); 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+}
+
+/* Cores de Status - Borda do Card */
+.card-Agendado, .card-AGENDADO { border-left-color: #f1c40f; }
+.card-Concluído, .card-CONCLUIDO { border-left-color: #20c997; }
+.card-Cancelado, .card-CANCELADO { border-left-color: #e74c3c; }
+
+/* Detalhes do Card - Topo */
+.card-top { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: start; 
+    margin-bottom: 15px; 
+}
+.proc-info h3 { margin: 0 0 5px 0; color: #2c3e50; font-size: 1.1rem; }
+.proc-info p { margin: 0; color: #7f8c8d; font-size: 0.9rem; }
+.proc-info i { color: #20c997; margin-right: 5px; }
+
+/* Data (Quadrado) */
+.date-box { 
+    text-align: center; 
+    background: #f8f9fa; 
+    padding: 8px 15px; 
+    border-radius: 8px; 
+    color: #555; 
+    border: 1px solid #eee; 
+    min-width: 60px;
+}
+.date-day { font-size: 1.4rem; font-weight: 800; display: block; color: #333; line-height: 1; }
+.date-month { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Rodapé do Card */
+.card-bottom { 
+    border-top: 1px solid #f0f2f5; 
+    padding-top: 15px; 
+    margin-top: 15px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
+.time-badge { font-weight: bold; color: #555; display: flex; align-items: center; gap: 5px; }
+
+/* --- COMPONENTES VISUAIS --- */
+
+/* Status Pill (Etiqueta) */
+.status-pill { 
+    padding: 5px 12px; 
+    border-radius: 20px; 
+    font-size: 0.75rem; 
+    font-weight: 800; 
+    text-transform: uppercase; 
+}
+.pill-Agendado, .pill-AGENDADO { background: #fff3cd; color: #856404; }
+.pill-Concluído, .pill-CONCLUIDO { background: #d4edda; color: #155724; }
+.pill-Cancelado, .pill-CANCELADO { background: #f8d7da; color: #721c24; }
+
+/* Botão de Cancelar */
+.btn-cancel {
+    background-color: transparent;
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+}
+.btn-cancel:hover {
+    background-color: #e74c3c;
+    color: white;
+}
+
+/* Alertas de Feedback */
+.alert-msg {
+    padding: 15px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+    display: flex; justify-content: center; align-items: center; gap: 10px;
+}
+.alert-sucesso { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.alert-erro { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+/* --- ESTILO DE NOTIFICAÇÕES (POPUP) --- */
+
+/* Botão Sino no Header */
+.btn-notif {
+    position: relative;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex; align-items: center; justify-content: center;
+}
+.btn-notif:hover { background: rgba(255,255,255,0.3); }
+
+.badge-notif {
+    position: absolute; top: -2px; right: -2px;
+    background: #e74c3c; color: white;
+    font-size: 0.7rem; padding: 2px 6px;
+    border-radius: 10px; font-weight: bold;
+    border: 2px solid rgba(255,255,255,0.2); /* Borda para destacar do fundo */
+}
+
+/* Modal Customizado (Estilo Popup Clean) */
+.modal-content-custom {
+    background-color: #ffffff; /* Fundo Branco */
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+
+.modal-header-custom {
+    background: linear-gradient(135deg, #20c997 0%, #1abc9c 100%); /* Verde VidaPlus */
+    color: white;
+    padding: 15px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.modal-header-custom h5 { margin: 0; font-weight: 700; font-size: 1.1rem; }
+
+.modal-body-custom {
+    padding: 0;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notif-list { list-style: none; padding: 0; margin: 0; }
+.notif-item {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    color: #444; /* Texto Escuro Legível */
+    font-size: 0.95rem;
+    display: flex; align-items: flex-start; gap: 10px;
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-item i { color: #20c997; margin-top: 3px; }
+
+.modal-footer-custom {
+    padding: 10px 20px;
+    background-color: #f8f9fa;
+    text-align: right;
+    border-top: 1px solid #eee;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 480px) {
+    .agenda-grid { grid-template-columns: 1fr; }
+    .card-bottom { flex-direction: column; gap: 15px; align-items: flex-start; }
+    .card-bottom > div, .card-bottom > span, .card-bottom form { width: 100%; display: flex; justify-content: space-between; }
+    .btn-cancel { width: 100%; justify-content: center; }
+}

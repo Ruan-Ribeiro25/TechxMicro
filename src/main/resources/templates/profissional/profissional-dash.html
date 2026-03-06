@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Profissional - SpeedMedical</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <main>
+        <div class="page-header">
+            <h2>Painel Clínico</h2>
+            <div class="user-info">
+                <span th:if="${#strings.contains(usuario.perfil, 'MEDICO')}" class="tag-medico"><i class="fas fa-user-md"></i> Médico</span>
+                <span th:if="${#strings.contains(usuario.perfil, 'ENFERMEIRO')}" class="tag-enf"><i class="fas fa-user-nurse"></i> Enfermeiro</span>
+            </div>
+        </div>
+
+        <div class="dash-container">
+            
+            <div class="sidebar">
+                <h3 class="sidebar-title"><i class="fas fa-search"></i> Buscar Paciente</h3>
+                
+                <form th:action="@{/profissional/painel}" method="get" class="search-form">
+                    <div style="display: flex; gap: 5px;">
+                        <input type="text" name="busca" class="form-control" placeholder="CPF ou Nome..." style="padding: 8px;">
+                        <button type="submit" class="btn-custom btn-search"><i class="fas fa-search"></i></button>
+                    </div>
+                </form>
+
+                <div class="patient-list-scroll">
+                    <div th:each="p : ${pacientes}" class="patient-card-item">
+                        <div class="patient-info-min">
+                            <strong th:text="${p.nome}">Nome do Paciente</strong>
+                            <small th:text="${p.cpf}">000.000.000-00</small>
+                        </div>
+                        <a th:href="@{/profissional/painel(pacienteId=${p.id})}" class="btn-icon-action">
+                            <i class="fas fa-chevron-circle-right"></i>
+                        </a>
+                    </div>
+                    
+                    <div th:if="${#lists.isEmpty(pacientes)}" class="empty-list-msg">
+                        Nenhum paciente encontrado.
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                
+                <div th:if="${pacienteSelecionado == null}" class="empty-state-panel">
+                    <i class="fas fa-user-injured"></i>
+                    <p>Selecione um paciente na lista lateral para visualizar o prontuário completo.</p>
+                </div>
+
+                <div th:if="${pacienteSelecionado != null}">
+                    
+                    <div class="patient-header-banner">
+                        <h3 class="patient-name">
+                            <i class="far fa-id-card"></i> <span th:text="${pacienteSelecionado.nome}">Nome</span>
+                        </h3>
+                        <span class="patient-cpf-badge">
+                            CPF: <strong th:text="${pacienteSelecionado.cpf}">000</strong>
+                        </span>
+                    </div>
+
+                    <div class="info-section">
+                        <h4 class="section-title"><i class="fas fa-file-medical-alt"></i> Histórico Clínico & Receituários</h4>
+                        
+                        <table class="table-clean">
+                            <thead>
+                                <tr>
+                                    <th width="15%">Data</th>
+                                    <th width="20%">Médico</th>
+                                    <th>Diagnóstico</th>
+                                    <th width="25%">Prescrição / Receita</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="hist : ${historicoClinico}">
+                                    <td th:text="${#temporals.format(hist.dataHora, 'dd/MM/yyyy HH:mm')}">Data</td>
+                                    <td th:text="${hist.medico.nome}">Dr. Silva</td>
+                                    <td th:text="${hist.diagnostico}">Diagnóstico...</td>
+                                    <td class="prescricao-text">
+                                        <i class="fas fa-prescription-bottle-alt"></i> <span th:text="${hist.prescricao}">Medicamento...</span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(historicoClinico)}">
+                                    <td colspan="4" class="empty-table-msg">Nenhum registro clínico encontrado.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="info-section">
+                        <h4><i class="far fa-calendar-check"></i> Agendamentos</h4>
+                        <div class="mini-cards-grid">
+                            <div th:each="ag : ${agendamentosPaciente}" class="mini-card">
+                                <strong th:text="${#temporals.format(ag.dataHora, 'dd/MM/yyyy HH:mm')}">Data</strong><br>
+                                <span th:text="${ag.procedimento}">Consulta</span> - 
+                                <span th:text="${ag.status}" class="status-text">Status</span>
+                            </div>
+                            <p th:if="${#lists.isEmpty(agendamentosPaciente)}" class="empty-text">Nenhum agendamento registrado.</p>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h4><i class="far fa-folder-open"></i> Documentos & Exames</h4>
+                        <ul class="doc-list">
+                            <li th:each="doc : ${documentosPaciente}">
+                                <i class="fas fa-file-alt icon-doc"></i>
+                                <span th:text="${doc.nomeArquivo}">Exame.pdf</span>
+                                <span class="doc-date" th:text="${#temporals.format(doc.dataUpload, 'dd/MM/yyyy')}">Data</span>
+                            </li>
+                            <li th:if="${#lists.isEmpty(documentosPaciente)}" class="empty-text">Nenhum documento anexado.</li>
+                        </ul>
+                    </div>
+
+                    <div th:if="${#strings.contains(usuario.perfil, 'MEDICO')}" class="diagnosis-form-area">
+                        <h4 class="diagnosis-title"><i class="fas fa-user-md"></i> Novo Atendimento Médico</h4>
+                        
+                        <form th:action="@{/profissional/salvar-prontuario}" method="post">
+                            <input type="hidden" name="pacienteId" th:value="${pacienteSelecionado.id}">
+                            
+                            <div class="form-group">
+                                <label class="label-bold">Diagnóstico / Evolução Clínica</label>
+                                <textarea name="conteudo" class="form-control" rows="3" required placeholder="Descreva o quadro clínico do paciente..."></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="label-bold">Prescrição / Receita Médica</label>
+                                <div class="input-icon-wrapper">
+                                    <i class="fas fa-pills input-icon"></i>
+                                    <input type="text" name="prescricao" class="form-control input-padded" placeholder="Ex: Amoxicilina 500mg de 8 em 8 horas...">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-custom btn-save-diagnosis">
+                                <i class="fas fa-save"></i> Registrar Atendimento
+                            </button>
+                        </form>
+                    </div>
+
+                    <div th:if="${#strings.contains(usuario.perfil, 'ENFERMEIRO')}" class="read-only-alert">
+                        <i class="fas fa-info-circle icon-alert"></i>
+                        <strong>Modo de Visualização</strong><br>
+                        Você tem acesso total aos dados para triagem e acompanhamento, mas o registro de diagnóstico e prescrição é exclusivo da equipe médica.
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: rodape}"></div>
+
+</body>
+</html>

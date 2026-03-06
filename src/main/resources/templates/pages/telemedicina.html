@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Telemedicina - VidaPlus</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    
+    <link rel="stylesheet" th:href="@{/css/telemedicina.css}"> 
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="page-telemedicina">
+
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <main class="tele-main">
+        <div class="tele-grid">
+            
+            <div class="video-stage">
+                <div class="availability-bar">
+                    <i class="fas fa-clock"></i>
+                    <span>Atendimento: 08:00 - 18:00</span>
+                </div>
+
+                <div class="main-video-container">
+                    <div class="placeholder-content" id="remotePlaceholder">
+                        <i class="fas fa-user-md" style="font-size: 3rem; margin-bottom: 10px; opacity: 0.5;"></i>
+                        <h3>Conectando...</h3>
+                        <p style="font-size: 0.8rem;">Aguardando vídeo remoto.</p>
+                    </div>
+                </div>
+
+                <div class="my-video-pip">
+                    <video id="localVideo" autoplay playsinline muted></video>
+                </div>
+
+                <div class="controls-bar">
+                    <button class="btn-control" onclick="toggleMute(this)" title="Mutar Microfone"><i class="fas fa-microphone"></i></button>
+                    <button class="btn-control" onclick="toggleCam(this)" title="Ligar/Desligar Câmera"><i class="fas fa-video"></i></button>
+                    <a href="/home" class="btn-control btn-danger" title="Encerrar Consulta" style="text-decoration: none;">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="chat-panel">
+                
+                <div class="chat-header">
+                    <div>
+                        <h4 style="margin:0; font-size:1rem;">
+                            <i class="fas fa-user-injured me-2"></i> 
+                            <span th:text="${pacienteSelecionado != null ? pacienteSelecionado.nome : 'Paciente'}">Paciente</span>
+                        </h4>
+                        <small style="color:var(--tele-primary); font-size:0.75rem;">
+                            Protocolo: #TELE-<span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2026</span>
+                        </small>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="badge" 
+                              style="padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;"
+                              th:styleappend="${#strings.contains(usuario.perfil, 'MEDICO')} ? 'background:#0ea5e9; color:white;' : 'background:#10b981; color:white;'"
+                              th:text="${usuario.perfil}">PERFIL</span>
+                    </div>
+                </div>
+
+                <div class="tele-tabs">
+                    <button class="tele-tab-btn active" onclick="switchTab('chat')"><i class="far fa-comments me-2"></i>Chat</button>
+                    <button class="tele-tab-btn" onclick="switchTab('prontuario')"><i class="fas fa-file-medical me-2"></i>Prontuário</button>
+                </div>
+
+                <div id="teleChatContainer">
+                    <div class="chat-messages" id="chatBody">
+                        <div class="msg msg-in">
+                            Bem-vindo à sala de Telemedicina.
+                            <span class="msg-time">Sistema</span>
+                        </div>
+                    </div>
+
+                    <div class="emoji-bar" id="emojiBar">
+                        <span onclick="addEmoji('👍')">👍</span>
+                        <span onclick="addEmoji('👋')">👋</span>
+                        <span onclick="addEmoji('😷')">😷</span>
+                        <span onclick="addEmoji('💊')">💊</span>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <div class="input-box">
+                            <button type="button" class="btn-chat-icon" onclick="toggleEmoji()"><i class="far fa-smile"></i></button>
+                            <input type="text" id="msgInput" class="input-field" placeholder="Digite..." onkeypress="handleEnter(event)" autocomplete="off">
+                            <div class="right-actions">
+                                <button type="button" class="btn-chat-icon" onclick="acionarInputArquivo()"><i class="fas fa-paperclip"></i></button>
+                                <button type="button" class="btn-chat-icon btn-send" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                        <input type="file" id="fileUpload" style="display: none;" onchange="handleFileUpload(this)">
+                    </div>
+                </div>
+
+                <div id="teleProntuarioContainer" class="prontuario-tele-area">
+                    
+                    <div th:if="${#strings.contains(usuario.perfil, 'MEDICO')}">
+                        <h5 style="color: white; margin-bottom: 15px;"><i class="fas fa-pen-nib text-success"></i> Evolução (Médico)</h5>
+                        <form th:action="@{/profissional/salvar-prontuario}" method="post">
+                            <input type="hidden" name="idPaciente" th:value="${pacienteSelecionado?.id}"> 
+                            <input type="hidden" name="origem" value="TELEMEDICINA">
+
+                            <div class="tele-input-group">
+                                <label>Anamnese</label>
+                                <textarea name="anotacoes" class="tele-form-control" rows="5" placeholder="Evolução..."></textarea>
+                            </div>
+                            <div class="tele-input-group">
+                                <label>CID-10</label>
+                                <input type="text" name="diagnostico" class="tele-form-control" placeholder="Ex: J12.9">
+                            </div>
+                            <div class="tele-input-group">
+                                <label>Prescrição</label>
+                                <textarea name="prescricao" class="tele-form-control" rows="3" placeholder="Medicamentos..."></textarea>
+                            </div>
+                            <button type="submit" class="tele-btn-save"><i class="fas fa-save"></i> Salvar</button>
+                        </form>
+                    </div>
+
+                    <div th:if="${#strings.contains(usuario.perfil, 'PACIENTE')}">
+                        <h5 style="color: white; margin-bottom: 15px;"><i class="fas fa-history text-info"></i> Histórico</h5>
+                        <div th:each="reg : ${historicoClinico}" class="tele-timeline-item">
+                            <span class="tele-timeline-date">
+                                <i class="far fa-calendar-alt"></i> <span th:text="${#temporals.format(reg.dataHora, 'dd/MM HH:mm')}"></span>
+                            </span>
+                            <div class="tele-timeline-cid" th:text="${reg.diagnostico}">CID</div>
+                            <p class="tele-timeline-text" th:text="${reg.conteudo}"></p>
+                            <div th:if="${reg.prescricao}" class="tele-timeline-presc">
+                                <i class="fas fa-pills"></i> <span th:text="${reg.prescricao}"></span>
+                            </div>
+                        </div>
+                        <div th:if="${#lists.isEmpty(historicoClinico)}" style="text-align: center; color: #64748b; padding: 20px;">
+                            <i class="fas fa-folder-open" style="font-size: 1.5rem; margin-bottom: 5px;"></i>
+                            <p>Sem registros recentes.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: rodape}"></div>
+
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.tele-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('teleChatContainer').classList.add('hidden');
+            document.getElementById('teleProntuarioContainer').classList.remove('active');
+            
+            if(tab === 'chat') {
+                document.querySelector('.tele-tab-btn:nth-child(1)').classList.add('active');
+                document.getElementById('teleChatContainer').classList.remove('hidden');
+            } else {
+                document.querySelector('.tele-tab-btn:nth-child(2)').classList.add('active');
+                document.getElementById('teleProntuarioContainer').classList.add('active');
+            }
+        }
+
+        function acionarInputArquivo() { document.getElementById('fileUpload').click(); }
+        function handleFileUpload(input) { if (input.files && input.files[0]) { appendMessage('Arquivo enviado: ' + input.files[0].name, 'out'); input.value = ''; } }
+        
+        function appendMessage(content, type) {
+            const chatBody = document.getElementById('chatBody');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `msg msg-${type}`;
+            msgDiv.innerText = content;
+            chatBody.appendChild(msgDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+        function sendMessage() {
+            const input = document.getElementById('msgInput');
+            if(input.value.trim() === "") return;
+            appendMessage(input.value, 'out');
+            input.value = "";
+        }
+        function handleEnter(e) { if(e.key === 'Enter') sendMessage(); }
+        function toggleEmoji() { const bar = document.getElementById('emojiBar'); bar.style.display = (bar.style.display === 'flex') ? 'none' : 'flex'; }
+        function addEmoji(e) { document.getElementById('msgInput').value += e; }
+
+        function toggleMute(btn) {
+            btn.classList.toggle('active-red');
+            btn.querySelector('i').className = btn.classList.contains('active-red') ? "fas fa-microphone-slash" : "fas fa-microphone";
+        }
+        function toggleCam(btn) {
+            btn.classList.toggle('active-red');
+            btn.querySelector('i').className = btn.classList.contains('active-red') ? "fas fa-video-slash" : "fas fa-video";
+        }
+
+        window.onload = async function() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                document.getElementById('localVideo').srcObject = stream;
+            } catch (e) { console.error("Sem câmera"); }
+        };
+    </script>
+</body>
+</html>

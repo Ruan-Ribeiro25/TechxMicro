@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Agendamentos - VidaPlus</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <h1><i class="fas fa-calendar-check"></i> Agendamentos</h1>
+        <a th:href="@{/home}" class="btn-principal" style="width: auto; background: transparent !important; border: 1px solid white !important;">Voltar</a>
+    </nav>
+
+    <main class="container-home">
+        <div th:replace="~{fragments/alerts :: mensagem}"></div>
+
+        <div class="caixa-branca">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>Próximas Consultas</h2>
+                <a th:href="@{/agendamentos/novo}" class="btn-acessar" style="width: auto;">+ Novo Agendamento</a>
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--verde-agua); text-align: left;">
+                        <th style="padding: 10px;">Data/Hora</th>
+                        <th>Paciente (CPF)</th>
+                        <th>Especialidade</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="a : ${agendamentos}" style="border-bottom: 1px solid #eee;">
+                        <td th:text="${#temporals.format(a.dataHora, 'dd/MM/yyyy HH:mm')}" style="padding: 10px;">01/01/2025</td>
+                        <td th:text="${a.pacienteCpf}">000.000.000-00</td>
+                        <td th:text="${a.especialidade}">Cardiologia</td>
+                        <td>
+                            <a th:href="@{/agendamentos/excluir/{id}(id=${a.id})}" style="color: #e74c3c;"><i class="fas fa-trash"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: rodape}"></div>
+</body>
+</html>

@@ -1,0 +1,264 @@
+/* ============================================================
+   ARQUIVO: painel-medico.css
+   DESCRIÇÃO: Estilos do Dashboard Médico (V9 - Layout Final & Cores)
+   ============================================================ */
+
+/* --- LAYOUT GERAL --- */
+body {
+    background-color: #f4f7f6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; padding: 0;
+}
+
+main {
+    padding: 20px 30px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* HEADER DA PÁGINA */
+.page-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 25px; background: #fff; padding: 15px 25px;
+    border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+}
+
+.page-header h2 {
+    margin: 0; color: #2c3e50; font-size: 1.5rem; font-weight: 700;
+    display: flex; align-items: center; gap: 10px;
+}
+
+.user-info { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid #eee; }
+.profile-pic-header-small {
+    width: 50px; height: 50px; border-radius: 50%; object-fit: cover;
+    border: 2px solid #f8f9fa; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.tag-medico {
+    font-size: 0.7rem; font-weight: 800; color: #20c997; 
+    letter-spacing: 0.5px; text-transform: uppercase; 
+    background: #e6fffa; padding: 2px 6px; border-radius: 4px; 
+}
+
+/* --- SIDEBAR E CONTAINER --- */
+.dash-container { display: flex; gap: 25px; align-items: flex-start; }
+
+.sidebar {
+    width: 320px; flex-shrink: 0; background: white; padding: 20px;
+    border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    height: calc(100vh - 140px); display: flex; flex-direction: column;
+}
+.sidebar-title { font-size: 1.1rem; color: #2c3e50; margin-bottom: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+
+/* BUSCA */
+.search-box { margin-bottom: 15px; }
+.search-box .input-group { 
+    display: flex; 
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    border-radius: 20px;
+}
+.search-box input { 
+    border-radius: 20px 0 0 20px; 
+    border: 1px solid #e9ecef; border-right: none;
+    padding-left: 15px;
+}
+.search-box input:focus { box-shadow: none; border-color: #20c997; }
+
+.search-box button { 
+    border-radius: 0 20px 20px 0; 
+    border: 1px solid #e9ecef; border-left: none; 
+    background: #fff; color: #95a5a6;
+    transition: all 0.2s ease; padding: 0 15px;
+}
+.search-box button:hover { background: #f8f9fa; color: #20c997; }
+
+/* LISTA DE PACIENTES */
+.patient-list-scroll { overflow-y: auto; flex-grow: 1; padding-right: 5px; }
+.patient-card-item {
+    display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #f0f0f0;
+    text-decoration: none; color: #444; transition: 0.2s; border-radius: 8px; margin-bottom: 5px;
+}
+.patient-card-item:hover { background-color: #f8f9fa; transform: translateX(3px); }
+
+/* IMAGEM DO PACIENTE NA SIDEBAR */
+.patient-list-avatar {
+    width: 42px; height: 42px; border-radius: 50%; object-fit: cover;
+    margin-right: 12px; border: 2px solid #e6fffa;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0;
+}
+.avatar-initials {
+    width: 42px; height: 42px; background: #e6fffa; color: #20c997;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; margin-right: 12px; flex-shrink: 0; font-size: 0.9rem;
+}
+
+/* --- CONTEÚDO PRINCIPAL --- */
+.main-content { flex-grow: 1; width: 100%; min-width: 0; }
+
+/* BANNER MÉDICO */
+.welcome-card-doctor {
+    background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
+    border-radius: 16px; padding: 35px; color: white;
+    display: flex; align-items: center; gap: 30px;
+    box-shadow: 0 10px 20px rgba(32, 201, 151, 0.2); margin-bottom: 30px;
+}
+.welcome-avatar-wrapper {
+    width: 100px; height: 100px; flex-shrink: 0; border-radius: 50%; 
+    border: 4px solid rgba(255, 255, 255, 0.4); overflow: hidden;
+}
+.welcome-avatar-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+
+/* KPI CARDS */
+.kpi-grid { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; }
+.kpi-card {
+    flex: 1; min-width: 200px;
+    background: white; border-radius: 12px; padding: 20px; text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03); border-top: 4px solid #ccc;
+    transition: transform 0.3s ease;
+}
+.kpi-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+.border-blue { border-top-color: #3498db; }
+.border-green { border-top-color: #20c997; }
+.border-red { border-top-color: #e74c3c; }
+.border-yellow { border-top-color: #f1c40f; }
+.kpi-value { font-size: 2rem; font-weight: 800; margin: 10px 0 0; color: #333; }
+.kpi-label { font-size: 0.8rem; text-transform: uppercase; color: #888; font-weight: 700; }
+
+/* --- GRÁFICOS E CALENDÁRIO --- */
+.row-graficos-responsive { 
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 25px; 
+}
+.card-grafico-item { 
+    background: white; padding: 25px; border-radius: 12px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
+    display: flex; flex-direction: column; min-height: 500px;
+}
+
+/* CUSTOMIZAÇÃO FULLCALENDAR */
+#calendar-medico { flex: 1; font-size: 0.85rem; margin-bottom: 10px; }
+.fc .fc-toolbar-title { font-size: 1.1rem !important; color: #2c3e50; font-weight: 700; }
+.fc .fc-button-primary { 
+    background-color: #20c997 !important; border-color: #20c997 !important;
+    font-weight: 600; text-transform: capitalize;
+}
+.fc .fc-day-today { background-color: rgba(32, 201, 151, 0.05) !important; }
+.fc-event { border: none !important; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+/* Grade Final Oculta */
+.fc-day-next, .fc-day-other { visibility: hidden !important; border: none !important; background: transparent !important; pointer-events: none; }
+.fc-scrollgrid-sync-table tr:last-child td { border-bottom: none !important; }
+
+/* Legenda do Calendário */
+.calendar-legend-container {
+    display: flex; justify-content: center; align-items: center;
+    gap: 20px; padding-top: 10px; margin-top: auto; position: relative; z-index: 10;
+}
+
+/* FIX: Cores das Bolinhas de Status */
+.card-grafico-item .d-flex.gap-3 span:nth-child(1) i, .card-grafico-item .d-flex.gap-3 span:nth-child(1) .legend-dot { color: #3498db !important; }
+.card-grafico-item .d-flex.gap-3 span:nth-child(2) i, .card-grafico-item .d-flex.gap-3 span:nth-child(2) .legend-dot { color: #f1c40f !important; }
+.card-grafico-item .d-flex.gap-3 span:nth-child(3) i, .card-grafico-item .d-flex.gap-3 span:nth-child(3) .legend-dot { color: #20c997 !important; }
+
+/* --- PRONTUÁRIO / BANNER PACIENTE (Verde Degradê) --- */
+.patient-header-banner {
+    background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
+    border-radius: 12px; padding: 25px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); color: white;
+}
+.patient-header-banner h2, .patient-header-banner span, .patient-header-banner i, .patient-header-banner div { color: white !important; }
+.patient-header-banner img { border: 4px solid rgba(255,255,255,0.4); border-radius: 50%; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+
+/* --- VISUAL DA TIMELINE (PRONTUÁRIO) MELHORADA --- */
+.timeline-item {
+    display: flex; flex-direction: column; gap: 15px; /* Espaçamento vertical entre blocos */
+    padding: 20px; background-color: #fff;
+}
+
+/* Fundo do CID (Verde Suave) */
+.timeline-item h5 { 
+    background-color: #e8f5e9; color: #2e7d32;
+    padding: 12px; border-radius: 8px; margin: 0;
+    border-left: 5px solid #20c997;
+}
+
+/* Fundo da Anamnese (Cinza Suave) */
+.timeline-item p {
+    background-color: #f8f9fa; color: #495057;
+    padding: 12px; border-radius: 8px; margin: 0;
+    line-height: 1.6;
+}
+
+/* Fundo da Prescrição (Amarelo Suave - Reforço) */
+.timeline-item div[style*="background: #fffbe6"] {
+    background-color: #fffde7 !important;
+    border: 1px solid #fff59d !important;
+    padding: 15px !important; border-radius: 8px !important;
+    margin-top: 0 !important; /* Remove margem extra pois usamos gap */
+}
+
+/* FIX: Botão de Edição (Lápis) na Timeline */
+.timeline-item .d-flex button.btn-light {
+    width: auto !important; /* Remove largura 100% */
+    background: transparent !important;
+    color: #999 !important;
+    border: 1px solid #eee !important;
+    padding: 4px 10px !important;
+    height: auto !important;
+}
+.timeline-item .d-flex button.btn-light:hover {
+    background: #20c997 !important; color: white !important; border-color: #20c997 !important;
+}
+
+/* --- ABAS E BOTÕES --- */
+.nav-tabs-custom .nav-link {
+    color: #555; font-weight: 600; border: none; padding: 10px 20px;
+    border-bottom: 3px solid transparent; background: transparent; cursor: pointer;
+}
+.nav-tabs-custom .nav-link:hover { color: #20c997; }
+.nav-tabs-custom .nav-link.active { color: #20c997; border-bottom-color: #20c997; }
+
+/* FIX: Botões Lado a Lado e Tamanhos Corretos */
+#form-prontuario button {
+    display: inline-flex !important;
+    width: auto !important; /* Remove w-100 */
+    min-width: 140px;
+    margin-top: 10px;
+    margin-right: 15px; /* Espaço lateral entre eles */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Botão Verde Padrão */
+.btn-action-primary, #btn-salvar-prontuario {
+    background-color: #20c997; color: white; border: none;
+    transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(32, 201, 151, 0.2);
+    padding: 10px 25px; border-radius: 8px; font-weight: bold;
+}
+.btn-action-primary:hover, #btn-salvar-prontuario:hover { 
+    background-color: #17a589; transform: translateY(-2px); color: white; 
+}
+
+/* Botão Cancelar / Perigo */
+.btn-action-danger, #btn-cancelar-edicao {
+    background-color: #ff4757; color: white; border: none;
+    transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(255, 71, 87, 0.2);
+    padding: 10px 25px; border-radius: 8px; font-weight: bold;
+}
+.btn-action-danger:hover, #btn-cancelar-edicao:hover { 
+    background-color: #e84118; transform: translateY(-2px); color: white; 
+}
+
+/* Botão Laranja (Atualizar) */
+.btn-warning, .btn-warning.text-dark {
+    background-color: #f39c12 !important; color: white !important;
+    border: none !important; box-shadow: 0 4px 6px rgba(243, 156, 18, 0.3);
+}
+.btn-warning:hover { background-color: #e67e22 !important; transform: translateY(-2px); }
+
+/* RESPONSIVIDADE */
+@media (max-width: 992px) {
+    .dash-container { flex-direction: column; }
+    .sidebar { width: 100%; height: auto; max-height: 400px; margin-bottom: 20px; }
+    .kpi-grid, .row-graficos-responsive { grid-template-columns: 1fr; }
+    .welcome-card-doctor, .patient-header-banner { flex-direction: column; text-align: center; }
+}

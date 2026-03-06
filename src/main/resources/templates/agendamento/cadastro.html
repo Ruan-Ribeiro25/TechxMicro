@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Agendamento - VidaPlus</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <h1><i class="fas fa-calendar-plus"></i> Agendamento</h1>
+        <a th:href="@{/agendamentos/lista}" class="btn-principal" style="width: auto; background: transparent !important; border: 1px solid white !important;">Ver Agenda</a>
+    </nav>
+
+    <main class="container-home">
+        <div th:replace="~{fragments/alerts :: mensagem}"></div>
+
+        <div class="caixa-branca" style="max-width: 600px; margin: 0 auto;">
+            <h2 style="color: var(--verde-agua); text-align: center; margin-bottom: 20px;">Marcar Consulta / Exame</h2>
+            <form th:action="@{/agendamentos/salvar}" th:object="${agendamento}" method="post">
+                
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">CPF do Paciente</label>
+                <input type="text" th:field="*{pacienteCpf}" placeholder="000.000.000-00" required>
+
+                <label style="font-weight: bold; display: block; margin: 15px 0 5px;">Especialidade</label>
+                <select th:field="*{especialidade}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; background: white;">
+                    <option value="Clínica Geral">Clínica Geral</option>
+                    <option value="Cardiologia">Cardiologia</option>
+                    <option value="Pediatria">Pediatria</option>
+                    <option value="Ortopedia">Ortopedia</option>
+                    <option value="Exame de Sangue">Exame Laboratorial</option>
+                    <option value="Raio-X / Imagem">Exame de Imagem</option>
+                </select>
+
+                <label style="font-weight: bold; display: block; margin: 15px 0 5px;">Data e Horário</label>
+                <input type="datetime-local" th:field="*{dataHora}" required>
+
+                <button type="submit" class="btn-principal" style="margin-top: 25px; height: 50px;">
+                    Confirmar Agendamento
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: rodape}"></div>
+</body>
+</html>

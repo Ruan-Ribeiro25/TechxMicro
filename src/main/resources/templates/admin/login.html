@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Acesso Administrativo - VidaPlus</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="admin-mode" style="display: flex; flex-direction: column; min-height: 100vh; justify-content: space-between; align-items: stretch;"> 
+    
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <main style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 0;">
+        <div class="login-admin-card">
+            
+            <div class="admin-icon">
+                <i class="fas fa-user-shield"></i>
+            </div>
+
+            <h2 class="text-admin-title">Portal Admin</h2>
+            <p class="text-admin-sub">Olá, <strong th:text="${usuario != null ? usuario.nome : 'Visitante'}">Admin</strong>. Confirme sua senha.</p>
+
+            <div th:if="${erro}" class="alert-box alert-blocked" style="margin-bottom: 20px;">
+                <i class="fas fa-exclamation-triangle"></i> 
+                <span th:text="${erro}">Erro de acesso</span>
+            </div>
+            
+            <form th:action="@{/admin/login-verificar}" method="post">
+                
+                <div class="form-group" style="text-align: left;">
+                    <label class="label-admin">E-mail Corporativo</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fas fa-user input-icon-left icon-admin-field"></i>
+                        <input type="text" name="username" th:value="${usuario != null ? usuario.username : ''}" class="form-control input-padded-left" readonly style="background-color: #f8f9fa;">
+                    </div>
+                </div>
+
+                <div class="form-group" style="text-align: left; margin-bottom: 5px;">
+                    <label class="label-admin">Senha</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fas fa-lock input-icon-left icon-admin-field"></i>
+                        <input type="password" name="password" class="form-control input-padded-left" placeholder="••••••••" required autofocus>
+                    </div>
+                </div>
+
+                <div style="text-align: right; margin-bottom: 20px;">
+                    <a th:href="@{/forgot-password}" style="color: #666; font-size: 0.85rem; text-decoration: none;">Esqueceu a senha?</a>
+                </div>
+
+                <button type="submit" class="btn-custom btn-admin" style="width: 100%;">
+                    DESBLOQUEAR PAINEL
+                </button>
+
+            </form>
+
+            <div style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px; font-size: 0.9rem;">
+                
+                <div style="margin-bottom: 15px;">
+                    <p style="margin-bottom: 5px; color: #888;">Novo gestor?</p>
+                    <a th:href="@{/register-admin}" style="color: #34495e; font-weight: bold; text-decoration: none;">
+                        Solicitar Cadastro Administrativo
+                    </a>
+                </div>
+
+                <a th:href="@{/home}" class="link-admin-back">
+                    <i class="fas fa-arrow-left"></i> Voltar ao Início
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: rodape}"></div>
+
+</body>
+</html>

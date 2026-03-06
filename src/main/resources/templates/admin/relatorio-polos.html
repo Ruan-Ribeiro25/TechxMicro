@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestão Centralizada - VidaPlus</title> 
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .badge-stat { min-width: 40px; font-weight: 500; }
+        .search-container { position: relative; width: 300px; }
+        .search-container input { padding-right: 35px; border-radius: 20px; }
+        .search-container i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #aaa; }
+        
+        /* Estilos para a tabela detalhada (Escancarada) */
+        .table-detailed th { white-space: nowrap; background-color: #f8f9fa; font-size: 0.8rem; text-transform: uppercase; color: #666; vertical-align: middle; }
+        .table-detailed td { font-size: 0.85rem; vertical-align: middle; padding: 10px 15px; }
+        .info-label { font-weight: 700; color: #555; font-size: 0.75rem; margin-right: 4px; }
+        .info-value { color: #333; }
+        .sub-row { display: block; margin-bottom: 3px; line-height: 1.2; }
+    </style>
+</head>
+<body>
+
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <main class="container-fluid mt-4">
+        
+        <div id="area-conteudo-dinamico">
+            
+            <div class="page-header mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <h2 class="d-flex align-items-center mb-0 text-white">
+                    
+                    <a th:if="${!modoClinica and !modoUsuarios}" th:href="@{/admin/painel}" class="text-decoration-none text-white me-3" title="Voltar ao Painel"><i class="fas fa-arrow-left"></i></a>
+
+                    <a th:if="${modoClinica}" th:href="@{/admin/polos}" class="text-decoration-none text-white me-3" title="Voltar para Cidades"><i class="fas fa-arrow-left"></i></a>
+
+                    <a th:if="${modoUsuarios}" th:href="@{/admin/polos/{id}/clinicas(id=${hospitalId})}" class="text-decoration-none text-white me-3" title="Voltar para Clínicas"><i class="fas fa-arrow-left"></i></a>
+
+                    <span th:text="${titulo != null} ? ${titulo} : 'Gestão de Polos'">Gestão</span>
+                </h2>
+                
+                <div class="d-flex align-items-center gap-2">
+                    <div th:if="${modoUsuarios}" class="search-container me-2">
+                        <form th:action="@{/admin/polos/clinica/{id}/usuarios(id=${clinicaId})}" method="get">
+                            <input type="text" name="busca" class="form-control form-control-sm" placeholder="Buscar por Nome ou CPF..." th:value="${buscaAtual}">
+                            <i class="fas fa-search small"></i>
+                        </form>
+                    </div>
+
+                    <div class="btn-group shadow-sm me-2">
+                        <a th:if="${modoClinica}" th:href="@{/admin/polos}" class="btn btn-sm btn-outline-light">
+                            <i class="fas fa-building me-2"></i> Cidades
+                        </a>
+                        <a th:if="${modoUsuarios}" th:href="@{/admin/polos/{id}/clinicas(id=${hospitalId})}" class="btn btn-sm btn-outline-light">
+                            <i class="fas fa-hospital-alt me-2"></i> Clínicas
+                        </a>
+                    </div>
+
+                    <div class="btn-group shadow-sm">
+                        <a th:href="@{/admin/download-relatorio/TXT}" class="btn btn-sm btn-dark" title="Baixar Auditoria Texto Global"><i class="fas fa-file-alt"></i> TXT</a>
+                        <a th:href="@{/admin/download-relatorio/JSON}" class="btn btn-sm btn-warning text-dark fw-bold" title="Baixar JSON Global"><i class="fas fa-code"></i> JSON</a>
+                        <a th:href="@{/admin/download-relatorio/CSV}" class="btn btn-sm btn-success" title="Baixar CSV Global"><i class="fas fa-file-csv"></i> CSV</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        
+                        <table th:if="${!modoClinica and !modoUsuarios}" class="table table-hover table-striped mb-0 align-middle">
+                            <thead class="bg-light text-uppercase small text-muted">
+                                <tr>
+                                    <th class="ps-4">ID</th>
+                                    <th>Unidade Hospitalar</th>
+                                    <th class="text-center">Hospitais</th>
+                                    <th class="text-center">Clínicas</th>
+                                    <th class="text-center">Laboratórios</th>
+                                    <th>Localização</th>
+                                    <th>Horário</th>
+                                    <th>Responsável</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="p : ${polos}">
+                                    <td class="ps-4 text-muted" th:text="${p.id}">1</td>
+                                    <td>
+                                        <a th:href="@{/admin/polos/{id}/clinicas(id=${p.id})}" class="text-decoration-none fw-bold d-flex align-items-center">
+                                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-2 me-3"><i class="fas fa-hospital fa-lg"></i></div>
+                                            <div><span th:text="${p.nome}" class="text-primary d-block">Hospital</span><small class="text-muted fw-normal">Ver filiais >></small></div>
+                                        </a>
+                                    </td>
+                                    
+                                    <td class="text-center">
+                                        <span class="badge rounded-pill bg-primary text-white badge-stat" 
+                                              th:text="${statsEstrutura != null && statsEstrutura.containsKey(p.id) ? statsEstrutura.get(p.id).get('HOSPITAIS') : 1}">1</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge rounded-pill bg-success text-white badge-stat" 
+                                              th:text="${statsEstrutura != null && statsEstrutura.containsKey(p.id) ? statsEstrutura.get(p.id).get('CLINICAS') : 0}">0</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge rounded-pill bg-warning text-dark badge-stat" 
+                                              th:text="${statsEstrutura != null && statsEstrutura.containsKey(p.id) ? statsEstrutura.get(p.id).get('LABORATORIOS') : 0}">0</span>
+                                    </td>
+
+                                    <td>
+                                        <span class="fw-bold small" th:text="${p.cidade}">Cidade</span>
+                                        <div class="small text-muted" th:text="${p.cep}">CEP</div>
+                                    </td>
+                                    <td><span class="badge border text-dark fw-normal bg-light" th:text="${p.horarioFuncionamento}"></span></td>
+                                    <td>
+                                        <div th:if="${p.responsavel != null}" style="line-height: 1.2;">
+                                            <span th:text="${p.responsavel.nome}" class="d-block fw-bold small text-dark"></span>
+                                            <span class="d-block text-muted" style="font-size: 0.7rem;" th:text="'CPF: ' + ${p.responsavel.cpf}"></span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table th:if="${modoClinica}" class="table table-hover table-striped mb-0 align-middle">
+                            <thead class="bg-light text-uppercase small text-muted">
+                                <tr>
+                                    <th class="ps-4">ID</th>
+                                    <th>Unidade (Clínica / Lab)</th>
+                                    <th class="text-center" style="width: 100px;">Pacientes</th>
+                                    <th class="text-center" style="width: 100px;">Equipe</th>
+                                    <th class="text-center" style="width: 80px;">Admins</th>
+                                    <th>Localização</th>
+                                    <th>Horário</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="p : ${polos}">
+                                    <td class="ps-4 text-muted" th:text="${p.id}">1</td>
+                                    <td>
+                                        <a th:href="@{/admin/polos/clinica/{id}/usuarios(id=${p.id})}" 
+                                           class="text-decoration-none fw-bold d-flex align-items-center">
+                                            
+                                            <div th:if="${p.tipo == 'CLINICA' or p.tipo == null}" 
+                                                 class="bg-success bg-opacity-10 text-success rounded-circle p-2 me-3">
+                                                <i class="fas fa-clinic-medical fa-lg"></i>
+                                            </div>
+
+                                            <div th:if="${p.tipo == 'LABORATORIO'}" 
+                                                 class="bg-warning bg-opacity-10 text-warning rounded-circle p-2 me-3">
+                                                <i class="fas fa-flask fa-lg"></i>
+                                            </div>
+
+                                            <div>
+                                                <span th:text="${p.nome}" 
+                                                      th:class="${p.tipo == 'LABORATORIO'} ? 'fw-bold text-dark d-block' : 'fw-bold text-success d-block'">
+                                                      Unidade
+                                                </span>
+                                                
+                                                <small class="text-muted fw-normal">
+                                                    <span th:if="${p.tipo == 'LABORATORIO'}">Análises Clínicas >></span>
+                                                    <span th:unless="${p.tipo == 'LABORATORIO'}">Ver cadastros >></span>
+                                                </small>
+                                            </div>
+                                        </a>
+                                    </td>
+                                    
+                                    <td class="text-center"><span class="badge rounded-pill bg-info text-dark badge-stat" th:text="${estatisticas.get(p.id).get('PACIENTES')}">0</span></td>
+                                    <td class="text-center"><span class="badge rounded-pill bg-success badge-stat" th:text="${estatisticas.get(p.id).get('PROFISSIONAIS')}">0</span></td>
+                                    <td class="text-center"><span class="badge rounded-pill bg-secondary badge-stat" th:text="${estatisticas.get(p.id).get('ADMINS')}">0</span></td>
+                                    
+                                    <td><span th:text="${p.bairro} + ' (' + ${p.cidade} + ')'" class="fw-bold small"></span></td>
+                                    <td><span class="badge bg-light text-dark border" th:text="${p.horarioFuncionamento}"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table th:if="${modoUsuarios}" class="table table-hover table-bordered table-detailed align-middle">
+                            <thead>
+                                <tr>
+                                    <th class="ps-3" style="width: 50px;">Status</th>
+                                    <th>Identificação Pessoal</th>
+                                    <th>Documentação Civil</th>
+                                    <th>Contato</th>
+                                    <th>Endereço Residencial</th>
+                                    <th>Dados Profissionais</th>
+                                    <th class="text-end pe-3">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="u : ${listaUsuarios}" th:with="prof=${mapaProfissionais != null ? mapaProfissionais.get(u.id) : null}">
+                                    
+                                    <td class="text-center bg-white">
+                                        <div class="d-flex flex-column align-items-center gap-1">
+                                            <span th:if="${u.ativo}" class="badge bg-success-subtle text-success border border-success" style="font-size: 0.7rem;">ATIVO</span>
+                                            <span th:unless="${u.ativo}" class="badge bg-danger-subtle text-danger border border-danger" style="font-size: 0.7rem;">INATIVO</span>
+                                            <span th:class="'badge ' + (${u.perfil == 'ADMIN'} ? 'bg-dark' : (${u.perfil == 'PACIENTE'} ? 'bg-info text-dark' : 'bg-success'))" 
+                                                  style="font-size: 0.65rem;" th:text="${u.perfil}">PERFIL</span>
+                                        </div>
+                                    </td>
+                                    
+                                    <td>
+                                        <div class="fw-bold text-dark mb-1" style="font-size: 0.95rem;" th:text="${u.nome}">Nome Completo</div>
+                                        <div class="sub-row"><span class="info-label">Data Nasc:</span> <span class="info-value" th:text="${u.dataNascimento != null ? u.dataNascimento : '-'}"></span></div>
+                                        <div class="sub-row"><span class="info-label">ID Sistema:</span> <span class="info-value" th:text="${u.id}"></span></div>
+                                    </td>
+
+                                    <td>
+                                        <div class="sub-row"><span class="info-label">CPF:</span> <span class="info-value fw-bold" th:text="${u.cpf}"></span></div>
+                                        <div class="sub-row"><span class="info-label">RG:</span> <span class="info-value" th:text="${u.rg != null ? u.rg : '-'}"></span></div>
+                                        <div class="sub-row"><span class="info-label">SUS:</span> <span class="info-value" th:text="${u.cartaoSus != null ? u.cartaoSus : '-'}"></span></div>
+                                    </td>
+
+                                    <td>
+                                        <div class="sub-row"><i class="fas fa-envelope me-1 text-muted" style="width: 15px;"></i> <span class="info-value" th:text="${u.email}"></span></div>
+                                        <div class="sub-row"><i class="fas fa-phone me-1 text-muted" style="width: 15px;"></i> <span class="info-value" th:text="${u.telefone != null ? u.telefone : '-'}"></span></div>
+                                    </td>
+
+                                    <td>
+                                        <div class="sub-row">
+                                            <span class="info-value" th:text="${u.logradouro}">Rua</span>, 
+                                            <span class="info-value fw-bold" th:text="${u.numero != null ? u.numero : 'S/N'}">100</span>
+                                        </div>
+                                        <div class="sub-row">
+                                            <span class="info-label">Bairro:</span> <span class="info-value" th:text="${u.bairro}"></span>
+                                        </div>
+                                        <div class="sub-row">
+                                            <span class="info-value" th:text="${u.cidade}">Cidade</span> - <span class="info-value" th:text="${u.cep}">CEP</span>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div th:if="${prof != null}">
+                                            <div class="sub-row" th:if="${prof.tipoProfissional}">
+                                                <span class="badge bg-light text-dark border" th:text="${prof.tipoProfissional}"></span>
+                                            </div>
+                                            <div class="sub-row mt-1" th:if="${prof.matricula}">
+                                                <span class="info-label">Matrícula:</span> <span class="info-value fw-bold" th:text="${prof.matricula}"></span>
+                                            </div>
+                                            <div class="sub-row" th:if="${prof.especialidade}">
+                                                <span class="info-label">Espec:</span> <span class="info-value text-primary" th:text="${prof.especialidade}"></span>
+                                            </div>
+                                            <div class="sub-row" th:if="${prof.crm != null}">
+                                                <span class="info-label text-danger">CRM:</span> <span class="info-value fw-bold" th:text="${prof.crm}"></span>
+                                            </div>
+                                            <div class="sub-row" th:if="${prof.coren != null}">
+                                                <span class="info-label text-success">COREN:</span> <span class="info-value fw-bold" th:text="${prof.coren}"></span>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td class="text-end pe-3 bg-white">
+                                        <div class="btn-group">
+                                            <a th:href="@{/admin/usuario/editar/{id}(id=${u.id})}" class="btn btn-sm btn-outline-primary" title="Editar Completo"><i class="fas fa-edit"></i></a>
+                                            <form th:action="@{/admin/excluir-usuario}" method="post" class="d-inline" onsubmit="return confirm('ATENÇÃO: Excluir este usuário removerá todos os vínculos. Confirmar?');">
+                                                <input type="hidden" name="idUsuario" th:value="${u.id}">
+                                                <input type="hidden" name="motivo" value="Painel Polos">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir"><i class="fas fa-trash"></i></button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(listaUsuarios)}">
+                                    <td colspan="7" class="text-center py-5 text-muted">
+                                        <i class="fas fa-user-slash fa-3x mb-3 opacity-25"></i><br>
+                                        Nenhum cadastro encontrado nesta clínica.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-top-danger mt-4" th:if="${listaLogs != null}">
+                <div class="card-body">
+                    <h5 class="text-danger mb-3"><i class="fas fa-history"></i> Logs</h5>
+                    <table class="table table-sm table-striped">
+                        <tr th:each="log : ${listaLogs}"><td th:text="${log[0]}"></td><td th:text="${log[1]}"></td><td th:text="${log[2]}"></td></tr>
+                    </table>
+                </div>
+            </div>
+            
+        </div> 
+    </main>
+    <div th:replace="~{fragments/footer :: rodape}"></div>
+    
+    <script>
+        async function atualizarConteudo() {
+            if (document.querySelector('.table:hover') || document.querySelector('input:focus')) return;
+            try {
+                const response = await fetch(window.location.href);
+                if (response.ok) {
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const novoConteudo = doc.getElementById('area-conteudo-dinamico');
+                    if (novoConteudo && !window.getSelection().toString()) {
+                        document.getElementById('area-conteudo-dinamico').innerHTML = novoConteudo.innerHTML;
+                    }
+                }
+            } catch (e) {}
+        }
+        setInterval(atualizarConteudo, 1000);
+    </script>
+
+</body>
+</html>

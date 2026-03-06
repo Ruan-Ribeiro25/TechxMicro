@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Meus Arquivos - SpeedMedical</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <h1><i class="fas fa-folder-open"></i> Meus Documentos</h1>
+        <a th:href="@{/home}" class="btn-principal" style="width: auto; background: transparent !important; border: 1px solid white !important;">Voltar</a>
+    </nav>
+
+    <main class="container-home">
+        <div th:replace="~{fragments/alerts :: mensagem}"></div>
+
+        <div class="caixa-branca" style="margin-bottom: 30px;">
+            <h3>Repositório Digital (CPF: <span th:text="${usuario.cpf}"></span>)</h3>
+            <p>Abaixo estão suas pastas organizadas automaticamente pelo sistema.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+            <div class="card-item" style="cursor: pointer;">
+                <i class="fas fa-file-medical" style="color: #ffd700; font-size: 4rem;"></i>
+                <h4>Receituários</h4>
+                <span class="badge" style="background: var(--verde-agua); color: white; padding: 2px 8px; border-radius: 10px;">Novo</span>
+            </div>
+            <div class="card-item" style="cursor: pointer;">
+                <i class="fas fa-microscope" style="color: #ffd700; font-size: 4rem;"></i>
+                <h4>Exames</h4>
+            </div>
+            <div class="card-item" style="cursor: pointer;">
+                <i class="fas fa-notes-medical" style="color: #ffd700; font-size: 4rem;"></i>
+                <h4>Laudos</h4>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: rodape}"></div>
+</body>
+</html>

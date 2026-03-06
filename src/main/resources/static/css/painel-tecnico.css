@@ -1,0 +1,164 @@
+/* ============================================================
+   ARQUIVO: painel-tecnico.css
+   DESCRIÇÃO: Estilos exclusivos do Dashboard de Técnico de Enfermagem
+   ============================================================ */
+
+body {
+    background-color: #f4f7f6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; padding: 0;
+}
+
+main {
+    padding: 20px 30px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* HEADER DA PÁGINA */
+.page-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 25px; background: #fff; padding: 15px 25px;
+    border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+}
+.page-header h2 {
+    margin: 0; color: #2c3e50; font-size: 1.5rem; font-weight: 700;
+    display: flex; align-items: center; gap: 10px;
+}
+
+/* Ações do Header (Sino e Perfil) */
+.header-actions { display: flex; align-items: center; gap: 20px; }
+
+.btn-notif-circle {
+    width: 42px; height: 42px; background: #f8f9fa; border: 1px solid #e9ecef;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    color: #555; cursor: pointer; position: relative; transition: 0.2s;
+}
+.btn-notif-circle:hover { background: #fff; color: #3498db; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transform: translateY(-2px); }
+
+.badge-notif-count {
+    position: absolute; top: -2px; right: -2px;
+    background-color: #e74c3c; color: white; font-size: 0.7rem; font-weight: bold;
+    padding: 2px 6px; border-radius: 10px; border: 2px solid #fff;
+}
+
+.user-info { display: flex; align-items: center; gap: 12px; padding-left: 20px; border-left: 1px solid #eee; }
+.user-details { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
+.user-name { font-weight: 700; color: #333; font-size: 0.95rem; }
+.user-role { font-size: 0.7rem; font-weight: 800; color: #8e44ad; letter-spacing: 0.5px; text-transform: uppercase; background: #f3e5f5; padding: 2px 6px; border-radius: 4px; }
+.profile-pic-header {
+    width: 45px; height: 45px; border-radius: 50%; object-fit: cover;
+    border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* --- SIDEBAR E ESTRUTURA --- */
+.dash-container { display: flex; gap: 25px; align-items: flex-start; }
+
+.sidebar {
+    width: 320px; flex-shrink: 0; background: white; padding: 20px;
+    border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    height: calc(100vh - 140px); display: flex; flex-direction: column;
+}
+.sidebar-title { font-size: 1.1rem; color: #2c3e50; margin-bottom: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+
+.search-box { margin-bottom: 15px; }
+.search-box .input-group { display: flex; }
+.search-box input { border-radius: 20px 0 0 20px; border-right: none; }
+.search-box button { border-radius: 0 20px 20px 0; border-left: none; background: #f8f9fa; }
+
+.patient-list-scroll { overflow-y: auto; flex-grow: 1; padding-right: 5px; }
+.patient-card-item {
+    display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #f0f0f0;
+    text-decoration: none; color: #444; transition: 0.2s; border-radius: 8px; margin-bottom: 5px;
+}
+.patient-card-item:hover { background-color: #f3e5f5; transform: translateX(3px); }
+
+.avatar-initials {
+    width: 40px; height: 40px; background: #f3e5f5; color: #8e44ad;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; margin-right: 12px; flex-shrink: 0;
+}
+
+.main-content { flex-grow: 1; width: 100%; }
+
+/* --- BANNER TÉCNICO (Roxo/Azul) --- */
+.welcome-card-tech {
+    background: linear-gradient(135deg, #8e44ad 0%, #3498db 100%);
+    border-radius: 16px; padding: 30px; color: white;
+    display: flex; align-items: center; gap: 30px;
+    box-shadow: 0 10px 20px rgba(142, 68, 173, 0.2);
+    margin-bottom: 30px; position: relative; overflow: hidden;
+}
+.welcome-avatar-wrapper {
+    width: 110px; height: 110px; flex-shrink: 0; border-radius: 50%;
+    border: 4px solid rgba(255, 255, 255, 0.3); box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    position: relative; background: #fff;
+}
+.welcome-avatar-wrapper img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+.btn-upload-icon {
+    position: absolute; bottom: 0; right: 0; background: #fff; color: #8e44ad;
+    width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); cursor: pointer; transition: 0.2s;
+}
+.btn-upload-icon:hover { transform: scale(1.1); }
+
+/* --- KPIS (ANIMADOS) --- */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+.kpi-card {
+    background: white; border-radius: 12px; padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03); border-top: 4px solid #ccc; text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.kpi-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+.border-purple { border-top-color: #8e44ad; }
+.border-blue { border-top-color: #3498db; }
+.border-green { border-top-color: #20c997; }
+.border-orange { border-top-color: #e67e22; }
+
+.kpi-value { font-size: 2rem; font-weight: 800; margin: 10px 0 0; color: #333; }
+.kpi-label { font-size: 0.8rem; text-transform: uppercase; color: #888; font-weight: 700; }
+
+/* --- ÁREA DO PACIENTE --- */
+.patient-header-banner {
+    background: white; border-radius: 12px; padding: 25px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 25px; border-left: 6px solid #8e44ad;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+
+.diagnosis-form-area {
+    background: #fff; border-radius: 16px; border-left: 8px solid #8e44ad;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04); padding: 30px; margin-bottom: 30px;
+}
+
+.timeline-item { position: relative; padding-left: 20px; }
+.card-box { background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+.form-label { font-weight: 600; color: #555; }
+
+/* Botões */
+.btn-custom-tech {
+    background: #8e44ad; color: white; border: none; padding: 10px 25px;
+    border-radius: 30px; font-weight: 600; text-decoration: none; transition: 0.2s;
+}
+.btn-custom-tech:hover { background: #71368a; color: white; transform: translateY(-2px); }
+
+/* --- MODAL NOTIFICAÇÕES (Popup Clean) --- */
+.modal-notification .modal-content {
+    border-radius: 12px; border: none; box-shadow: 0 15px 50px rgba(0,0,0,0.2); background: #fff;
+}
+.modal-notification .modal-header {
+    background: #8e44ad; color: white; padding: 15px 20px; border-bottom: none;
+}
+.modal-notification .modal-body { padding: 0; max-height: 350px; overflow-y: auto; }
+.modal-notification .list-group-item {
+    border: none; border-bottom: 1px solid #f0f0f0; padding: 15px 20px; color: #444;
+}
+.modal-notification .modal-footer { background: #f9f9f9; padding: 10px 20px; border-top: 1px solid #eee; }
+
+/* Responsividade */
+@media (max-width: 992px) {
+    .dash-container { flex-direction: column; }
+    .sidebar { width: 100%; height: auto; max-height: 400px; }
+    .kpi-grid { grid-template-columns: 1fr; }
+    .welcome-card-tech { flex-direction: column; text-align: center; }
+}

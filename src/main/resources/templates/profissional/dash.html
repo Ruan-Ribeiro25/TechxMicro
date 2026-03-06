@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Profissional - SpeedMedical</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <h1>SpeedMedical | Portal do Especialista</h1>
+        <a th:href="@{/home}" class="btn-principal" style="width: auto; background: transparent !important; border: 1px solid white !important;">Voltar</a>
+    </nav>
+
+    <main class="container-home">
+        <section class="caixa-branca" style="margin-bottom: 30px;">
+            <h2 style="color: var(--verde-agua); margin-bottom: 20px;"><i class="fas fa-id-card-alt"></i> Cadastro Profissional</h2>
+            <p style="color: #666; margin-bottom: 20px;">Complete seu perfil técnico para habilitar as funções de atendimento.</p>
+            <form th:action="@{/profissional/salvar}" method="post">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <input type="text" name="crm" placeholder="CRM (Ex: 123456/SP)" required>
+                    <input type="text" name="especialidade" placeholder="Especialidade Médica">
+                </div>
+                <button type="submit" class="btn-principal" style="margin-top: 15px;">Atualizar Registro Profissional</button>
+            </form>
+        </section>
+
+        <section class="caixa-branca">
+            <h2 style="color: var(--verde-agua); margin-bottom: 20px;"><i class="fas fa-stethoscope"></i> Atendimento e Prescrições</h2>
+            <form th:action="@{/atendimento/salvar}" method="post">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <input type="text" placeholder="ID do Paciente (Vínculo Automático)" required style="grid-column: span 2;">
+                    <textarea name="receituario" placeholder="Digite aqui o receituário, orientações ou laudo médico..." rows="5" style="grid-column: span 2; width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd;"></textarea>
+                    <input type="text" placeholder="Nome do Exame solicitado">
+                    <input type="date" title="Data da Consulta">
+                    <button type="submit" class="btn-principal" style="grid-column: span 2;">Salvar Histórico no Prontuário</button>
+                </div>
+            </form>
+        </section>
+    </main>
+    <footer>© 2025 SpeedMedical - Sistema Hospitalar Unificado</footer>
+</body>
+</html>

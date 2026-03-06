@@ -1,0 +1,174 @@
+/* ============================================================
+   ARQUIVO: pacientes.css (Versão Refinada & Responsiva)
+   ============================================================ */
+
+/* --- TÍTULO DA PÁGINA --- */
+.page-header-custom {
+    display: flex; align-items: center; justify-content: center; gap: 15px;
+    margin-bottom: 30px; padding-bottom: 15px;
+    border-bottom: 4px solid var(--primary-color);
+}
+.page-header-custom a { color: white; font-size: 1.4rem; transition: 0.2s; }
+.page-header-custom a:hover { transform: scale(1.1); }
+.page-header-custom h2 { color: white; margin: 0; font-size: 1.8rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+
+/* --- LAYOUT GRID (Desktop) --- */
+.prontuario-container {
+    display: grid;
+    grid-template-columns: 320px 1fr; /* Perfil fixo, conteúdo fluido */
+    gap: 30px;
+    align-items: start;
+    width: 100%;
+}
+.content-area { display: flex; flex-direction: column; gap: 30px; min-width: 0; /* Evita estouro de flex items */ }
+
+/* --- PERFIL DO PACIENTE --- */
+.profile-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px; padding: 30px 20px;
+    text-align: center;
+    border-top: 5px solid var(--primary-color);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+.profile-pic-box {
+    position: relative; width: 120px; height: 120px; margin: 0 auto 15px;
+}
+.avatar-img {
+    width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+    border: 4px solid var(--primary-color);
+    padding: 3px; background: white;
+}
+.btn-cam {
+    position: absolute; bottom: 0; right: 0;
+    background: var(--primary-color); color: white;
+    width: 35px; height: 35px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 3px solid white; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.subtitle { color: #888; font-size: 0.9rem; margin-bottom: 20px; }
+
+.info-list { text-align: left; margin-top: 20px; border-top: 1px dashed #ddd; padding-top: 15px; }
+.info-item { margin-bottom: 12px; }
+.info-item small { display: block; color: var(--primary-color); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
+.info-item span { color: #444; font-size: 0.95rem; font-weight: 500; }
+
+.btn-outline-custom {
+    display: inline-block; margin-top: 20px;
+    border: 2px solid var(--primary-color); color: var(--primary-color);
+    padding: 8px 20px; border-radius: 50px; font-weight: 700; font-size: 0.9rem;
+    transition: 0.3s;
+}
+.btn-outline-custom:hover { background: var(--primary-color); color: white; }
+
+/* --- BOTÕES DE AÇÃO (GRID) --- */
+.action-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 colunas no desktop */
+    gap: 20px;
+}
+.card-action {
+    background: white; border-radius: 12px; padding: 20px;
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.3s;
+    text-decoration: none; color: #333;
+    border-bottom: 4px solid #ccc;
+}
+.card-action:hover { transform: translateY(-5px); }
+.card-action .icon-box { font-size: 2rem; margin-bottom: 10px; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+.card-action h3 { font-size: 1.1rem; margin: 0 0 5px; }
+.card-action p { font-size: 0.85rem; color: #777; margin: 0; }
+
+/* Cores Cards */
+.card-agenda { border-color: #f1c40f; }
+.card-agenda .icon-box { background: #fff3cd; color: #f1c40f; }
+.card-docs { border-color: #e74c3c; }
+.card-docs .icon-box { background: #fbecec; color: #e74c3c; }
+
+/* --- CARDS DE HISTÓRICO --- */
+.history-card {
+    background: rgba(255, 255, 255, 0.98); border-radius: 12px; padding: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+.card-header-flex {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;
+}
+.card-header-flex h3 { font-size: 1.2rem; color: var(--dark-blue); margin: 0; }
+.btn-sm-primary {
+    background: var(--primary-color); color: white; padding: 5px 15px;
+    border-radius: 20px; font-size: 0.85rem; font-weight: 600; text-decoration: none;
+}
+
+/* --- TABELA RESPONSIVA --- */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto; /* Permite scroll lateral na tabela se precisar */
+    -webkit-overflow-scrolling: touch;
+}
+table { width: 100%; border-collapse: collapse; white-space: nowrap; }
+th { background: #f8f9fa; padding: 12px; text-align: left; font-size: 0.8rem; color: #888; text-transform: uppercase; }
+td { padding: 12px; border-bottom: 1px solid #eee; font-size: 0.9rem; color: #333; }
+.status-tag { padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; font-weight: 700; }
+.status-Agendado { background: #fff3cd; color: #856404; }
+.empty-row { text-align: center; color: #999; padding: 20px; }
+.icon-view { color: var(--primary-color); font-size: 1rem; }
+
+/* --- TIMELINE --- */
+.timeline-item {
+    background: white; border: 1px solid #eee; border-radius: 8px;
+    padding: 15px; margin-bottom: 15px;
+    border-left-width: 4px; border-left-style: solid;
+}
+.doctor-item { border-left-color: var(--primary-color); }
+.nurse-item { border-left-color: var(--secondary-color); }
+
+.timeline-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.85rem; }
+.date-badge { font-weight: 700; color: #555; }
+.pro-badge { background: #e6fffa; color: var(--primary-color); padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+.pro-badge.nurse { background: #e8f4fd; color: var(--secondary-color); }
+
+.timeline-stats { display: flex; gap: 15px; background: #f8f9fa; padding: 10px; border-radius: 5px; font-size: 0.9rem; }
+
+/* ============================================================
+   MOBILE (MAX-WIDTH: 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+    /* 1. Header */
+    .page-header-custom { flex-direction: column; gap: 10px; text-align: center; }
+    .page-header-custom h2 { font-size: 1.5rem; }
+
+    /* 2. Container vira coluna única */
+    .prontuario-container {
+        grid-template-columns: 1fr; /* Remove a coluna fixa */
+        gap: 20px;
+    }
+
+    /* 3. Cards ocupam largura total */
+    .profile-card { width: 100%; padding: 20px; }
+    .content-area { width: 100%; }
+
+    /* 4. Botões de Ação Empilhados (1 por linha) e Horizontais */
+    .action-grid {
+        grid-template-columns: 1fr; /* 1 coluna */
+        gap: 15px;
+    }
+    .card-action {
+        flex-direction: row; /* Ícone lado a lado com texto */
+        justify-content: flex-start;
+        align-items: center;
+        text-align: left;
+        padding: 15px;
+        min-height: auto;
+    }
+    .card-action .icon-box { margin-bottom: 0; margin-right: 15px; width: 50px; height: 50px; font-size: 1.5rem; }
+    .card-action .text-box h3 { font-size: 1rem; margin-bottom: 2px; }
+    .card-action .text-box p { font-size: 0.8rem; }
+
+    /* 5. Ajustes de Tabela e Cards */
+    .history-card { padding: 15px; }
+    .card-header-flex { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .btn-sm-primary { width: 100%; text-align: center; display: block; }
+    
+    /* 6. Remove excesso de margem no main */
+    main { padding: 20px 15px; }
+}

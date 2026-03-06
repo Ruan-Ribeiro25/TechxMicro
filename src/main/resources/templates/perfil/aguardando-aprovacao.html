@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro em Análise - VidaPlus</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <style>
+        body { background: #f8f9fa; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; max-width: 500px; border-top: 5px solid #ffc107; }
+        .icon { font-size: 60px; color: #ffc107; margin-bottom: 20px; }
+        .btn { background: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 20px; }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="card">
+        <i class="fas fa-hourglass-half icon"></i>
+        <h2>Cadastro em Análise</h2>
+        <p>Olá! Recebemos seus dados profissionais (CRM e Matrícula).</p>
+        <p>Por questões de segurança, um <strong>Administrador</strong> precisa validar seu registro antes de liberar o acesso aos dados dos pacientes.</p>
+        <p>Por favor, aguarde a aprovação.</p>
+        
+        <a th:href="@{/logout}" class="btn">Sair e Tentar Mais Tarde</a>
+    </div>
+</body>
+</html>

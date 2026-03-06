@@ -1,0 +1,16 @@
+<!-- templates/fragments/modal.html -->
+<!-- Arquivo: src/main/resources/templates/fragments/modal.html -->
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 th:text="${modalTitle}">Título do Modal</h3>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="modal-body" th:utext="${modalBody}">
+            Conteúdo do Modal
+        </div>
+        <div class="modal-footer">
+            <button onclick="closeModal()">Fechar</button>
+        </div>
+    </div>
+</div>
