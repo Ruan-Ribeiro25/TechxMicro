@@ -1,10 +1,10 @@
 {
-  "name": "COPAMIR",
-  "short_name": "COPAMIR",
+  "name": "PIXEL.TI",
+  "short_name": "PIXEL.TI",
   "start_url": "/login", 
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#e57733",
+  "background_color": "#1c1c1c",
+  "theme_color": "#1c1c1c",
   "icons": [
     {
       "src": "/img/logo1.png?v=2",   

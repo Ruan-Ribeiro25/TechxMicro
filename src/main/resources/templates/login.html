@@ -2,12 +2,12 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Login - Copamir</title>
+    <title>Login - PIXEL TI</title>
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="manifest" th:href="@{/manifest.json}">
-	<meta name="theme-color" content="#0d6efd">
+	<meta name="theme-color" content="#1c1c1c">
 
 	<script>
   		if ('serviceWorker' in navigator) {
@@ -29,7 +29,7 @@
         <div class="login-container">
             <div class="login-header">
                 <center><img th:src="@{/img/LogoSite.V1.White.png}" alt="COPAMIR" style="height: 40px; margin-bottom: 10px;"><center />
-                <p>Conselho de Pastores e Ministros de Itajubá e Região</p>
+                <p>Sistema de Helpdesk V1.0</p>
             </div>
 
             <div th:if="${param.error}" class="alert-box alert-error">
