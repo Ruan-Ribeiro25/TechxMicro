@@ -2,7 +2,7 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Cadastro Profissional - VidaPlus</title>
+    <title>Cadastro Profissional - Copamir</title>
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -15,7 +15,7 @@
         <div class="register-size border-top-blue">
             
             <div class="login-header text-center">
-                <h2 class="theme-blue"><i class="fas fa-user-md"></i> Ativação de Perfil Profissional</h2>
+                <h2 class="theme-blue"><i class="fas fa-user-tie"></i> Ativação de Perfil Profissional</h2>
                 <p class="text-gray">Vincule suas credenciais à sua conta existente</p>
             </div>
 
@@ -27,25 +27,10 @@
                 
                 <div class="role-selector">
                     <div class="role-option">
-                        <input type="radio" name="tipoProfissional" id="tipoMedico" value="MEDICO" checked onclick="mudarTipo('MEDICO')">
-                        <label for="tipoMedico"><i class="fas fa-user-md"></i> Médico</label>
+                        <input type="radio" name="tipoProfissional" id="tipoPastor" value="PASTOR" checked onclick="mudarTipo('PASTOR')">
+                        <label for="tipoMedico"><i class="fas fa-user-md"></i> Líder Pastoral</label>
                     </div>
-                    <div class="role-option">
-                        <input type="radio" name="tipoProfissional" id="tipoEnfermeiro" value="ENFERMEIRO" onclick="mudarTipo('ENFERMEIRO')">
-                        <label for="tipoEnfermeiro"><i class="fas fa-user-nurse"></i> Enfermeiro</label>
-                    </div>
-                    <div class="role-option">
-                        <input type="radio" name="tipoProfissional" id="tipoMotorista" value="MOTORISTA" onclick="mudarTipo('MOTORISTA')">
-                        <label for="tipoMotorista"><i class="fas fa-ambulance"></i> Motorista</label>
-                    </div>
-                    <div class="role-option">
-                        <input type="radio" name="tipoProfissional" id="tipoRecepcao" value="RECEPCAO" onclick="mudarTipo('RECEPCAO')">
-                        <label for="tipoRecepcao"><i class="fas fa-headset"></i> Recepção</label>
-                    </div>
-                    <div class="role-option">
-                        <input type="radio" name="tipoProfissional" id="tipoServicos" value="SERVICOS_GERAIS" onclick="mudarTipo('SERVICOS_GERAIS')">
-                        <label for="tipoServicos"><i class="fas fa-broom"></i> Serv. Gerais</label>
-                    </div>
+                   
                 </div>
 
                 <h4 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; color: #888;">
@@ -100,17 +85,17 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Especialidade / Setor</label>
-                    <select name="especialidade" id="especialidadeSelect" class="form-control" required>
-                        <option value="" disabled selected>Selecione a Especialidade...</option>
+                    <label>Igreja / Congregação</label>
+                    <select name="igreja" id="igrejaSelect" class="form-control" required>
+                        <option value="" disabled selected>Selecione sua Igreja</option>
                     </select>
                 </div>
-
+<br>
                 <button type="submit" class="btn-custom btn-blue mt-20" style="width: 100%; padding: 16px; font-size: 1.1rem;">
                     Confirmar Vínculo Profissional
                 </button>
             </form>
-
+<br>
             <div class="footer-links text-center mt-3">
                 <a th:href="@{/home}" class="theme-blue" style="font-weight: bold; text-decoration: none;">
                     <i class="fas fa-arrow-left"></i> Cancelar e Voltar

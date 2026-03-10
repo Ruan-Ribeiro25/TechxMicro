@@ -2,10 +2,10 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Gestão Centralizada - VidaPlus</title> 
+    <title>Gestão Centralizada - Copamir</title> 
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .badge-stat { min-width: 40px; font-weight: 500; }
@@ -54,7 +54,7 @@
                             <i class="fas fa-building me-2"></i> Cidades
                         </a>
                         <a th:if="${modoUsuarios}" th:href="@{/admin/polos/{id}/clinicas(id=${hospitalId})}" class="btn btn-sm btn-outline-light">
-                            <i class="fas fa-hospital-alt me-2"></i> Clínicas
+                            <i class="fas fa-map-marker-alt me-2"></i> Geolocalização
                         </a>
                     </div>
 
@@ -74,12 +74,10 @@
                             <thead class="bg-light text-uppercase small text-muted">
                                 <tr>
                                     <th class="ps-4">ID</th>
-                                    <th>Unidade Hospitalar</th>
-                                    <th class="text-center">Hospitais</th>
-                                    <th class="text-center">Clínicas</th>
-                                    <th class="text-center">Laboratórios</th>
-                                    <th>Localização</th>
-                                    <th>Horário</th>
+                                    <th>Geolocalização</th>
+                                    <th class="text-center">Cidade</th>
+                                    <th class="text-center">Bairro</th>
+                                    
                                     <th>Responsável</th>
                                 </tr>
                             </thead>
@@ -89,7 +87,7 @@
                                     <td>
                                         <a th:href="@{/admin/polos/{id}/clinicas(id=${p.id})}" class="text-decoration-none fw-bold d-flex align-items-center">
                                             <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-2 me-3"><i class="fas fa-hospital fa-lg"></i></div>
-                                            <div><span th:text="${p.nome}" class="text-primary d-block">Hospital</span><small class="text-muted fw-normal">Ver filiais >></small></div>
+                                            <div><span th:text="${p.nome}" class="text-primary d-block">Geolocalização</span><small class="text-muted fw-normal">Ver Geolocalização >></small></div>
                                         </a>
                                     </td>
                                     
@@ -125,9 +123,9 @@
                             <thead class="bg-light text-uppercase small text-muted">
                                 <tr>
                                     <th class="ps-4">ID</th>
-                                    <th>Unidade (Clínica / Lab)</th>
-                                    <th class="text-center" style="width: 100px;">Pacientes</th>
-                                    <th class="text-center" style="width: 100px;">Equipe</th>
+                                    <th>Geolocalização</th>
+                                    <th class="text-center" style="width: 100px;">Usuários</th>
+                                    <th class="text-center" style="width: 100px;">Gestores</th>
                                     <th class="text-center" style="width: 80px;">Admins</th>
                                     <th>Localização</th>
                                     <th>Horário</th>
@@ -144,23 +142,7 @@
                                                  class="bg-success bg-opacity-10 text-success rounded-circle p-2 me-3">
                                                 <i class="fas fa-clinic-medical fa-lg"></i>
                                             </div>
-
-                                            <div th:if="${p.tipo == 'LABORATORIO'}" 
-                                                 class="bg-warning bg-opacity-10 text-warning rounded-circle p-2 me-3">
-                                                <i class="fas fa-flask fa-lg"></i>
-                                            </div>
-
-                                            <div>
-                                                <span th:text="${p.nome}" 
-                                                      th:class="${p.tipo == 'LABORATORIO'} ? 'fw-bold text-dark d-block' : 'fw-bold text-success d-block'">
-                                                      Unidade
-                                                </span>
-                                                
-                                                <small class="text-muted fw-normal">
-                                                    <span th:if="${p.tipo == 'LABORATORIO'}">Análises Clínicas >></span>
-                                                    <span th:unless="${p.tipo == 'LABORATORIO'}">Ver cadastros >></span>
-                                                </small>
-                                            </div>
+                                            
                                         </a>
                                     </td>
                                     
@@ -207,7 +189,7 @@
                                     <td>
                                         <div class="sub-row"><span class="info-label">CPF:</span> <span class="info-value fw-bold" th:text="${u.cpf}"></span></div>
                                         <div class="sub-row"><span class="info-label">RG:</span> <span class="info-value" th:text="${u.rg != null ? u.rg : '-'}"></span></div>
-                                        <div class="sub-row"><span class="info-label">SUS:</span> <span class="info-value" th:text="${u.cartaoSus != null ? u.cartaoSus : '-'}"></span></div>
+                                        
                                     </td>
 
                                     <td>
@@ -236,16 +218,8 @@
                                             <div class="sub-row mt-1" th:if="${prof.matricula}">
                                                 <span class="info-label">Matrícula:</span> <span class="info-value fw-bold" th:text="${prof.matricula}"></span>
                                             </div>
-                                            <div class="sub-row" th:if="${prof.especialidade}">
-                                                <span class="info-label">Espec:</span> <span class="info-value text-primary" th:text="${prof.especialidade}"></span>
-                                            </div>
-                                            <div class="sub-row" th:if="${prof.crm != null}">
-                                                <span class="info-label text-danger">CRM:</span> <span class="info-value fw-bold" th:text="${prof.crm}"></span>
-                                            </div>
-                                            <div class="sub-row" th:if="${prof.coren != null}">
-                                                <span class="info-label text-success">COREN:</span> <span class="info-value fw-bold" th:text="${prof.coren}"></span>
-                                            </div>
-                                        </div>
+                                                                                        
+                                          </div>
                                     </td>
 
                                     <td class="text-end pe-3 bg-white">
@@ -262,7 +236,7 @@
                                 <tr th:if="${#lists.isEmpty(listaUsuarios)}">
                                     <td colspan="7" class="text-center py-5 text-muted">
                                         <i class="fas fa-user-slash fa-3x mb-3 opacity-25"></i><br>
-                                        Nenhum cadastro encontrado nesta clínica.
+                                        Nenhum cadastro encontrado nesta Geolocalização.
                                     </td>
                                 </tr>
                             </tbody>

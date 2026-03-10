@@ -1,10 +1,10 @@
 {
-  "name": "VidaPlus",
-  "short_name": "VidaPlus",
+  "name": "COPAMIR",
+  "short_name": "COPAMIR",
   "start_url": "/login", 
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#b4b4b4",
+  "theme_color": "#e57733",
   "icons": [
     {
       "src": "/img/logo1.png?v=2",   
@@ -12,7 +12,7 @@
       "type": "image/png"
     },
     {
-      "src": "/img/logo1.png?v=2",   
+      "src": "/img/logo2.png?v=2",   
       "sizes": "512x512",
       "type": "image/png"
     }

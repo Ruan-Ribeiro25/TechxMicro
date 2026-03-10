@@ -22,9 +22,9 @@
         <label>Nome do Documento:</label>
         <input type="text" th:field="*{nome}" required>
 
-        <label>Paciente:</label>
-        <select th:field="*{paciente}" required>
-            <option th:each="p : ${pacientes}" th:value="${p.id}" th:text="${p.nome}"></option>
+        <label>Pastor:</label>
+        <select th:field="*{pastor}" required>
+            <option th:each="p : ${pastor}" th:value="${p.id}" th:text="${p.nome}"></option>
         </select>
 
         <label>Arquivo:</label>

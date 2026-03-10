@@ -1,20 +1,15 @@
-# --- Etapa 1: Construção (Build) ---
-FROM maven:3.9.6-eclipse-temurin-21 AS build
-WORKDIR /app
-
-# Copia tudo
-COPY . .
-
-# Gera o .jar (O nome será 'vidaplus.jar' por causa do pom.xml)
-RUN mvn clean package -DskipTests
-
-# --- Etapa 2: Execução (Run) ---
+# Usa o Java 21 Leve (para rodar)
 FROM eclipse-temurin:21-jre-alpine
+
+# Define a pasta de trabalho
 WORKDIR /app
 
-# Copia apenas o resultado da etapa anterior
-COPY --from=build /app/target/vidaplus.jar app.jar
+# COPIA O ARQUIVO QUE VOCÊ JÁ CRIOU NO TERMINAL
+# (Isso garante que o código novo vai para o ar)
+COPY target/copamir.jar app.jar
 
+# Libera a porta
 EXPOSE 8080
 
+# Roda o aplicativo
 ENTRYPOINT ["java", "-jar", "app.jar"]

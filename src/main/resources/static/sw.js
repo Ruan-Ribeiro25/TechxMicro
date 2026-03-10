@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vidaplus-v2';
+const CACHE_NAME = 'copamir-v2';
 
 // Evento de Instalação: O navegador reconhece que é um PWA
 self.addEventListener('install', (event) => {

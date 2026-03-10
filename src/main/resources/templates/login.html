@@ -2,7 +2,7 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Login - VidaPlus</title>
+    <title>Login - Copamir</title>
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -28,8 +28,8 @@
     <main class="main-center">
         <div class="login-container">
             <div class="login-header">
-                <h2><i class="fas fa-heartbeat" style="color: #20c997;"></i> VidaPlus</h2>
-                <p>Gestão Hospitalar Inteligente</p>
+                <center><img th:src="@{/img/LogoSite.V1.White.png}" alt="COPAMIR" style="height: 40px; margin-bottom: 10px;"><center />
+                <p>Conselho de Pastores e Ministros de Itajubá e Região</p>
             </div>
 
             <div th:if="${param.error}" class="alert-box alert-error">
@@ -77,6 +77,8 @@
                 <div class="forgot-wrapper">
                     <a th:href="@{/forgot-password}" class="forgot-link">Esqueceu a senha?</a>
                 </div>
+                
+				<br>
 
                 <button type="submit" id="btnLogin" class="btn-custom">
                     ENTRAR <i class="fas fa-arrow-right ms-2"></i>

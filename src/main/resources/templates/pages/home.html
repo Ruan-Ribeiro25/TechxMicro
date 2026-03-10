@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Geral - VidaPlus</title>
+    <title>Painel Geral - Copamir</title>
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link rel="stylesheet" th:href="@{/css/global.css}">
 	<link rel="stylesheet" th:href="@{/css/home.css}">
@@ -15,7 +15,7 @@
 
     <main>
         <div class="welcome-section">
-            <i class="far fa-window-restore" style="font-size: 3rem; color: #20c997; margin-bottom: 15px;"></i>
+            <i class="far fa-window-restore" style="font-size: 3rem; color: #2c3e50; margin-bottom: 15px;"></i>
             <div class="welcome-text">
                 <h2>Painel de Controle</h2>
                 <p>Olá, <strong th:text="${usuario.nome}">Usuário</strong>. Selecione o módulo que deseja acessar.</p>
@@ -24,40 +24,43 @@
 
         <div class="dashboard-grid">
             
-            <a th:href="@{/pacientes}" class="card-action card-paciente">
-                <div class="icon-box"><i class="fas fa-user-injured"></i></div>
-                <h3>Área do Paciente</h3>
-                <p>Acesse seu prontuário, histórico e dados.</p>
-            </a>
+           <a th:href="@{/pastores}" class="card-action card-pastor">
+    			<div class="icon-box"><i class="fas fa-user-tie"><!-- fa-file-invoice-dollar --></i></div> 
+    
+    			<h3>Área Pastoral</h3>
+    
+    			<p>Gestão de discipulado, relatórios e escalas.</p>
+		   </a>
 
             <a th:href="@{/acesso-profissional}" class="card-action card-profissional">
-                <div class="icon-box"><i class="fas fa-user-md"></i></div>
-                <h3>Área Profissional</h3>
-                <p>Gestão de atendimentos e agenda médica.</p>
+                <div class="icon-box"><i class="fas fa-users-cog"><!-- fa-sitemap, fa-bullhorn,  --></i></div>
+                <h3>Área da Liderança</h3>
+                <p>Gestão interna de departamentos.</p>
             </a>
 
             <a th:href="@{/laboratorio/dashboard}" class="card-action card-laboratorio" style="border-bottom: 5px solid #d63384;">
-                <div class="icon-box" style="background: #fce4ec; color: #d63384;"><i class="fas fa-flask"></i></div>
-                <h3>Laboratório</h3>
-                <p>Exames, pagamentos e laudos.</p>
+                <div class="icon-box" style="background: #fce4ec; color: #d63384;"><i class="fas fa-hand-holding-usd"><!-- fa-file-invoice-dollar, fa-flask, fa-file-signature, fa-coins -->
+                </i></div>
+                <h3>Tesouraria</h3>
+                <p>Anuidades, ofertas e relatórios financeiros.</p>
             </a>
 
             <a th:href="@{/telemedicina}" class="card-action card-tele">
-                <div class="icon-box"><i class="fas fa-video"></i></div>
-                <h3>Telemedicina</h3>
-                <p>Acesse a sala de espera virtual.</p>
+                <div class="icon-box"><i class="fas fa-broadcast-tower"><!-- fa-file-invoice-dollar --></i></div>
+                <h3>Transmissão - Ao Vivo</h3>
+                <p>Acompanhe nossos cultos e eventos especiais transmitidos em tempo real.</p>
             </a>
 
             <a th:href="@{/rede-credenciada}" class="card-action" style="border-bottom: 5px solid #fd7e14;">
-                <div class="icon-box" style="background: #fff5f5; color: #fd7e14;"><i class="fas fa-map-marked-alt"></i></div>
+                <div class="icon-box" style="background: #fff5f5; color: #fd7e14;"><i class="fas fa-church"><!-- fa-map-marked-alt --></i></div>
                 <h3>Rede Credenciada</h3>
                 <p style="font-size: 0.85rem; line-height: 1.4;">
-                    As clínicas e polos que você está vendo se referem ao seu endereço local, o que quer dizer que se caso você viajar para qualquer lugar do país sua geolocalização te mostrará os hospitais e clínicas bem como os profissionais que atuam em cada uma nesta região de forma automática.
+                    Localize as igrejas e ministérios filiados ao COPAMIR em Itajubá e região no mapa interativo.
                 </p>
             </a>
 
             <a th:href="@{/admin/login}" class="card-action card-admin">
-                <div class="icon-box"><i class="fas fa-cogs"></i></div>
+                <div class="icon-box"><i class="fas fa-cogs"><!-- fa-file-invoice-dollar --></i></div>
                 <h3>Administração</h3>
                 <p>Configurações do sistema.</p>
             </a>

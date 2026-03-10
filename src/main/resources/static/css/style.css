@@ -35,18 +35,36 @@ html, body {
 }
 
 body {
-    /* BACKGROUND FUTURISTA (Tech Blue Gradient + Imagem) */
-    background: linear-gradient(135deg, rgba(10, 25, 47, 0.9), rgba(32, 201, 151, 0.75)),
-                url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') !important;
-    background-size: cover !important;
-    background-position: center !important;
-    background-attachment: fixed !important;
-    
+    /* --- 1. CONFIGURAÇÃO DE LAYOUT --- */
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    font-size: 16px;
-    color: var(--text-color);
+    margin: 0;
+    font-family: sans-serif; /* Adicione sua fonte aqui se tiver */
+    color: var(--text-color, #333);
+
+    /* --- 2. DEFINIÇÃO DA IMAGEM E COR (Separados para não dar erro) --- */
+    
+    /* Cor de fundo (aparece se a imagem falhar) */
+    background-color: #ffe0b2;
+
+    /* AQUI ESTÁ O SEGREDO: Usamos 'background-image' em vez de apenas 'background' */
+    background-image: 
+        /* Camada 1: Gradiente Laranja Suave (diminuí a opacidade para 0.4 e 0.3 para ver melhor a foto) */
+        linear-gradient(135deg, rgba(255, 228, 200, 0.4), rgba(255, 180, 130, 0.3)),
+        
+        /* Camada 2: A Foto de Adoração */
+        url('https://images.unsplash.com/photo-1438232992991-995b7058bbb3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+
+    /* --- 3. AJUSTES DA IMAGEM (Com !important para garantir) --- */
+    background-size: cover !important;        /* Estica a imagem para cobrir tudo */
+    background-position: center center !important; /* Centraliza o foco */
+    background-repeat: no-repeat !important;  /* Não deixa repetir */
+    background-attachment: fixed !important;  /* Efeito de imagem fixa no fundo */
+    
+    /* --- 4. TRUQUE DE MESTRE (Opcional) --- */
+    /* Isso ajuda a misturar a cor com a foto de forma mais bonita */
+    background-blend-mode: overlay;
 }
 
 ul { list-style: none; }
@@ -108,6 +126,7 @@ main {
     width: 100%;
     padding: 40px 20px; 
     box-sizing: border-box;
+    color: white;
 }
 
 .page-title {
@@ -142,7 +161,7 @@ main {
 h2 { color: var(--primary-color); margin-bottom: 25px; text-align: center; }
 
 .form-group { margin-bottom: 20px; text-align: left; width: 100%; }
-label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; font-size: 0.9rem; }
+label { display: block; margin-bottom: 8px; font-weight: 600; color: #ffffff; font-size: 0.9rem; }
 
 /* Inputs Redondos */
 input, .form-control, select {
@@ -172,7 +191,7 @@ input:focus, .form-control:focus, select:focus {
 /* Botões Redondos e Gradientes */
 button, .btn-custom {
     width: 100%; padding: 14px; 
-    background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
+    background: linear-gradient(135deg, #FF8968 0%, #FC761E 100%);
     color: white;
     border: none; border-radius: 50px; 
     font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.3s;
@@ -235,14 +254,14 @@ a.btn-gray:hover { background-color: #7f8c8d !important; text-decoration: none !
 /* Login & Alerts (Glass) */
 .login-container { 
     width: 100%; max-width: 450px; margin: 0 auto; 
-    background: rgba(255, 255, 255, 0.95); 
+    background: rgba(0, 0, 0, 0.95); 
     padding: 30px; border-radius: 20px; 
     box-shadow: 0 15px 40px rgba(0,0,0,0.2); 
     backdrop-filter: blur(8px);
     border: 1px solid rgba(255,255,255,0.4);
 }
-.login-header h2 { font-size: 1.8rem; margin-bottom: 5px; }
-.login-header p { color: #666; margin-bottom: 20px; }
+.login-header h2 { font-size: 1.8rem; margin-bottom: 5px; color: #ffffff;}
+.login-header p { color: #ffffff; margin-bottom: 20px; }
 .theme-blue { color: var(--secondary-color) !important; }
 .border-top-blue { border-top: 5px solid var(--secondary-color) !important; }
 .alert-box { padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: left; font-size: 0.9rem; border: 1px solid transparent; display:flex; align-items:center; gap:10px; }
@@ -251,7 +270,7 @@ a.btn-gray:hover { background-color: #7f8c8d !important; text-decoration: none !
 .alert-info { background-color: #e1f5fe; color: #3498db; border-color: #b3e5fc; }
 .alert-warning { background-color: #fff3cd; color: #856404; border-color: #ffeeba; }
 .alert-blocked { background-color: #fffbeb; color: #92400e; border-color: #fde68a; }
-.login-footer { text-align: center; margin-top: 15px; }
+.login-footer { text-align: center; margin-top: 15px; color: #ffffff;}
 
 /* ============================================================
    5. HOME DASHBOARD

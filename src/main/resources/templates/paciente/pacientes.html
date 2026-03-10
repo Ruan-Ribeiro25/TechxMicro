@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Prontuário - VidaPlus</title>
+    <title>Meu Histórico Pastoral - Copamir </title>
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     
     <link rel="stylesheet" th:href="@{/css/global.css}">
@@ -20,7 +20,7 @@
             <a th:href="@{/home}" title="Voltar">
                 <i class="fas fa-arrow-left"></i>
             </a>
-            <h2>Prontuário do Paciente</h2>
+            <h2>Histórico Pastoral</h2>
         </div>
 
         <div class="prontuario-container">
@@ -39,7 +39,7 @@
                 </div>
 
                 <h3 th:text="${paciente.nome}">Nome do Paciente</h3>
-                <p class="subtitle">Paciente VidaPlus</p>
+                <p class="subtitle">Participante - Copamir</p>
 
                 <div class="info-list">
                     <div class="info-item">

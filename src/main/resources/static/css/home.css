@@ -10,12 +10,13 @@
     border-radius: 15px;
     box-shadow: 0 5px 20px rgba(0,0,0,0.05); 
     margin-bottom: 40px; /* Espaço padrão no desktop */
-    border-left: 6px solid var(--primary-color); 
+    border-left: 5px solid #2c3e50; 
     display: flex; 
     align-items: center;
     justify-content: space-between; 
     width: 100%; 
     backdrop-filter: blur(5px);
+    
 }
 
 .welcome-text h2 { 
@@ -37,6 +38,67 @@
     gap: 30px; 
     width: 100%;
 }
+
+/* ============================================
+   IDENTIDADE VISUAL COPAMIR (Laranja e Escuro)
+   ============================================ */
+
+/* 1. Definição das Cores Globais */
+:root {
+    --copamir-orange: #E67E22; /* Laranja da engrenagem do logo */
+    --copamir-dark: #2C3E50;   /* Cor escura do logo */
+    --copamir-orange-light: rgba(230, 126, 34, 0.1); /* Laranja claro para fundos */
+    --card-border-color: #E67E22; /* Cor da borda inferior dos cards */
+}
+
+/* 2. Estilização Geral dos CARDS (Aplica a todos os cards) */
+.card-action {
+    /* Padroniza a borda inferior para laranja em TODOS os cards */
+    border-bottom: 4px solid var(--card-border-color) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Efeito Hover (Passar o mouse) */
+.card-action:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(230, 126, 34, 0.2); /* Sombra laranja suave */
+}
+
+/* 3. Estilização dos Círculos de Ícone (icon-box) em TODOS os cards */
+/* O seletor '.card-action .icon-box' garante que isso se aplique a qualquer card */
+.card-action .icon-box {
+    background-color: var(--copamir-orange-light) !important; /* Fundo laranja claro */
+    color: var(--copamir-orange) !important; /* Ícone laranja forte */
+    
+    /* Mantém o formato redondo e centralizado */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+/* 4. Estilização do Ícone Principal "Painel de Controle" */
+/* Supondo que a estrutura seja algo como: <div class="card-header-icon"><i class="..."></i></div> */
+/* Verifique a classe exata no seu HTML se este seletor não funcionar */
+.card-header-icon,
+.page-header .icon-box,
+.main-icon-container { /* Adicionei seletores comuns, ajuste conforme seu HTML */
+    color: var(--copamir-orange) !important;
+}
+
+/* Se o ícone principal tiver um fundo, use isto também: */
+/*
+.card-header-icon {
+    background-color: var(--copamir-orange-light) !important;
+    color: var(--copamir-orange) !important;
+    padding: 10px;
+    border-radius: 10px;
+}
+*/
 
 /* ============================================================
    CORREÇÃO MOBILE (AJUSTE DE CORES E ESPAÇAMENTO)
