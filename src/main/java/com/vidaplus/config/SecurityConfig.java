@@ -8,7 +8,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer; // <--- IMPORTANTE: O que faltava
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -27,21 +27,10 @@ public class SecurityConfig {
     @Autowired
     private CustomAuthenticationFailureHandler failureHandler;
 
-    // =========================================================================
-    // NOVIDADE: MODO "IGNORAR" (Pula toda a verificação de segurança)
-    // Isso garante que o /api/teste/** nunca pedirá login, aconteça o que acontecer.
-    // =========================================================================
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/api/teste/**");
-    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // Mantemos o CSRF desativado para garantir compatibilidade geral
-            .csrf(csrf -> csrf.disable()) 
-
+            .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                 // --- RECURSOS ESTÁTICOS & PWA ---
                 .requestMatchers(
@@ -53,11 +42,8 @@ public class SecurityConfig {
                     "/fragments/**",
                     "/manifest.json", 
                     "/sw.js",
-                    "/favicon.ico"
+                    "/favicon.ico" // <--- ADICIONADO: Libera o ícone padrão para não dar erro 500
                 ).permitAll()
-                
-                // NOTA: A regra do "/api/teste/**" foi removida daqui porque
-                // agora ela é tratada no webSecurityCustomizer acima (é mais forte).
                 
                 // --- MONITORAMENTO ---
                 .requestMatchers("/actuator/**").permitAll()
@@ -71,11 +57,11 @@ public class SecurityConfig {
                     "/acesso-profissional", "/bem-vindo"
                 ).permitAll()
                 
-                // --- ROTAS PROTEGIDAS (Preservadas) ---
+                // --- ROTAS PROTEGIDAS ---
                 .requestMatchers("/admin/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
                 .requestMatchers("/financeiro/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
                 
-                // --- PERMISSÕES DE PROFISSIONAIS (Preservadas) ---
+                // --- PERMISSÕES DE PROFISSIONAIS ---
                 .requestMatchers("/profissional/**").hasAnyAuthority(
                     "MEDICO", "ROLE_MEDICO", 
                     "ENFERMEIRO", "ROLE_ENFERMEIRO", 
@@ -90,7 +76,7 @@ public class SecurityConfig {
                 // Áreas específicas que exigem login
                 .requestMatchers("/pacientes/**", "/agendamentos/**", "/documentos/**", "/telemedicina/**").authenticated()
                 
-                // Qualquer outra rota exige login
+                // A Home e qualquer outra rota exigem apenas estar logado
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

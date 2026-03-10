@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "polos")
@@ -29,7 +28,6 @@ public class Polo {
     // --- HIERARQUIA (CIDADE x BAIRRO) ---
     @ManyToOne
     @JoinColumn(name = "polo_pai_id")
-    @JsonIgnore  // <--- ADICIONE ISSO AQUI!
     private Polo poloPai; // O Hospital da Cidade será o Pai da Clínica de Bairro
 
     @OneToMany(mappedBy = "poloPai", cascade = CascadeType.ALL)
