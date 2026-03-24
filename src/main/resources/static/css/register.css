@@ -33,28 +33,19 @@ body {
     font-family: sans-serif; /* Adicione sua fonte aqui se tiver */
     color: var(--text-color, #333);
 
-    /* --- 2. DEFINIÇÃO DA IMAGEM E COR (Separados para não dar erro) --- */
+   /* 2. DEFINIÇÃO DA IMAGEM E COR */
     
-    /* Cor de fundo (aparece se a imagem falhar) */
-    background-color: #ffe0b2;
-
-    /* AQUI ESTÁ O SEGREDO: Usamos 'background-image' em vez de apenas 'background' */
-    background-image: 
-        /* Camada 1: Gradiente Laranja Suave (diminuí a opacidade para 0.4 e 0.3 para ver melhor a foto) */
-        linear-gradient(135deg, rgba(255, 228, 200, 0.4), rgba(255, 180, 130, 0.3)),
-        
-        /* Camada 2: A Foto de Adoração */
-        url('https://images.unsplash.com/photo-1438232992991-995b7058bbb3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
-
-    /* --- 3. AJUSTES DA IMAGEM (Com !important para garantir) --- */
-    background-size: cover !important;        /* Estica a imagem para cobrir tudo */
-    background-position: center center !important; /* Centraliza o foco */
-    background-repeat: no-repeat !important;  /* Não deixa repetir */
-    background-attachment: fixed !important;  /* Efeito de imagem fixa no fundo */
+    /* Cor de fundo escura de segurança */
+    background-color: #000000;
     
-    /* --- 4. TRUQUE DE MESTRE (Opcional) --- */
-    /* Isso ajuda a misturar a cor com a foto de forma mais bonita */
-    background-blend-mode: overlay;
+    /* Fundo Animado: Globo com Fluxo de Conexões IoT (Novo Link Giphy) */
+    background-image: url('https://i.pinimg.com/1200x/9a/79/03/9a790369ff4a5d3e9ba82b3ddfcd6153.jpg');
+    
+    /* Propriedades extras para o GIF se adaptar perfeitamente ao ecrã */
+    background-size: cover;         
+    background-position: center;    
+    background-repeat: no-repeat;   
+    background-attachment: fixed;   
 }
 
 ul { list-style: none; }

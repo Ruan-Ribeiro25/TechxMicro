@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Geral - Copamir</title>
+    <title>Painel Geral - PIXELTI</title>
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link rel="stylesheet" th:href="@{/css/global.css}">
 	<link rel="stylesheet" th:href="@{/css/home.css}">
@@ -21,48 +21,87 @@
                 <p>Olá, <strong th:text="${usuario.nome}">Usuário</strong>. Selecione o módulo que deseja acessar.</p>
             </div>
         </div>
+        
+        
+        <br>
+                
+       <!--  <div class="iframe-container">
+    		<iframe 
+        		src="https://web.erpeasy.compels.net/#home" 
+        		title="Descrição do conteúdo para acessibilidade"
+        		loading="lazy"
+        		sandbox="allow-scripts allow-same-origin allow-forms"
+        		referrerpolicy="no-referrer-when-downgrade"
+        		allowfullscreen>
+   			</iframe>
+		</div> -->
+				
+				
+		<br>
+		<br>
 
         <div class="dashboard-grid">
             
-           <a th:href="@{/pastores}" class="card-action card-pastor">
-    			<div class="icon-box"><i class="fas fa-user-tie"><!-- fa-file-invoice-dollar --></i></div> 
+          <!--  <a th:href="@{/pastores}" class="card-action card-pastor">
+    			<div class="icon-box"><i class="fas fa-user-tie"><!-- fa-file-invoice-dollar </i></div> 
     
-    			<h3>Área Pastoral</h3>
+    			<h3>HELPDESK</h3>
     
-    			<p>Gestão de discipulado, relatórios e escalas.</p>
-		   </a>
+    			<p>Gestão de chamados!</p>
+		   </a> -->
 
-            <a th:href="@{/acesso-profissional}" class="card-action card-profissional">
-                <div class="icon-box"><i class="fas fa-users-cog"><!-- fa-sitemap, fa-bullhorn,  --></i></div>
-                <h3>Área da Liderança</h3>
-                <p>Gestão interna de departamentos.</p>
+           <!-- <a th:href="@{/acesso-profissional}" class="card-action card-profissional">
+                <div class="icon-box"><i class="fas fa-users-cog"><!-- fa-sitemap, fa-bullhorn,  </i></div>
+                <h3>ERP</h3>
+                <p>Sistema Compels, otimizador de processos empresariais.</p>
+            </a> -->
+
+          
+            <a th:href="@{/rede-credenciada}" class="card-action" style="border-bottom: 5px solid #fd7e14;">
+                <div class="icon-box" style="background: #fff5f5; color: #fd7e14;"><i class="fas fa-headset"><!-- fa-map-marked-alt --></i></div>
+                <h3>HELPDESK</h3>
+                <p style="font-size: 0.85rem; line-height: 1.4;">
+                    Sistema Inteligente para Gestão de Chamados.
+                </p>
             </a>
-
-            <a th:href="@{/laboratorio/dashboard}" class="card-action card-laboratorio" style="border-bottom: 5px solid #d63384;">
-                <div class="icon-box" style="background: #fce4ec; color: #d63384;"><i class="fas fa-hand-holding-usd"><!-- fa-file-invoice-dollar, fa-flask, fa-file-signature, fa-coins -->
-                </i></div>
-                <h3>Tesouraria</h3>
-                <p>Anuidades, ofertas e relatórios financeiros.</p>
+            
+                          
+            <a th:href="@{/rede-credenciada}" class="card-action" style="border-bottom: 5px solid #fd7e14;">
+                <div class="icon-box" style="background: #fff5f5; color: #fd7e14;"><i class="fas fa-clipboard-check"><!-- fa-map-marked-alt --></i></div>
+                <h3>QUALIDADE</h3>
+                <p style="font-size: 0.85rem; line-height: 1.4;">
+                    Gestão de Processos.
+                </p>
             </a>
 
             <a th:href="@{/telemedicina}" class="card-action card-tele">
                 <div class="icon-box"><i class="fas fa-broadcast-tower"><!-- fa-file-invoice-dollar --></i></div>
-                <h3>Transmissão - Ao Vivo</h3>
-                <p>Acompanhe nossos cultos e eventos especiais transmitidos em tempo real.</p>
-            </a>
-
-            <a th:href="@{/rede-credenciada}" class="card-action" style="border-bottom: 5px solid #fd7e14;">
-                <div class="icon-box" style="background: #fff5f5; color: #fd7e14;"><i class="fas fa-church"><!-- fa-map-marked-alt --></i></div>
-                <h3>Rede Credenciada</h3>
-                <p style="font-size: 0.85rem; line-height: 1.4;">
-                    Localize as igrejas e ministérios filiados ao COPAMIR em Itajubá e região no mapa interativo.
-                </p>
+                <h3>CONFERÊNCIAS</h3>
+                <p>Reunião e alinhamento empresarial.</p>
             </a>
 
             <a th:href="@{/admin/login}" class="card-action card-admin">
                 <div class="icon-box"><i class="fas fa-cogs"><!-- fa-file-invoice-dollar --></i></div>
-                <h3>Administração</h3>
+                <h3>ADMINISTRAÇÃO</h3>
                 <p>Configurações do sistema.</p>
+            </a>
+            
+                        
+              <a th:href="@{/rede-credenciada}" class="card-action" style="border-bottom: 5px solid #fd7e14;">
+                <div class="icon-box" style="background: #fff5f5; color: #fd7e14;"><i class="fas fa-calendar-alt"><!-- fa-map-marked-alt --></i></div>
+                <h3>AGENDA</h3>
+                <p style="font-size: 0.85rem; line-height: 1.4;">
+                    Agendamentos e compromissos PIXEL TI.
+                </p>
+            </a>
+            
+                                               
+            <a th:href="@{/rede-credenciada}" class="card-action" style="border-bottom: 5px solid #fd7e14;">
+                <div class="icon-box" style="background: #fff5f5; color: #fd7e14;"><i class="fas fa-cubes"><!-- fa-map-marked-alt --></i></div>
+                <h3>ERP</h3>
+                <p style="font-size: 0.85rem; line-height: 1.4;">
+                    Sistema Compels, otimizador de processos empresariais.
+                </p>
             </a>
             
         </div>
