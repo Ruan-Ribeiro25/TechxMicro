@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.4">
+    <title>Dashboard Helpdesk - PIXEL TI</title>
+    
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .network-header-flex { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+        .header-title-group { display: flex; align-items: center; gap: 15px; }
+        .header-title-group h2 { margin: 0; color: #2c3e50; font-size: 1.5rem; font-weight: 700; }
+        .header-title-group p { margin: 0; font-size: 0.85rem; color: #64748b; }
+        
+        .action-buttons { display: flex; gap: 10px; }
+        .btn-tech { background-color: #34495e; color: white; padding: 10px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: 0.3s; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-tech:hover { background-color: #2c3e50; }
+        .btn-novo-chamado { background-color: #20c997; color: white; padding: 10px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: 0.3s; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-novo-chamado:hover { background-color: #17a589; }
+
+        /* Botão Assumir Responsabilidade */
+        .btn-assumir { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; padding: 5px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-assumir:hover { background: #0284c7; color: white; box-shadow: 0 2px 5px rgba(2, 132, 199, 0.3); }
+        
+        @media (max-width: 768px) {
+            .network-header-flex { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .action-buttons { width: 100%; justify-content: space-between; }
+            .btn-tech, .btn-novo-chamado { flex: 1; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <main>
+        <div class="page-sheet-helpdesk">
+            
+            <div class="network-header-flex">
+                <div class="header-title-group">
+                    <a href="/home" class="btn-circle-back" title="Voltar ao Painel"><i class="fas fa-arrow-left"></i></a>
+                    <div>
+                        <h2>Painel Helpdesk</h2>
+                        <p>Monitorização em Tempo Real</p>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <a href="#" class="btn-tech"><i class="fas fa-user-plus"></i> Cadastrar Técnico</a>
+                    <a href="#" class="btn-novo-chamado"><i class="fas fa-plus-circle"></i> Novo Chamado</a>
+                </div>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card border-pendente">
+                    <div class="kpi-info">
+                        <h3>Pendentes</h3>
+                        <span class="kpi-number">14</span>
+                    </div>
+                    <i class="fas fa-clock kpi-icon text-pendente"></i>
+                </div>
+                <div class="kpi-card border-resolvido">
+                    <div class="kpi-info">
+                        <h3>Resolvidos</h3>
+                        <span class="kpi-number">128</span>
+                    </div>
+                    <i class="fas fa-check-circle kpi-icon text-resolvido"></i>
+                </div>
+                <div class="kpi-card border-cancelado">
+                    <div class="kpi-info">
+                        <h3>Cancelados</h3>
+                        <span class="kpi-number">3</span>
+                    </div>
+                    <i class="fas fa-times-circle kpi-icon text-cancelado"></i>
+                </div>
+                <div class="kpi-card border-baixado">
+                    <div class="kpi-info">
+                        <h3>Baixados</h3>
+                        <span class="kpi-number">45</span>
+                    </div>
+                    <i class="fas fa-archive kpi-icon text-baixado"></i>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h4 class="chart-title"><i class="fas fa-laptop-medical" style="color: #3498db;"></i> Demandas de Suporte TI (Infra)</h4>
+                    <canvas id="chartSuporteTI"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h4 class="chart-title"><i class="fas fa-bug" style="color: #34495e;"></i> Problemas Software Helpdesk</h4>
+                    <div style="position: relative; height: 85%; width: 100%; display: flex; justify-content: center;">
+                        <canvas id="chartSoftware"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="history-section">
+                <h4 class="chart-title" style="margin-bottom: 15px;"><i class="fas fa-list-alt"></i> Histórico Recente de Chamados</h4>
+                <div class="table-responsive">
+                    <table class="helpdesk-table">
+                        <thead>
+                            <tr>
+                                <th>Ticket</th>
+                                <th>Categoria</th>
+                                <th>Descrição do Problema</th>
+                                <th>Abertura</th>
+                                <th>Responsável</th>
+                                <th>Status</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#1042</td>
+                                <td><span class="badge badge-ti">Suporte TI</span></td>
+                                <td>Falta de acesso à VLAN de Marketing</td>
+                                <td>25/03/2026</td>
+                                <td><strong style="color: #334155;">Júlio</strong></td>
+                                <td><span class="dot dot-pendente"></span> Pendente</td>
+                                <td><button class="btn-action" title="Ver Detalhes"><i class="fas fa-eye"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td>#1041</td>
+                                <td><span class="badge badge-software">Software Helpdesk</span></td>
+                                <td>Erro 500 ao gerar relatório PDF</td>
+                                <td>24/03/2026</td>
+                                <td><strong style="color: #334155;">André</strong></td>
+                                <td><span class="dot dot-resolvido"></span> Resolvido</td>
+                                <td><button class="btn-action" title="Ver Detalhes"><i class="fas fa-eye"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td>#1038</td>
+                                <td><span class="badge badge-ti">Suporte TI</span></td>
+                                <td>Configuração Switch Ubiquiti POE</td>
+                                <td>22/03/2026</td>
+                                <td><strong style="color: #334155;">Ruan</strong></td>
+                                <td><span class="dot dot-baixado"></span> Baixado</td>
+                                <td><button class="btn-action" title="Ver Detalhes"><i class="fas fa-eye"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td>#1035</td>
+                                <td><span class="badge badge-software">Software Helpdesk</span></td>
+                                <td>Botão de login inoperante no mobile</td>
+                                <td>20/03/2026</td>
+                                <td>
+                                    <button class="btn-assumir" title="Puxar chamado para mim">
+                                        <i class="fas fa-hand-sparkles"></i> Assumir
+                                    </button>
+                                </td>
+                                <td><span class="dot dot-cancelado"></span> Cancelado</td>
+                                <td><button class="btn-action" title="Ver Detalhes"><i class="fas fa-eye"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: rodape}"></div>
+
+    <script>
+        // Gráfico 1: Suporte TI (Demandas Técnicas) - Barras azuis conforme a imagem
+        const ctxTI = document.getElementById('chartSuporteTI').getContext('2d');
+        new Chart(ctxTI, {
+            type: 'bar',
+            data: {
+                labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'],
+                datasets: [{
+                    label: 'Chamados TI',
+                    data: [12, 19, 8, 15, 22],
+                    backgroundColor: 'rgba(110, 180, 225, 0.9)', // Azul claro da imagem
+                    borderRadius: 4
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: { legend: { display: true, position: 'top' } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // Gráfico 2: Software Helpdesk (Problemas do App) - Doughnut
+        const ctxSoft = document.getElementById('chartSoftware').getContext('2d');
+        new Chart(ctxSoft, {
+            type: 'doughnut',
+            data: {
+                labels: ['Resolvidos', 'Pendentes', 'Bugs Novos'],
+                datasets: [{
+                    data: [65, 20, 15],
+                    backgroundColor: ['#2ecc71', '#f39c12', '#e74c3c'], // Verde, Laranja, Vermelho
+                    borderWidth: 0
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                cutout: '65%', // Espessura da rosquinha idêntica à imagem
+                plugins: { legend: { display: true, position: 'top' } }
+            }
+        });
+    </script>
+</body>
+</html>

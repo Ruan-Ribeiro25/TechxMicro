@@ -1,11 +1,14 @@
 /* ============================================================
    ARQUIVO: global.css
    DESCRIÇÃO: Estilos universais (Header, Footer, Reset, Vars)
+   EMPRESA: PIXEL TI | HELP EASY
+   ÚLTIMA ATUALIZAÇÃO: INTEGRAÇÃO DOS ESTILOS DO DASHBOARD HELPDESK
    ============================================================ */
 
+/* 1. VARIÁVEIS GERAIS */
 :root {
-    --primary-color: #20c997;       /* Verde Médico */
-    --secondary-color: #3498db;     /* Azul Enfermeiro */
+    --primary-color: #20c997;       
+    --secondary-color: #3498db;     
     --bg-color: #f4f7f6;
     --text-color: #333;
     --danger-color: #e74c3c;
@@ -20,28 +23,21 @@
     --glass-border: rgba(255, 255, 255, 0.1);
 }
 
+/* 2. RESET E ESTILOS BÁSICOS */
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
 html, body { height: 100%; margin: 0; padding: 0; }
 
 body {
-    /* --- 1. CONFIGURAÇÃO DE LAYOUT --- */
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     margin: 0;
-    font-family: sans-serif; /* Adicione sua fonte aqui se tiver */
+    font-family: sans-serif;
     color: var(--text-color, #333);
 
- /* 2. DEFINIÇÃO DA IMAGEM E COR */
-    
-    /* Cor de fundo escura de segurança */
     background-color: #000000;
-    
-    /* Fundo Animado: Globo com Fluxo de Conexões IoT (Novo Link Giphy) */
     background-image: url('https://images.unsplash.com/photo-1555496710-2660a86c4557?q=80&w=1991&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
-    
-    /* Propriedades extras para o GIF se adaptar perfeitamente ao ecrã */
     background-size: cover;         
     background-position: center;    
     background-repeat: no-repeat;   
@@ -52,12 +48,9 @@ ul { list-style: none; }
 a { text-decoration: none; color: inherit; }
 img { max-width: 100%; height: auto; }
 
-/* --- BARRA DE NAVEGAÇÃO --- */
-/* ============================================================
-   2. BARRA DE NAVEGAÇÃO
-   ============================================================ */
+/* 3. BARRA DE NAVEGAÇÃO (NAVBAR) - DESKTOP */
 nav {
-    background: rgba(32, 201, 151, 0.95); /* Leve transparência */
+    background: rgba(32, 201, 151, 0.95); 
     color: white;
     padding: 15px 40px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -67,7 +60,7 @@ nav {
     position: sticky; top: 0; z-index: 1000;
     backdrop-filter: blur(5px);
 }
-nav h1 { font-size: 1.6rem; font-weight: 700; margin: 0; letter-spacing: 0.5px; }
+nav h1 { font-size: 1.6rem; font-weight: 700; margin: 0; letter-spacing: 0.5px; line-height: 1.2; }
 
 .user-info { font-size: 0.95rem; display: flex; align-items: center; gap: 15px; font-weight: 500; }
 
@@ -84,13 +77,13 @@ nav h1 { font-size: 1.6rem; font-weight: 700; margin: 0; letter-spacing: 0.5px; 
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* --- ESTRUTURA PRINCIPAL --- */
+/* 4. ESTRUTURA PRINCIPAL (MAIN CONTAINER) */
 main {
     flex: 1; display: flex; flex-direction: column;
     padding: 40px 20px; width: 100%; max-width: 1200px; margin: 0 auto;
 }
 
-/* --- TÍTULOS DE PÁGINA PADRÃO --- */
+/* 5. TÍTULOS DE PÁGINA PADRÃO */
 .page-title, .page-header {
     width: 100%; margin-bottom: 30px; font-size: 1.8rem; 
     color: #fff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
@@ -99,23 +92,7 @@ main {
     display: flex; align-items: center; justify-content: center; gap: 15px;
 }
 
-/* --- FOOTER --- */
-footer {
-    background: rgba(32, 201, 151, 0.95); color: white;
-    text-align: center; padding: 25px; font-size: 0.9rem;
-    margin-top: auto; backdrop-filter: blur(5px);
-}
-
-/* --- BOTÕES GERAIS --- */
-.btn-novo {
-    background-color: var(--primary-color); color: white;
-    padding: 10px 20px; border-radius: 50px;
-    text-decoration: none; font-weight: 700; font-size: 0.9rem;
-    transition: 0.3s; display: inline-flex; align-items: center; gap: 8px;
-}
-.btn-novo:hover { background-color: #17a589; }
-
-/* --- CARDS DE AÇÃO (Usado na Home e no Perfil do Paciente) --- */
+/* 6. CARDS DE AÇÃO - BASE DESKTOP */
 .card-action {
     background: rgba(255, 255, 255, 0.95); border-radius: 16px; padding: 30px;
     text-align: center; text-decoration: none; color: #333;
@@ -128,7 +105,6 @@ footer {
     width: 80px; height: 80px; line-height: 80px; border-radius: 50%;
     margin-bottom: 20px; font-size: 2rem; display: flex; align-items: center; justify-content: center;
 }
-/* Variantes de Card */
 .card-agenda { border-bottom: 5px solid var(--warning-color); }
 .card-agenda .icon-box { background: #fff3cd; color: var(--warning-color); }
 .card-docs { border-bottom: 5px solid var(--danger-color); }
@@ -142,81 +118,138 @@ footer {
 .card-admin { border-bottom: 5px solid var(--dark-blue); }
 .card-admin .icon-box { background: #eceff1; color: #607d8b; }
 
-/* --- DASHBOARD GRID (Usado na Home) --- */
-.dashboard-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 30px; width: 100%;
-}
+/* 7. DASHBOARD GRID - DESKTOP */
+.dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; width: 100%; }
 
-.iframe-container {
-    width: 100%;
-    max-width: 1120px; /* Limite opcional */
-    margin: 20px auto;
-    border-radius: 8px;
-    overflow: hidden; /* Garante que as bordas arredondadas funcionem */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
+/* 8. BOTÕES GERAIS E FOOTER */
+.btn-novo { background-color: var(--primary-color); color: white; padding: 10px 20px; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 0.9rem; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+.btn-novo:hover { background-color: #17a589; }
 
-.iframe-container iframe {
-    width: 100%;
-    aspect-ratio: 16 / 9; /* Mantém a proporção de vídeo/web padrão */
-    border: none;
-    display: block;
-}
+footer { background: rgba(32, 201, 151, 0.95); color: white; text-align: center; padding: 25px; font-size: 0.9rem; margin-top: auto; backdrop-filter: blur(5px); }
 
-/* 2. Media Query para Mobile e Tablets (Telas até 768px) */
-@media (max-width: 768px) {
-    .iframe-container {
-        /* Reduz as margens para aproveitar o máximo da tela estreita */
-        margin: 10px; 
-        border-radius: 6px;
+/* 9. PÁGINA ERP COMPELS */
+.page-sheet, .page-sheet-erp { width: 100%; margin: 0 auto; background-color: #ffffff !important; border-radius: 10px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column; flex-grow: 1; }
+.network-header { display: flex; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+.btn-circle-back { width: 40px; height: 40px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #64748b; transition: 0.2s; border: 1px solid #e2e8f0; text-decoration: none; margin-right: 15px; }
+.btn-circle-back:hover { background: #fd7e14; color: white; border-color: #fd7e14; }
+.erp-frame, .erp-frame-fluid { width: 100%; flex-grow: 1; border: 1px solid #e2e8f0; border-radius: 8px; display: block; background-color: #ffffff !important; min-height: 60vh; }
+
+
+/* ============================================================
+   10. ESTILOS ESPECÍFICOS: DASHBOARD HELPDESK
+   ============================================================ */
+.page-sheet-helpdesk { width: 100%; margin: 0 auto; background-color: #ffffff !important; border-radius: 10px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column; flex-grow: 1; }
+
+/* Cabeçalho Helpdesk Flex */
+.network-header-flex { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+.header-title-group { display: flex; align-items: center; gap: 15px; }
+.header-title-group h2 { margin: 0; color: #2c3e50; font-size: 1.5rem; font-weight: 700; }
+.header-title-group p { margin: 0; font-size: 0.85rem; color: #64748b; }
+
+/* Botões de Ação Topo Helpdesk */
+.action-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn-tech { background-color: #34495e; color: white; padding: 10px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: 0.3s; display: inline-flex; align-items: center; gap: 6px; }
+.btn-tech:hover { background-color: #2c3e50; }
+.btn-novo-chamado { background-color: #20c997; color: white; padding: 10px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: 0.3s; display: inline-flex; align-items: center; gap: 6px; }
+.btn-novo-chamado:hover { background-color: #17a589; }
+
+/* Botão Assumir Chamado */
+.btn-assumir { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; padding: 5px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+.btn-assumir:hover { background: #0284c7; color: white; box-shadow: 0 2px 5px rgba(2, 132, 199, 0.3); }
+
+/* Grid de KPIs */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+.kpi-card { background: #f8fafc; padding: 20px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 5px solid transparent; }
+.kpi-info h3 { font-size: 0.85rem; color: #64748b; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+.kpi-number { font-size: 1.8rem; font-weight: 800; color: #1e293b; }
+.kpi-icon { font-size: 2.2rem; opacity: 0.8; }
+
+/* Cores de Status (Bordas e Ícones) */
+.border-pendente { border-left-color: #f39c12; } .text-pendente { color: #f39c12; }
+.border-resolvido { border-left-color: #2ecc71; } .text-resolvido { color: #2ecc71; }
+.border-cancelado { border-left-color: #e74c3c; } .text-cancelado { color: #e74c3c; }
+.border-baixado { border-left-color: #95a5a6; }   .text-baixado { color: #95a5a6; }
+
+/* Bolinhas de Status (Dots) */
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+.dot-pendente { background-color: #f39c12; box-shadow: 0 0 5px rgba(243, 156, 18, 0.5); }
+.dot-resolvido { background-color: #2ecc71; box-shadow: 0 0 5px rgba(46, 204, 113, 0.5); }
+.dot-cancelado { background-color: #e74c3c; box-shadow: 0 0 5px rgba(231, 76, 60, 0.5); }
+.dot-baixado { background-color: #95a5a6; }
+
+/* Gráficos */
+.charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 25px; margin-bottom: 30px; }
+.chart-container { background: #fff; padding: 20px; border-radius: 10px; border: 1px solid #e2e8f0; height: 300px; display: flex; flex-direction: column; }
+.chart-title { font-size: 1rem; color: #334155; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
+
+/* Tabela de Histórico */
+.history-section { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; }
+.table-responsive { overflow-x: auto; }
+.helpdesk-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
+.helpdesk-table th { background-color: #f8fafc; padding: 12px 15px; color: #64748b; font-weight: 600; border-bottom: 2px solid #e2e8f0; }
+.helpdesk-table td { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
+.helpdesk-table tr:hover { background-color: #f8fafc; }
+
+/* Badges de Categoria */
+.badge { padding: 5px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; color: white; }
+.badge-ti { background-color: #3498db; }
+.badge-software { background-color: #9b59b6; }
+
+/* Botão Tabela Ação */
+.btn-action { background: #f1f5f9; border: none; padding: 6px 10px; border-radius: 6px; color: #3b82f6; cursor: pointer; transition: 0.2s; }
+.btn-action:hover { background: #3b82f6; color: white; }
+
+
+/* ============================================================
+   A MÁGICA DO MINI-DESKTOP ESCALA 0.4 (SIMETRIA PERFEITA)
+   ============================================================ */
+
+@media (max-width: 1200px) {
+    /* CABEÇALHO FINO TIPO ERP */
+    nav { padding: 5px 10px; gap: 5px; flex-direction: row; justify-content: space-between; align-items: center; width: 100%; }
+    nav h1 { font-size: 1.0rem; font-weight: 600; margin: 0; line-height: 1.0; }
+    .user-info { flex-direction: row; gap: 8px; font-size: 0.75rem; font-weight: 400; line-height: 1.0; }
+    .profile-pic-header { width: 28px; height: 28px; border-width: 1px; } 
+    .btn-sair { padding: 4px 12px; font-size: 0.65rem; } 
+    .user-info span { display: none; } 
+
+    /* ESTRUTURA PRINCIPAL: Padding simétrico igual para a esquerda e para a direita! */
+    main { padding: 15px 15px; }
+    .page-title, .page-header { font-size: 1.1rem; margin-bottom: 10px; padding-bottom: 8px; }
+
+    /* DASHBOARD GRID: DE UM EM UM NA VERTICAL COM SIMETRIA EXATA */
+    .dashboard-grid { 
+        grid-template-columns: 1fr !important; 
+        gap: 15px; 
+        width: 100%; 
+        max-width: 450px; 
+        margin: 0 auto;   
     }
-
-    .iframe-container iframe {
-        /* Remove a proporção horizontal do desktop */
-        aspect-ratio: unset; 
-        
-        /* Define uma altura baseada na tela do usuário (Viewport Height) */
-        /* 80vh significa 80% da altura da tela do dispositivo */
-        height: 80vh; 
-        
-        /* Alternativa: Se quiser forçar a proporção exata de um celular (vertical) */
-        /* aspect-ratio: 9 / 16; */
-    }
-}
-
-/* 3. Media Query para Celulares bem pequenos (Telas até 480px) */
-@media (max-width: 480px) {
-    .iframe-container {
-        margin: 0; /* Remove a margem externa para colar nas bordas do celular */
-        border-radius: 0; /* Bordas retas economizam espaço na tela */
-    }
-
-    .iframe-container iframe {
-        height: 100vh; /* Ocupa 100% da altura da tela, imitando um app nativo */
-    }
-}
-
-/* Fallback para navegadores muito antigos (opcional) */
-@supports not (aspect-ratio: 16 / 9) {
-    .iframe-container iframe {
-        height: 500px;
-    }
-}
-
-/* --- RESPONSIVIDADE GLOBAL --- */
-@media (max-width: 768px) {
-    nav { flex-direction: column; gap: 15px; padding: 15px; }
-    .user-info { flex-direction: column; gap: 10px; }
-    main { padding: 20px 15px; }
     
-    .dashboard-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
-    .card-action { min-height: 140px; padding: 15px; }
-    .card-action .icon-box { width: 60px; height: 60px; font-size: 1.5rem; margin-bottom: 10px; }
+    /* MICRO-UI DOS CARDS */
+    .card-action { min-height: auto; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .card-action .icon-box { width: 45px; height: 45px; font-size: 1.2rem; line-height: 45px; margin-bottom: 8px; }
+    .card-action h3 { font-size: 0.95rem; margin-bottom: 4px; }
+    .card-action p { font-size: 0.75rem; line-height: 1.3; color: #666; display: block; margin-top: 2px; }
+
+    /* COMPORTAMENTO RESPONSIVO DOS BOTÕES DE AÇÃO DO HELPDESK */
+    .network-header-flex { flex-direction: column; align-items: flex-start; gap: 15px; }
+    .action-buttons { width: 100%; justify-content: space-between; }
+    .btn-tech, .btn-novo-chamado { flex: 1; justify-content: center; }
+
+    /* FOOTER COMPACTO */
+    footer { padding: 10px; font-size: 0.7rem; }
     
-    .page-title, .page-header { flex-direction: column; text-align: center; }
+    /* ERP E HELPDESK BOX SIMÉTRICO */
+    .page-sheet, .page-sheet-erp, .page-sheet-helpdesk { border-radius: 6px; padding: 10px; }
 }
 
+/* Cópia de Segurança para telas ainda menores (Simetria Mantida) */
+@media (max-width: 768px) {
+    main { padding: 10px 10px; }
+}
 @media (max-width: 480px) {
-    .dashboard-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    main { padding: 8px 8px; }
+    nav h1 { font-size: 0.9rem; }
+    .card-action { padding: 12px; }
 }

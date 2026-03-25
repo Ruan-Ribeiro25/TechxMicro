@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ERP - COMPELS | PIXEL TI</title>
+    
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+   
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    </head>
+
+<body>
+
+    <div th:replace="~{fragments/header :: navbar}"></div>
+    
+    
+    
+
+    <main>
+        <div class="page-sheet-erp">
+            
+            <div class="network-header">
+                <a href="/home" class="btn-circle-back" title="Voltar ao Painel"><i class="fas fa-arrow-left"></i></a>
+                <h2 style="margin:0; color: #ffffff;">ERP Compels</h2>
+            </div>
+            
+            
+    		            
+            <iframe 
+                class="erp-frame-fluid"
+                src="https://web.erpeasy.compels.net/#home" 
+                title="Sistema ERP Compels"
+                loading="lazy"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                referrerpolicy="no-referrer-when-downgrade"
+                allowfullscreen>
+            </iframe>
+            
+            
+
+        </div>
+    </main>
+    
+    		<br>
+            <br>
+            <br>
+            <br>
+            
+            
+           
+    
+    <div th:replace="~{fragments/footer :: rodape}"></div>
+
+</body>
+</html>
