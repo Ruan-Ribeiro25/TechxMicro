@@ -48,13 +48,24 @@
                     </div>
 
                     <div class="form-row">
-                        <div class="form-group">
+                        <div class="form-group" style="width: 100%;">
                             <label class="form-label">E-mail Corporativo</label>
                             <input type="email" class="form-control" name="email" placeholder="joao@pixelti.com.br" required>
                         </div>
+                    </div>
+                    
+                    <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Senha Provisória</label>
-                            <input type="password" class="form-control" name="senha" required>
+                            <input type="password" class="form-control" name="senha" id="senha" 
+                                   pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}" 
+                                   title="A senha deve conter no mínimo 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais (!@#$%^&*)" required>
+                            <small style="color: #666; font-size: 0.75rem;">Mín. 8 chars: Maiúscula, Minúscula, Número e Especial (!@#$%).</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Repetir Senha</label>
+                            <input type="password" class="form-control" id="confirmarSenha" required>
+                            <span id="senhaErro" style="color: red; font-size: 0.8rem; display: none;">As senhas não coincidem!</span>
                         </div>
                     </div>
 
@@ -64,6 +75,7 @@
                             <option value="" disabled selected>Selecione a equipe de atuação...</option>
                             <option value="TECNICO_TI">Equipe de Suporte TI (Infraestrutura/Equipamentos)</option>
                             <option value="TECNICO_SOFTWARE">Equipe de Software (Helpdesk/Sistemas)</option>
+                            <option value="TECNICO_AMBOS">Equipe Plena (Atende TI e Software)</option>
                         </select>
                     </div>
                     
@@ -84,5 +96,18 @@
     </main>
 
     <div th:replace="~{fragments/footer :: rodape}"></div>
+    <script>
+        document.querySelector("form").addEventListener("submit", function(event) {
+            var senha = document.getElementById("senha").value;
+            var confirmarSenha = document.getElementById("confirmarSenha").value;
+            if (senha !== confirmarSenha) {
+                event.preventDefault(); // Impede o envio
+                document.getElementById("senhaErro").style.display = "block";
+                document.getElementById("confirmarSenha").focus();
+            } else {
+                document.getElementById("senhaErro").style.display = "none";
+            }
+        });
+    </script>
 </body>
 </html>

@@ -78,12 +78,38 @@ public class HomeController {
         long resolvidos = todosChamados.stream().filter(c -> c.getStatus() == StatusChamado.RESOLVIDO).count();
         long cancelados = todosChamados.stream().filter(c -> c.getStatus() == StatusChamado.CANCELADO).count();
 
-        int[] infraPorDia = new int[5];
+     // PREPARAÇÃO DOS DADOS PARA A LINHA DO TEMPO DO GRÁFICO
+        int[] infraPorHora = new int[24];
+        int[] infraPorDia = new int[7];
+        int[] infraPorMes = new int[12];
+        int[] infraPorAno = new int[10];
+        
+        int anoAtual = LocalDateTime.now().getYear();
+
         for (Chamado c : todosChamados) {
-            if (c.getCategoria() == CategoriaChamado.TI) {
-                int diaDaSemana = c.getDataAbertura().getDayOfWeek().getValue();
-                if (diaDaSemana >= 1 && diaDaSemana <= 5) {
+            if (c.getCategoria() == CategoriaChamado.TI && c.getDataAbertura() != null) {
+                LocalDateTime dt = c.getDataAbertura();
+                
+                // 1. DIA (Hoje - Por hora)
+                if (dt.toLocalDate().isEqual(LocalDateTime.now().toLocalDate())) {
+                    infraPorHora[dt.getHour()]++;
+                }
+                
+                // 2. SEMANA (Por dia da semana)
+                int diaDaSemana = dt.getDayOfWeek().getValue();
+                if (diaDaSemana >= 1 && diaDaSemana <= 7) { 
                     infraPorDia[diaDaSemana - 1]++;
+                }
+                
+                // 3. 1 ANO (Por mês dentro do ano atual)
+                if (dt.getYear() == anoAtual) {
+                    infraPorMes[dt.getMonthValue() - 1]++;
+                }
+                
+                // 4. 10 ANOS (Por ano na última década)
+                int diffAno = anoAtual - dt.getYear();
+                if (diffAno >= 0 && diffAno < 10) {
+                    infraPorAno[9 - diffAno]++;
                 }
             }
         }
@@ -105,7 +131,11 @@ public class HomeController {
         model.addAttribute("resolvidos", resolvidos);
         model.addAttribute("cancelados", cancelados);
         
-        model.addAttribute("infraPorDia", infraPorDia);
+        model.addAttribute("infraPorDia", infraPorDia); // Você já tem essa linha
+        model.addAttribute("infraPorHora", infraPorHora);
+        model.addAttribute("infraPorMes", infraPorMes);
+        model.addAttribute("infraPorAno", infraPorAno);
+        model.addAttribute("anoAtual", anoAtual);
         model.addAttribute("softResolvidos", softResolvidos);
         model.addAttribute("softPendentes", softPendentes);
         model.addAttribute("softCancelados", softCancelados);
@@ -213,14 +243,35 @@ public class HomeController {
     }
 
     @GetMapping("/helpdesk/assumir")
-    public String assumirChamado(@RequestParam("id") Long id, Principal principal) {
+    public String assumirChamado(@RequestParam("id") Long id, Principal principal, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         if (principal == null) return "redirect:/login";
         Usuario tecnico = usuarioRepository.findByUsernameOrCpf(principal.getName());
         Chamado chamado = chamadoRepository.findById(id).orElse(null);
 
         if (chamado != null && chamado.getResponsavel() == null) {
-            chamado.setResponsavel(tecnico);
-            chamadoRepository.save(chamado);
+            String perfil = tecnico.getPerfil() != null ? tecnico.getPerfil().toUpperCase() : "";
+            
+            // Regras de liberação
+            boolean isMaster = perfil.contains("ADMIN") || perfil.contains("MASTER");
+            boolean isAmbos = perfil.contains("TECNICO_AMBOS");
+            boolean podeAssumir = isMaster || isAmbos;
+
+            // Validação cruzada
+            if (!podeAssumir) {
+                if (chamado.getCategoria() == CategoriaChamado.TI && perfil.contains("TECNICO_TI")) {
+                    podeAssumir = true;
+                } else if (chamado.getCategoria() == CategoriaChamado.SOFTWARE && perfil.contains("TECNICO_SOFTWARE")) {
+                    podeAssumir = true;
+                }
+            }
+
+            if (podeAssumir) {
+                chamado.setResponsavel(tecnico);
+                chamadoRepository.save(chamado);
+            } else {
+                // Devolve um erro na tela se ele tentar pegar da fila errada
+                redirectAttributes.addFlashAttribute("erroFila", "Acesso Negado: Sua especialidade não permite assumir chamados desta categoria.");
+            }
         }
         return "redirect:/helpdesk"; 
     }

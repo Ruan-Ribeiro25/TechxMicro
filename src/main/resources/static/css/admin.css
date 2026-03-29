@@ -271,6 +271,42 @@ nav h1 { font-size: 1.6rem; font-weight: 700; margin: 0; letter-spacing: 0.5px; 
 .info-label { font-size: 0.8rem; color: #888; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
 .info-value { font-size: 1rem; color: #333; font-weight: 500; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
 
+ /* 1. FIX DA TABELA TREMENDO (MANTER IMÓVEL) */
+        /* ========================================================= */
+        
+        /* Trava a barra de rolagem vertical da página */
+        html { overflow-y: scroll !important; }
+        
+        /* Trava a largura EXATA da Célula de ações na tabela */
+        .table th:last-child, .table td.text-nowrap { 
+            min-width: 260px !important; 
+            width: 260px !important;
+            max-width: 260px !important;
+        }
+        
+        /* Mata a barra de rolagem horizontal fantasma na div responsiva */
+        .table-responsive { 
+            overflow-x: hidden !important; 
+            padding-bottom: 5px;
+        }
+
+        /* ========================================================= */
+        /* 2. DEVOLVENDO O EFEITO DE MOVIMENTO NOS CARDS */
+        /* ========================================================= */
+        
+        /* Define a transição suave para as propriedades de movimento e sombra */
+        .dashboard-cards .card {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out !important;
+            border: none !important; /* Estetica: remove bordas antigas */
+        }
+        
+        /* Aplica o efeito "ELEVADOR" ao passar o mouse */
+        .dashboard-cards .card:hover {
+            transform: translateY(-10px); /* Levanta o card em 10px */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2) !important; /* Aumenta a sombra projetada */
+            cursor: pointer; /* Muda o cursor para mãozinha */
+        }
+
 /* ============================================================
    6. RESPONSIVIDADE (CRÍTICO PARA NÃO QUEBRAR)
    ============================================================ */

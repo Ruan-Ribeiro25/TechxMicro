@@ -474,57 +474,125 @@ public class AdminController {
         if (u != null) { u.setAtivo(false); usuarioRepository.save(u); }
         return "redirect:/admin/painel?msg=bloqueado";
     }
+    
+    @Transactional
+    @PostMapping("/rejeitar-cadastro")
+    public String rejeitarCadastro(@RequestParam Long idUsuario, Principal principal) {
+        Usuario u = usuarioRepository.findById(idUsuario).orElse(null);
+        if (u != null) {
+            String adminResponsavel = principal != null ? principal.getName() : "SISTEMA";
+            String detalhes = "Cadastro REJEITADO e removido: " + u.getNome() + " (CPF: " + u.getCpf() + ")";
+            
+            // Registra a negação na auditoria
+            entityManager.createNativeQuery("INSERT INTO historico_logs (acao, data_hora, detalhes, username_registrado) VALUES (?, ?, ?, ?)")
+                .setParameter(1, "CADASTRO_REJEITADO")
+                .setParameter(2, LocalDateTime.now())
+                .setParameter(3, detalhes)
+                .setParameter(4, adminResponsavel)
+                .executeUpdate();
+
+            // Apaga o usuário do banco
+            usuarioRepository.deleteById(idUsuario);
+        }
+        return "redirect:/admin/painel?msg=rejeitado";
+    }
+
+    @PostMapping("/alterar-especialidade")
+    public String alterarEspecialidadeTecnico(@RequestParam Long idUsuario, @RequestParam String novaEspecialidade) {
+        Usuario u = usuarioRepository.findById(idUsuario).orElse(null);
+        if (u != null) {
+            u.setPerfil(novaEspecialidade);
+            usuarioRepository.save(u);
+        }
+        return "redirect:/admin/painel?msg=perfil_atualizado";
+    }
 
     @Transactional
     @PostMapping("/excluir-usuario")
-    public String excluirUsuario(@RequestParam Long idUsuario, @RequestParam("motivo") String motivo, Principal principal) {
+    public String excluirUsuario(@RequestParam("idUsuario") Long idUsuario, @RequestParam("motivo") String motivo, Principal principal) {
+        System.out.println("\n\n🚨 INICIANDO PROCESSO DE EXCLUSÃO - ID: " + idUsuario);
+        
         try {
             Usuario u = usuarioRepository.findById(idUsuario).orElse(null);
-            if (u != null) {
-                if ("ADMIN".equalsIgnoreCase(u.getPerfil())) {
-                    long adminsCount = usuarioRepository.findAll().stream().filter(user -> "ADMIN".equalsIgnoreCase(user.getPerfil())).count();
-                    if (adminsCount <= 1) return "redirect:/admin/painel?error=ultimo_admin";
-                }
-                String adminResponsavel = principal != null ? principal.getName() : "SISTEMA";
-                
-                StringBuilder detalhes = new StringBuilder();
-                detalhes.append("MOTIVO: ").append(motivo.toUpperCase()).append("\n");
-                detalhes.append("Usuário: ").append(u.getNome()).append(" (CPF: ").append(u.getCpf()).append(")\n");
-                
-                entityManager.createNativeQuery("INSERT INTO historico_logs (acao, data_hora, detalhes, username_registrado) VALUES (?, ?, ?, ?)")
-                    .setParameter(1, "EXCLUSAO_USUARIO")
-                    .setParameter(2, LocalDateTime.now())
-                    .setParameter(3, detalhes.toString())
-                    .setParameter(4, adminResponsavel)
-                    .executeUpdate();
-
-                limparTabela("usuarios_polos", "usuario_id", idUsuario);
-                limparTabela("administrador", "usuario_id", idUsuario);
-                limparTabela("profissionais", "usuario_id", idUsuario);
-                limparTabela("prontuarios", "paciente_id", idUsuario);
-                limparTabela("prontuarios", "medico_id", idUsuario);
-                limparTabela("sinais_vitais", "paciente_id", idUsuario);
-                limparTabela("sinais_vitais", "responsavel_id", idUsuario);
-                limparTabela("registro_clinico", "paciente_id", idUsuario);
-                
-                entityManager.createNativeQuery("DELETE FROM historico_logs WHERE usuario_id = :uid").setParameter("uid", idUsuario).executeUpdate();
-                limparTabela("documentos", "usuario_id", idUsuario);
-                limparTabela("agendamentos", "usuario_id", idUsuario);
-                
-                if (u.getPolos() != null && !u.getPolos().isEmpty()) { for (Polo p : u.getPolos()) { p.setUsuario(null); poloRepository.save(p); } u.getPolos().clear(); }
-                
-                usuarioRepository.deleteById(idUsuario);
+            if (u == null) {
+                System.out.println("❌ USUÁRIO NÃO ENCONTRADO!");
+                return "redirect:/admin/painel?error=erro_desconhecido";
             }
+            
+            System.out.println("✅ USUÁRIO ENCONTRADO: " + u.getNome());
+
+            // Segurança: Não permite excluir o último Admin
+            if (u.getPerfil() != null && u.getPerfil().contains("ADMIN")) {
+                long adminsCount = usuarioRepository.findAll().stream().filter(user -> user.getPerfil() != null && user.getPerfil().contains("ADMIN")).count();
+                if (adminsCount <= 1) return "redirect:/admin/painel?error=ultimo_admin";
+            }
+
+            // ======================================================================
+            // RADAR DE SEGURANÇA
+            // ======================================================================
+            try {
+                Long chamados = (Long) entityManager.createQuery("SELECT COUNT(c) FROM Chamado c WHERE c.solicitante.id = :uid OR c.responsavel.id = :uid")
+                                                           .setParameter("uid", idUsuario).getSingleResult();
+                Long mensagens = (Long) entityManager.createQuery("SELECT COUNT(i) FROM InteracaoChamado i WHERE i.autor.id = :uid")
+                                                      .setParameter("uid", idUsuario).getSingleResult();
+                
+                System.out.println("🔍 RADAR: Chamados=" + chamados + ", Mensagens=" + mensagens);
+                
+                // Se ele já trabalhou no Helpdesk, bloqueamos a exclusão física e avisamos a tela
+                if (chamados > 0 || mensagens > 0) {
+                    System.out.println("⚠️ PROTEÇÃO ATIVADA: Usuário possui histórico. Abortando exclusão para proteger auditoria.");
+                    return "redirect:/admin/painel?error=dependencia_helpdesk";
+                }
+            } catch (Exception e) {
+                System.out.println("Aviso no radar: " + e.getMessage());
+            }
+            // ======================================================================
+
+            String adminResponsavel = principal != null ? principal.getName() : "SISTEMA";
+            
+            StringBuilder detalhes = new StringBuilder();
+            detalhes.append("MOTIVO: ").append(motivo.toUpperCase()).append("\n");
+            detalhes.append("Usuário: ").append(u.getNome()).append(" (CPF: ").append(u.getCpf()).append(")\n");
+            
+            entityManager.createNativeQuery("INSERT INTO historico_logs (acao, data_hora, detalhes, username_registrado) VALUES (?, ?, ?, ?)")
+                .setParameter(1, "EXCLUSAO_USUARIO")
+                .setParameter(2, LocalDateTime.now())
+                .setParameter(3, detalhes.toString())
+                .setParameter(4, adminResponsavel)
+                .executeUpdate();
+
+            // Limpeza de tabelas anexas
+            System.out.println("🧹 Limpando vínculos antigos...");
+            limparTabela("usuarios_polos", "usuario_id", idUsuario);
+            limparTabela("administrador", "usuario_id", idUsuario);
+            limparTabela("profissionais", "usuario_id", idUsuario);
+            
+            if (u.getPolos() != null) { u.getPolos().clear(); }
+            
+            System.out.println("🗑️ APAGANDO USUÁRIO NO BANCO DE DADOS...");
+            entityManager.flush();
+            entityManager.createNativeQuery("DELETE FROM usuarios WHERE id = :uid")
+                         .setParameter("uid", idUsuario)
+                         .executeUpdate();
+                         
+            System.out.println("✅ EXCLUSÃO CONCLUÍDA COM SUCESSO!\n\n");
             return "redirect:/admin/painel?msg=excluido";
+            
         } catch (Exception e) { 
+            System.err.println("\n=============== ERRO FATAL NA EXCLUSÃO ===============");
+            e.printStackTrace();
+            System.err.println("======================================================\n");
             return "redirect:/admin/painel?error=erro_desconhecido"; 
         }
+    
     }
-
     private void limparTabela(String tabela, String coluna, Long id) {
-        try { entityManager.createNativeQuery("DELETE FROM " + tabela + " WHERE " + coluna + " = :uid").setParameter("uid", id).executeUpdate(); } catch (Exception e) {}
+        try { 
+            entityManager.createNativeQuery("DELETE FROM " + tabela + " WHERE " + coluna + " = :uid")
+                         .setParameter("uid", id).executeUpdate(); 
+        } catch (Exception e) {}
     }
-
+    
     // =================================================================================
     // 6. GESTÃO DE POLOS CENTRALIZADA
     // =================================================================================

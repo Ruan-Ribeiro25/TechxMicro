@@ -2,7 +2,7 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Administração - Copamir</title> 
+    <title>Administração - PIXEL TI</title> 
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/admin.css}">
@@ -54,6 +54,7 @@
             <div th:if="${param.msg == 'excluido'}" class="alert alert-success d-flex align-items-center"><i class="fas fa-trash me-2"></i> Usuário excluído e motivo registrado!</div>
             <div th:if="${param.msg == 'bloqueado'}" class="alert alert-warning d-flex align-items-center"><i class="fas fa-ban me-2"></i> Usuário bloqueado com sucesso.</div>
             <div th:if="${param.msg == 'aprovado'}" class="alert alert-success d-flex align-items-center"><i class="fas fa-check me-2"></i> Usuário aprovado com sucesso.</div>
+            <div th:if="${param.msg == 'rejeitado'}" class="alert alert-danger d-flex align-items-center"><i class="fas fa-user-times me-2"></i> Solicitação de cadastro negada e removida do sistema!</div>
             <div th:if="${param.error == 'ultimo_admin'}" class="alert alert-danger"><i class="fas fa-user-shield me-2"></i> Segurança: Você não pode excluir o último administrador.</div>
         </div>
 
@@ -70,7 +71,6 @@
                 <i class="fas fa-hand-holding-usd refined-icon-bg" style="color: #20c997;"></i>
             </a>
 
-                 
             <a th:href="@{/admin/estoque}" class="card-refined card-estoque">
                 <div>
                     <div class="refined-value" th:text="${totalProdutos}">0</div>
@@ -158,11 +158,18 @@
                                 <td th:text="${u.nome}">Nome</td>
                                 <td th:text="${u.perfil}">PERFIL</td>
                                 <td class="text-warning fw-bold">Pendente</td>
-                                <td>
-                                    <form th:action="@{/admin/aprovar-profissional}" method="post">
-                                        <input type="hidden" name="idUsuario" th:value="${u.id}">
-                                        <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-check"></i> Aprovar Acesso</button>
-                                    </form>
+                               <td>
+                                    <div class="d-flex gap-2">
+                                        <form th:action="@{/admin/aprovar-profissional}" method="post">
+                                            <input type="hidden" name="idUsuario" th:value="${u.id}">
+                                            <button type="submit" class="btn btn-success btn-sm" title="Aprovar"><i class="fas fa-check"></i> Aprovar</button>
+                                        </form>
+                                        
+                                        <form th:action="@{/admin/rejeitar-cadastro}" method="post" onsubmit="return confirm('Tem certeza que deseja NEGAR e excluir permanentemente a solicitação deste colaborador?');">
+                                            <input type="hidden" name="idUsuario" th:value="${u.id}">
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Negar"><i class="fas fa-times"></i> Negar</button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -180,8 +187,16 @@
                 </form>
             </div>
             <div class="card-body">
+    
+                <div th:if="${param.error != null and #strings.equals(param.error[0], 'dependencia_helpdesk')}" class="alert alert-danger d-flex align-items-center shadow-sm mb-3">
+                    <i class="fas fa-exclamation-triangle me-2 fs-5"></i> 
+                    <div>
+                        <strong>Proteção de Histórico:</strong> Este colaborador não pode ser excluído permanentemente pois possui chamados no sistema. Use o Bloqueio.
+                    </div>
+                </div>
+
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
+                    <table class="table table-hover align-middle" id="usuariosGlobalTable">
                         <thead class="table-light">
                             <tr><th>ID</th><th>Nome / Email</th><th>Perfil</th><th>Cidade</th><th>Status</th><th>Ações</th></tr>
                         </thead>
@@ -192,69 +207,24 @@
                                 <td><span class="badge bg-secondary" th:text="${u.perfil}">PERFIL</span></td>
                                 <td th:text="${u.cidade} ?: 'N/I'">Cidade</td>
                                 <td><span th:if="${u.ativo}" class="badge bg-success">Ativo</span><span th:unless="${u.ativo}" class="badge bg-danger">Bloqueado</span></td>
-                                <td class="text-nowrap">
+                               <td class="text-nowrap">
                                     <button type="button" class="btn-action btn-eye" data-bs-toggle="modal" th:data-bs-target="'#modalInfo' + ${u.id}" title="Ver Ficha"><i class="fas fa-eye"></i></button>
+                                    
                                     <form th:if="${u.ativo}" th:action="@{/admin/bloquear-usuario}" method="post" class="d-inline">
                                         <input type="hidden" name="idUsuario" th:value="${u.id}">
                                         <button type="submit" class="btn-action btn-block" title="Bloquear"><i class="fas fa-ban"></i></button>
                                     </form>
+                                    
                                     <form th:unless="${u.ativo}" th:action="@{/admin/aprovar-profissional}" method="post" class="d-inline">
                                         <input type="hidden" name="idUsuario" th:value="${u.id}">
                                         <button type="submit" class="btn-action btn-approve" title="Reativar"><i class="fas fa-check-circle"></i></button>
                                     </form>
-                                    <button type="button" class="btn-action btn-delete" data-bs-toggle="modal" th:data-bs-target="'#modalExcluir' + ${u.id}" title="Excluir"><i class="fas fa-trash"></i></button>
-                                    
-                                    <div class="modal fade" th:id="'modalInfo' + ${u.id}" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg">
-                                            <div class="modal-content">
-                                                <div class="modal-header modal-header-admin"><h5 class="modal-title"><i class="fas fa-id-card me-2"></i>Ficha Cadastral: <span th:text="${u.nome}"></span></h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-                                                <div class="modal-body">
-                                                    <div class="container-fluid">
-                                                        <div class="row">
-                                                            <div class="col-12 mb-2 border-bottom pb-1 text-primary fw-bold"><i class="fas fa-user me-1"></i> Dados Pessoais</div>
-                                                            <div class="col-md-4"><div class="info-label">CPF</div><div class="info-value" th:text="${u.cpf} ?: '---'"></div></div>
-                                                            <div class="col-md-4"><div class="info-label">RG</div><div class="info-value" th:text="${u.rg} ?: '---'"></div></div>
-                                                            <div class="col-md-4"><div class="info-label">Data Nasc.</div><div class="info-value" th:text="${u.dataNascimento} ?: '---'"></div></div>
-                                                            <div class="col-md-6"><div class="info-label">Email / Login</div><div class="info-value" th:text="${u.email}"></div></div>
-                                                            <div class="col-md-6"><div class="info-label">Telefone</div><div class="info-value" th:text="${u.telefone} ?: '---'"></div></div>
-                                                            <div class="col-md-12"><div class="info-label">Cartão SUS</div><div class="info-value" th:text="${u.cartaoSus} ?: 'Não informado'"></div></div>
-                                                            <div class="col-12 mt-3 mb-2 border-bottom pb-1 text-primary fw-bold"><i class="fas fa-map-marker-alt me-1"></i> Endereço</div>
-                                                            <div class="col-md-8"><div class="info-label">Logradouro</div><div class="info-value" th:text="${u.logradouro} ?: '---'"></div></div>
-                                                            <div class="col-md-4"><div class="info-label">Número</div><div class="info-value" th:text="${u.numero} ?: '---'"></div></div>
-                                                            <div class="col-md-4"><div class="info-label">Bairro</div><div class="info-value" th:text="${u.bairro} ?: '---'"></div></div>
-                                                            <div class="col-md-4"><div class="info-label">Cidade / UF</div><div class="info-value"><span th:text="${u.cidade} ?: '---'"></span> - <span th:text="${u.uf} ?: '-'"></span></div></div>
-                                                            <div class="col-md-4"><div class="info-label">CEP</div><div class="info-value" th:text="${u.cep} ?: '---'"></div></div>
-                                                            <div class="col-12 mt-3 mb-2 border-bottom pb-1 text-primary fw-bold" th:if="${#strings.contains(u.perfil, 'MEDICO') or #strings.contains(u.perfil, 'ENFERMEIRO')}"><i class="fas fa-user-md me-1"></i> Dados do Profissional</div>
-                                                            <th:block th:if="${mapaProfissionais != null and mapaProfissionais.containsKey(u.id)}">
-                                                                <div class="col-md-4"><div class="info-label">Registro Oficial</div><div class="info-value"><span th:if="${#strings.contains(u.perfil, 'MEDICO')}" class="fw-bold text-dark">CRM: <span th:text="${mapaProfissionais.get(u.id).crm}"></span></span><span th:if="${#strings.contains(u.perfil, 'ENFERMEIRO')}" class="fw-bold text-dark">COREN: <span th:text="${mapaProfissionais.get(u.id).coren}"></span></span></div></div>
-                                                                <div class="col-md-4"><div class="info-label">Matrícula Interna</div><div class="info-value" th:text="${mapaProfissionais.get(u.id).matricula}"></div></div>
-                                                                <div class="col-md-4"><div class="info-label">Especialidade</div><div class="info-value" th:text="${mapaProfissionais.get(u.id).especialidade}"></div></div>
-                                                                <div class="col-md-6"><div class="info-label">Status Credenciamento</div><div class="info-value fw-bold text-success"><i class="fas fa-check-circle"></i> <span th:text="${mapaProfissionais.get(u.id).statusAprovacao}"></span></div></div>
-                                                            </th:block>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer bg-light"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="modal fade" th:id="'modalExcluir' + ${u.id}" tabindex="-1">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <form th:action="@{/admin/excluir-usuario}" method="post">
-                                                    <div class="modal-header bg-danger text-white"><h5 class="modal-title">Confirmar Exclusão</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-                                                    <div class="modal-body">
-                                                        <p class="text-center fw-bold fs-5">Você está prestes a excluir:<br><span class="text-danger" th:text="${u.nome}"></span></p>
-                                                        <div class="alert alert-warning small"><i class="fas fa-info-circle"></i> Esta ação é irreversível.</div>
-                                                        <div class="mb-3 text-start"><label for="motivo" class="form-label fw-bold">Motivo da Exclusão:</label><textarea name="motivo" id="motivo" class="form-control" rows="3" required></textarea></div>
-                                                        <input type="hidden" name="idUsuario" th:value="${u.id}">
-                                                    </div>
-                                                    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-danger">Confirmar</button></div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
+
+                                    <a href="#" class="btn-action btn-delete" title="Excluir Colaborador" data-bs-toggle="modal" th:attr="data-bs-target='#modalExcluir' + ${u.id}">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+
+                                    <button type="button" class="btn-action btn-warning" data-bs-toggle="modal" th:data-bs-target="'#modalEspecialidade' + ${u.id}" title="Alterar Especialidade / Cargo"><i class="fas fa-user-tag"></i></button>
                                 </td>
                             </tr>
                         </tbody>
@@ -266,6 +236,102 @@
     </main>
     
     <br>
+
+    <th:block th:each="u : ${todosUsuarios}">
+        
+        <div class="modal fade" th:id="'modalInfo' + ${u.id}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header modal-header-admin">
+                        <h5 class="modal-title"><i class="fas fa-id-card me-2"></i>Ficha Cadastral: <span th:text="${u.nome}"></span></h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-12 mb-2 border-bottom pb-1 text-primary fw-bold"><i class="fas fa-user me-1"></i> Dados Pessoais</div>
+                                <div class="col-md-4"><div class="info-label">CPF</div><div class="info-value" th:text="${u.cpf} ?: '---'"></div></div>
+                                <div class="col-md-4"><div class="info-label">RG</div><div class="info-value" th:text="${u.rg} ?: '---'"></div></div>
+                                <div class="col-md-4"><div class="info-label">Data Nasc.</div><div class="info-value" th:text="${u.dataNascimento} ?: '---'"></div></div>
+                                <div class="col-md-6"><div class="info-label">Email / Login</div><div class="info-value" th:text="${u.email}"></div></div>
+                                <div class="col-md-6"><div class="info-label">Telefone</div><div class="info-value" th:text="${u.telefone} ?: '---'"></div></div>
+                                
+                                <div class="col-12 mt-3 mb-2 border-bottom pb-1 text-primary fw-bold"><i class="fas fa-map-marker-alt me-1"></i> Endereço</div>
+                                <div class="col-md-8"><div class="info-label">Logradouro</div><div class="info-value" th:text="${u.logradouro} ?: '---'"></div></div>
+                                <div class="col-md-4"><div class="info-label">Número</div><div class="info-value" th:text="${u.numero} ?: '---'"></div></div>
+                                <div class="col-md-4"><div class="info-label">Bairro</div><div class="info-value" th:text="${u.bairro} ?: '---'"></div></div>
+                                <div class="col-md-4"><div class="info-label">Cidade / UF</div><div class="info-value"><span th:text="${u.cidade} ?: '---'"></span> - <span th:text="${u.uf} ?: '-'"></span></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" th:id="'modalEspecialidade' + ${u.id}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form th:action="@{/admin/alterar-especialidade}" method="post">
+                        <div class="modal-header" style="background-color: #000000; color: #b6d441;">
+                            <h5 class="modal-title"><i class="fas fa-user-tag"></i> Alterar Especialidade</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Defina o novo nível de acesso para: <strong th:text="${u.nome}"></strong></p>
+                           <input type="hidden" name="idUsuario" th:value="${u.id}">
+                            <div class="form-group">
+                                <select class="form-control" name="novaEspecialidade" required>
+                                    <option th:value="${u.perfil}" selected>Manter Atual: [[${u.perfil}]]</option>
+                                    <option value="TECNICO_TI">Equipe de Suporte TI (Infraestrutura)</option>
+                                    <option value="TECNICO_SOFTWARE">Equipe de Software (Helpdesk)</option>
+                                    <option value="TECNICO_AMBOS">Equipe Plena (Atende TI e Software)</option>
+                                    <option value="ADMIN_MASTER">Administrador Master</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn" style="background-color: #b6d441; color: #000;">Salvar Alteração</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" th:id="'modalExcluir' + ${u.id}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg">
+                    <form th:action="@{/admin/excluir-usuario}" method="post">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title"><i class="fas fa-user-times me-2"></i> Confirmar Exclusão</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-4 text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-exclamation-circle text-danger" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5 class="mb-2">Atenção, Administrador!</h5>
+                            <p class="text-muted">Você está prestes a excluir permanentemente o acesso de <br><strong class="text-dark" th:text="${u.nome}"></strong>.</p>
+                            
+                            <input type="hidden" name="idUsuario" th:value="${u.id}">
+                                
+                            <div class="text-start mt-4">
+                                <label class="form-label fw-bold small text-uppercase">Justificativa da Exclusão:</label>
+                                <textarea class="form-control bg-light" name="motivo" rows="3" 
+                                          placeholder="Explique o motivo para fins de auditoria..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-light border-0">
+                            <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-danger px-4 shadow-sm">Confirmar Exclusão</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+    </th:block>
 
     <div th:replace="~{fragments/footer :: rodape}"></div>
     
@@ -321,5 +387,6 @@
             }
         });
     </script>
+    
 </body>
 </html>

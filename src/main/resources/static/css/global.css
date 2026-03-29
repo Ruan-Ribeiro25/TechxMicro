@@ -381,6 +381,22 @@ select.form-control { cursor: pointer; appearance: none; background-image: url("
 .btn-send { background: #b6d441; color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: 0.3s; }
 .btn-send:hover { background: #a4c038; transform: scale(1.05); }
 
+/* ========================================================= */
+        /* 2. DEVOLVENDO O EFEITO DE MOVIMENTO NOS CARDS */
+        /* ========================================================= */
+        
+        /* Define a transição suave para as propriedades de movimento e sombra */
+        .kpi-card {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out !important;
+        }
+        
+        /* Aplica o efeito "ELEVADOR" ao passar o mouse */
+        .kpi-card:hover {
+            transform: translateY(-10px); /* Levanta o card em 10px */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2) !important; /* Aumenta a sombra projetada */
+            cursor: pointer; /* Muda o cursor para mãozinha */
+        }
+
 /* Ajuste Responsivo */
 @media (max-width: 1200px) {
     nav { padding: 5px 10px; gap: 5px; flex-direction: row; justify-content: space-between; align-items: center; width: 100%; }

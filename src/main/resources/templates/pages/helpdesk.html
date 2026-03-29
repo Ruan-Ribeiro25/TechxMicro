@@ -55,7 +55,7 @@
             </div>
 
             <div class="charts-grid">
-                <div class="chart-container"><h4 class="chart-title"><i class="fas fa-laptop-medical" style="color: #f07d35;"></i> Demandas de Suporte TI (Infra)</h4><canvas id="chartSuporteTI"></canvas></div>
+                <div class="chart-container"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;"><h4 class="chart-title" style="margin: 0;"><i class="fas fa-laptop-medical" style="color: #f07d35;"></i> Suporte TI</h4><select id="filtroTempoTI" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.85rem; outline: none; background: #fff;"><option value="dia">Hoje (Horas)</option><option value="semana" selected>Semana Atual</option><option value="ano">1 Ano (Meses)</option><option value="dez_anos">Últimos 10 Anos</option></select></div><canvas id="chartSuporteTI"></canvas></div>
                 <div class="chart-container"><h4 class="chart-title"><i class="fas fa-bug" style="color: #b6d441;"></i> Problemas Software Helpdesk</h4><div style="position: relative; height: 85%; width: 100%; display: flex; justify-content: center;"><canvas id="chartSoftware"></canvas></div></div>
             </div>
 
@@ -140,23 +140,57 @@
 
     <div th:replace="~{fragments/footer :: rodape}"></div>
 
-    <script th:inline="javascript">
+  <script th:inline="javascript">
         /*<![CDATA[*/
-        const dadosInfra = /*[[${infraPorDia}]]*/ null || [0, 0, 0, 0, 0];
-        const softRes = /*[[${softResolvidos}]]*/ null || 0;
-        const softPen = /*[[${softPendentes}]]*/ null || 0;
-        const softCan = /*[[${softCancelados}]]*/ null || 0;
+        // 1. Recebendo as variáveis do Java da forma CORRETA para o Thymeleaf e Eclipse
+        const dadosHora = /*[[${infraPorHora}]]*/ [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+        const dadosDia = /*[[${infraPorDia}]]*/ [0,0,0,0,0,0,0];
+        const dadosMes = /*[[${infraPorMes}]]*/ [0,0,0,0,0,0,0,0,0,0,0,0];
+        const dadosAno = /*[[${infraPorAno}]]*/ [0,0,0,0,0,0,0,0,0,0];
+        const anoAtual = /*[[${anoAtual}]]*/ 2026;
 
+        // 2. Criando as legendas (eixo X)
+        const labelsHora = Array.from({length: 24}, (_, i) => i + 'h');
+        const labelsDia = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+        const labelsMes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const labelsAno = Array.from({length: 10}, (_, i) => (anoAtual - 9) + i);
+
+        // Variáveis do gráfico de Software
+        const softRes = /*[[${softResolvidos}]]*/ 0;
+        const softPen = /*[[${softPendentes}]]*/ 0;
+        const softCan = /*[[${softCancelados}]]*/ 0;
+
+        // 3. Inicializando o Gráfico de TI (Infra)
         const ctxTI = document.getElementById('chartSuporteTI').getContext('2d');
-        new Chart(ctxTI, {
+        let chartTI = new Chart(ctxTI, {
             type: 'bar',
             data: {
-                labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'],
-                datasets: [{ label: 'Chamados Infra', data: dadosInfra, backgroundColor: '#f07d35', borderRadius: 4 }]
+                labels: labelsDia, // Começa mostrando a Semana
+                datasets: [{ label: 'Chamados Infra', data: dadosDia, backgroundColor: '#f07d35', borderRadius: 4 }]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'top' } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
         });
 
+        // 4. O "Ouvinte" do Select: muda o gráfico na hora!
+        document.getElementById('filtroTempoTI').addEventListener('change', function() {
+            let val = this.value;
+            if (val === 'dia') { 
+                chartTI.data.labels = labelsHora; 
+                chartTI.data.datasets[0].data = dadosHora; 
+            } else if (val === 'semana') { 
+                chartTI.data.labels = labelsDia; 
+                chartTI.data.datasets[0].data = dadosDia; 
+            } else if (val === 'ano') { 
+                chartTI.data.labels = labelsMes; 
+                chartTI.data.datasets[0].data = dadosMes; 
+            } else if (val === 'dez_anos') { 
+                chartTI.data.labels = labelsAno; 
+                chartTI.data.datasets[0].data = dadosAno; 
+            }
+            chartTI.update(); // Atualiza a tela
+        });
+
+        // Inicializando o Gráfico de Software (Donut)
         const ctxSoft = document.getElementById('chartSoftware').getContext('2d');
         new Chart(ctxSoft, {
             type: 'doughnut',
