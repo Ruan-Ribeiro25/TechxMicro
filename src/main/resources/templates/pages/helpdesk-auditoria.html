@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Auditoria - PIXEL TI</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+   
+</head>
+<body style="background-color: #f4f4f4;">
+
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <main class="container-fluid mt-4" style="padding: 0 40px;">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap header-pixel">
+            <div class="d-flex align-items-center">
+                <a th:href="@{/helpdesk}" class="btn btn-outline-light me-3" style="border-color: #b6d441; color: #b6d441;" title="Voltar">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div>
+                    <h3 class="m-0 fw-bold">
+                        Auditoria de Segurança: <span style="color: #f07d35;" th:text="${tipoRelatorio}">LOGS</span>
+                    </h3>
+                    <small class="subtitle-pixel">Monitorização de tráfego e registros do sistema Helpdesk PIXEL TI.</small>
+                </div>
+            </div>
+
+            <div class="btn-group shadow-sm">
+                <a th:href="@{/helpdesk/download-auditoria/TXT}" class="btn btn-sm btn-txt-pixel" title="Baixar TXT">
+                    <i class="fas fa-file-alt"></i> TXT
+                </a>
+                <a th:href="@{/helpdesk/download-auditoria/JSON}" class="btn btn-sm btn-json-pixel" title="Baixar JSON">
+                    <i class="fas fa-code"></i> JSON
+                </a>
+                <a th:href="@{/helpdesk/download-auditoria/CSV}" class="btn btn-sm btn-csv-pixel" title="Baixar CSV">
+                    <i class="fas fa-file-csv"></i> CSV
+                </a>
+            </div>
+        </div>
+
+        <div class="card-log-pixel">
+            <div class="card-header-log">
+                <i class="fas fa-shield-alt me-2"></i> Histórico de Eventos
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-logs">
+                        <thead>
+                            <tr>
+                                <th style="width: 180px;">DATA/HORA</th>
+                                <th style="width: 150px;">AÇÃO</th>
+                                <th>DETALHES DO REGISTRO</th>
+                                <th style="width: 180px;">ADMIN / USUÁRIO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="log : ${listaLogs}">
+                                <td class="fw-bold text-secondary" th:text="${#strings.substring(log[0], 0, 19).replace('T', ' ')}">Data</td>
+                                
+                                <td>
+                                    <span class="badge-log-pixel"
+      th:classappend="${
+          (#strings.contains(log[1], 'ERRO') or #strings.contains(log[1], 'EXCLUS') or #strings.contains(log[1], 'FALHA') or #strings.contains(log[1], 'CANCELADO')) ? 'status-laranja' : 
+          ((#strings.contains(log[1], 'SUCESSO') or #strings.contains(log[1], 'LOGIN') or #strings.contains(log[1], 'CADASTRO') or #strings.contains(log[1], 'APROVADO') or #strings.contains(log[1], 'RESOLVIDO')) ? 'status-verde' : 
+          'status-preto')
+      }"
+      th:text="${log[1]}">AÇÃO</span>
+                                </td>
+                                
+                                <td>
+                                    <div th:text="${log[2]}" style="font-family: monospace; font-size: 0.9rem; color: #333;">Detalhes...</div>
+                                </td>
+                                
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-user-shield me-2" style="color: #f07d35;"></i>
+                                        <span class="fw-bold text-dark" th:text="${log[3]}">Admin</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(listaLogs)}">
+                                <td colspan="4" class="text-center py-5 text-muted">
+                                    <i class="fas fa-database fa-3x mb-3" style="color: #b6d441;"></i><br>
+                                    Nenhum registro de auditoria encontrado.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+<br>
+    <div th:replace="~{fragments/footer :: rodape}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

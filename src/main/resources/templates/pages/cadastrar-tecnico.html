@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Técnico - PIXEL TI</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/global.css?v=1.2}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <main>
+        <div class="page-sheet-helpdesk">
+            <div class="network-header-flex">
+                <div class="header-title-group">
+                    <a th:href="@{/helpdesk}" class="btn-circle-back" title="Voltar ao Painel"><i class="fas fa-arrow-left"></i></a>
+                    <div>
+                        <h2 style="color: #000000;">Cadastrar Novo Técnico</h2>
+                        <p style="color: #000000;">Área exclusiva para solicitação de acesso de equipe de suporte.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${param.sucesso}" style="background-color: #b6d441; color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; text-align: center;">
+                <i class="fas fa-check-circle"></i> Cadastro solicitado com sucesso! O técnico ficará inativo até a liberação do Administrador.
+            </div>
+
+            <form th:action="@{/helpdesk/cadastrar-tecnico}" method="POST">
+                <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                <div class="form-section">
+                    <h4 class="chart-title" style="margin-bottom: 20px; color: #000000;">
+                        <i class="fas fa-user-shield" style="color: #b6d441;"></i> Dados do Colaborador
+                    </h4>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Nome Completo</label>
+                            <input type="text" class="form-control" name="nome" placeholder="Ex: João da Silva" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">CPF (Login)</label>
+                            <input type="text" class="form-control" name="cpf" placeholder="Apenas números" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">E-mail Corporativo</label>
+                            <input type="email" class="form-control" name="email" placeholder="joao@pixelti.com.br" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Senha Provisória</label>
+                            <input type="password" class="form-control" name="senha" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 10px;">
+                        <label class="form-label">Especialidade / Fila de Atendimento</label>
+                        <select class="form-control" name="perfilTecnico" required>
+                            <option value="" disabled selected>Selecione a equipe de atuação...</option>
+                            <option value="TECNICO_TI">Equipe de Suporte TI (Infraestrutura/Equipamentos)</option>
+                            <option value="TECNICO_SOFTWARE">Equipe de Software (Helpdesk/Sistemas)</option>
+                        </select>
+                    </div>
+                    
+                    <div style="background-color: rgba(240, 125, 53, 0.1); border-left: 4px solid #f07d35; padding: 12px; border-radius: 4px; margin-top: 15px;">
+                        <p style="color: #000000; font-size: 0.85rem; margin: 0;">
+                            <i class="fas fa-exclamation-triangle" style="color: #f07d35;"></i> 
+                            <strong>Atenção:</strong> Por razões de segurança, a conta será criada com o status <strong style="color: #f07d35;">INATIVO</strong>. O técnico só poderá realizar login e assumir chamados após a aprovação do Administrador Master.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a th:href="@{/helpdesk}" class="btn-cancel">Cancelar</a>
+                    <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Solicitar Cadastro</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: rodape}"></div>
+</body>
+</html>

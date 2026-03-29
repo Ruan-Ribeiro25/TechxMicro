@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Chamado - PIXEL TI</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/global.css?v=1.2}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <main>
+        <div class="page-sheet-helpdesk">
+            
+            <div class="network-header-flex">
+                <div class="header-title-group">
+                    <a th:href="@{/helpdesk}" class="btn-circle-back" title="Voltar ao Dashboard"><i class="fas fa-arrow-left"></i></a>
+                    <div>
+                        <h2 style="color: #000000;">Abertura de Chamado</h2>
+                        <p style="color: #000000;">Descreva o problema para a equipe técnica da PIXEL TI.</p>
+                    </div>
+                </div>
+            </div>
+
+            <form th:action="@{/helpdesk/novo-chamado}" method="POST">
+                <div class="form-section">
+                    <h4 class="chart-title" style="margin-bottom: 20px; color: #000000;"><i class="fas fa-ticket-alt" style="color: #b6d441;"></i> Detalhes da Solicitação</h4>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Categoria do Problema</label>
+                            <select class="form-control" name="categoria" required>
+                                <option value="" disabled selected>Selecione a categoria...</option>
+                                <option value="TI">Suporte TI (Infraestrutura, Redes, Equipamentos)</option>
+                                <option value="SOFTWARE">Software (Problema no Helpdesk, ERP)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nível de Urgência</label>
+                            <select class="form-control" name="urgencia" required>
+                                <option value="BAIXA">Baixa (Pode aguardar)</option>
+                                <option value="MEDIA" selected>Média (Atrapalha a rotina)</option>
+                                <option value="ALTA">Alta (Sistema parado / Urgente)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label class="form-label">Assunto (Resumo breve)</label>
+                        <input type="text" class="form-control" name="assunto" placeholder="Ex: Impressora do RH não conecta" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Descrição Detalhada</label>
+                        <textarea class="form-control" name="descricao" placeholder="Descreva o problema com o máximo de detalhes possível para facilitar o diagnóstico..." required></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a th:href="@{/helpdesk}" class="btn-cancel">Cancelar</a>
+                    <button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Abrir Chamado</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: rodape}"></div>
+</body>
+</html>

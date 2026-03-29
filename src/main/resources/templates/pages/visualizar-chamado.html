@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.4">
+    <title>Visualizar Chamado - PIXEL TI</title>
+    <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/global.css?v=1.2}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <main>
+        <div class="page-sheet-helpdesk">
+            <div class="network-header-flex">
+                <div class="header-title-group">
+                    <a th:href="@{/helpdesk}" class="btn-circle-back" title="Voltar"><i class="fas fa-arrow-left"></i></a>
+                    <div>
+                        <h2 th:text="'Ticket #' + ${chamado.id}" style="color: #000000;">Ticket #000</h2>
+                        <p style="color: #000000;">Acompanhamento e Interações</p>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <form th:action="@{/helpdesk/atualizar-status}" method="POST" style="display:inline;">
+                        <input type="hidden" name="id" th:value="${chamado.id}" />
+                        <input type="hidden" name="status" value="CANCELADO" />
+                        <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        
+                        <button type="submit" class="btn-cancel" th:if="${chamado.status.name() == 'PENDENTE'}" style="padding: 8px 15px; cursor: pointer; border: none;">
+                            <i class="fas fa-times"></i> Cancelar Ticket
+                        </button>
+                    </form>
+
+                    <form th:action="@{/helpdesk/atualizar-status}" method="POST" style="display:inline;">
+                        <input type="hidden" name="id" th:value="${chamado.id}" />
+                        <input type="hidden" name="status" value="RESOLVIDO" />
+                        <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        
+                        <button type="submit" th:if="${chamado.responsavel != null and chamado.status.name() == 'PENDENTE' and isTechOrAdmin}" style="padding: 8px 15px; cursor: pointer; background-color: #b6d441; color: white; border: none; border-radius: 4px; font-weight: 600;">
+                            <i class="fas fa-check"></i> Resolver Chamado
+                        </button>
+                    </form>
+
+                    <a th:if="${chamado.responsavel == null and isTechOrAdmin}" th:href="@{/helpdesk/assumir(id=${chamado.id})}" class="btn-assumir" style="padding: 8px 15px; font-size: 0.85rem; text-decoration: none; display: inline-block;">
+                        <i class="fas fa-hand-sparkles"></i> Assumir Chamado
+                    </a>
+                </div>
+            </div>
+
+            <div class="ticket-view-container">
+                <div class="ticket-details">
+                    <div class="ticket-header-info">
+                        <span class="categoria-badge" th:if="${chamado.categoria != null}" 
+      th:classappend="${chamado.categoria.name() == 'TI' ? 'categoria-ti' : 'categoria-software'}"
+      th:text="${chamado.categoria.name() == 'TI' ? 'Suporte TI' : 'Software Helpdesk'}">Categoria</span>
+                              
+                        <div>
+                            <span class="dot" th:style="${chamado.status.name() == 'PENDENTE' ? 'background-color: #000000;' : (chamado.status.name() == 'CANCELADO' ? 'background-color: #f07d35;' : 'background-color: #b6d441;')}"></span> 
+                            <strong th:style="${chamado.status.name() == 'PENDENTE' ? 'color: #000000;' : (chamado.status.name() == 'CANCELADO' ? 'color: #f07d35;' : 'color: #b6d441;')}" th:text="${chamado.status}">Status</strong>
+                        </div>
+                    </div>
+
+                    <h3 class="ticket-subject" th:text="${chamado.assunto}">Assunto do Problema</h3>
+                    <div class="ticket-desc-box" th:text="${chamado.descricao}">Descrição do problema</div>
+
+                    <div class="ticket-meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Abertura</span>
+                            <span class="meta-value" th:text="${#temporals.format(chamado.dataAbertura, 'dd/MM/yyyy HH:mm')}">Data</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Solicitante</span>
+                            <span class="meta-value" th:text="${chamado.solicitante.nome}">Nome</span>
+                        </div>
+                       <div class="meta-item">
+    						<span class="meta-label">Urgência</span>
+   							<span class="urgencia-badge" 
+          th:classappend="${chamado.urgencia.name() == 'ALTA' ? 'urgencia-alta' : (chamado.urgencia.name() == 'MEDIA' ? 'urgencia-media' : 'urgencia-baixa')}"
+          th:text="${chamado.urgencia}">Urgência</span>
+						</div>
+                        <div class="meta-item">
+                            <span class="meta-label">Técnico</span>
+                            <span class="meta-value" th:style="${chamado.responsavel != null ? 'color: #000000;' : 'color: #000000;'}" th:text="${chamado.responsavel != null ? chamado.responsavel.nome : 'Nenhum (Aguardando)'}">Responsável</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-box">
+                    <div class="chat-header">
+                        <i class="far fa-comments" style="color: #000000;"></i> Diálogo do Atendimento
+                    </div>
+                    
+                    <div class="chat-messages" id="chatContainer" style="max-height: 350px; overflow-y: auto; padding-right: 10px;">
+                        <div class="msg-wrapper left">
+                            <span class="msg-author">Helpdesk PIXEL TI</span>
+                            <div class="msg-bubble">Chamado registrado com sucesso. Aguardando atendimento.</div>
+                            <span class="msg-time" th:text="${#temporals.format(chamado.dataAbertura, 'dd/MM/yyyy HH:mm')}">Hora</span>
+                        </div>
+
+                        <div th:each="interacao : ${chamado.interacoes}" class="msg-wrapper" th:classappend="${(usuario != null and interacao.autor.id == usuario.id) ? 'right' : 'left'}">
+    						<span class="msg-author" th:text="${interacao.autor.nome}">Autor</span>
+   							<div class="msg-bubble" th:text="${interacao.texto}">Texto da mensagem</div>
+   							<span class="msg-time" th:text="${#temporals.format(interacao.dataEnvio, 'dd/MM/yyyy HH:mm')}">Data</span>
+						</div>
+                    </div>
+
+                    <form th:action="@{/helpdesk/responder}" method="POST" class="chat-input-area" th:if="${chamado.status.name() == 'PENDENTE'}">
+                        <input type="hidden" name="chamadoId" th:value="${chamado.id}" />
+                        
+                        <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        
+                        <textarea name="mensagem" placeholder="Digite uma mensagem ou atualização..." required style="resize: none;"></textarea>
+                        <button type="submit" class="btn-send" title="Enviar Mensagem">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                    
+                    <div th:if="${chamado.status.name() != 'PENDENTE'}" style="text-align: center; padding: 15px; color: #000000; background-color: #f8fafc; border-radius: 8px;">
+                        <i class="fas fa-lock" style="color: #f07d35;"></i> Este chamado está encerrado e não pode receber novas mensagens.
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: rodape}"></div>
+
+    <script>
+        window.onload = function() {
+            var chatContainer = document.getElementById("chatContainer");
+            if (chatContainer) {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        };
+    </script>
+</body>
+</html>
