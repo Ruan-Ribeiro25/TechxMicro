@@ -16,7 +16,7 @@ import java.util.UUID;
 public class FileUploadController {
 
     // Pega o caminho configurado no application.properties
-    @Value("${vidaplus.upload.dir}") 
+    @Value("${pixelti.upload.dir}") 
     private String uploadDir;
 
     @PostMapping("/imagem")
