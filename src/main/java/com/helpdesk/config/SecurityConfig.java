@@ -7,13 +7,18 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer; // <--- IMPORTANTE: O que faltava
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.helpdesk.service.impl.CustomUserDetailsService;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -28,10 +33,6 @@ public class SecurityConfig {
     @Autowired
     private CustomAuthenticationFailureHandler failureHandler;
 
-    // =========================================================================
-    // NOVIDADE: MODO "IGNORAR" (Pula toda a verificação de segurança)
-    // Isso garante que o /api/teste/** nunca pedirá login, aconteça o que acontecer.
-    // =========================================================================
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers("/api/teste/**");
@@ -40,58 +41,25 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // Mantemos o CSRF desativado para garantir compatibilidade geral
+            // 1. ATIVA O CORS (Crucial para o domínio pixelti.app.br)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            
+            // 2. MANTÉM CSRF DESATIVADO (Para compatibilidade com o túnel)
             .csrf(csrf -> csrf.disable()) 
 
             .authorizeHttpRequests(auth -> auth
-                // --- RECURSOS ESTÁTICOS & PWA ---
-                .requestMatchers(
-                    "/css/**", 
-                    "/js/**", 
-                    "/uploads/**", 
-                    "/img/**", 
-                    "/webjars/**", 
-                    "/fragments/**",
-                    "/manifest.json", 
-                    "/sw.js",
-                    "/favicon.ico"
-                ).permitAll()
-                
-                // NOTA: A regra do "/api/teste/**" foi removida daqui porque
-                // agora ela é tratada no webSecurityCustomizer acima (é mais forte).
-                
-                // --- MONITORAMENTO ---
+                // Recursos estáticos
+                .requestMatchers("/css/**", "/js/**", "/uploads/**", "/img/**", "/webjars/**", "/fragments/**", "/manifest.json", "/sw.js", "/favicon.ico").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
-
-                // --- PÁGINAS PÚBLICAS ---
-                .requestMatchers(
-                    "/", "/login", "/login-professional", "/admin/login",
-                    "/register", "/register-professional", "/register-medico", "/register-admin",
-                    "/verificar-conta", "/forgot-password", "/enter-code", 
-                    "/verify-reset-code", "/update-password", "/perfil/selecionar-polo",
-                    "/acesso-profissional", "/bem-vindo"
-                ).permitAll()
+                // Páginas públicas
+                .requestMatchers("/", "/login", "/login-professional", "/admin/login", "/register", "/register-professional", "/register-medico", "/register-admin", "/verificar-conta", "/forgot-password", "/enter-code", "/verify-reset-code", "/update-password", "/perfil/selecionar-polo", "/acesso-profissional", "/bem-vindo").permitAll()
                 
-                // --- ROTAS PROTEGIDAS (Preservadas) ---
+                // Regras de acesso
                 .requestMatchers("/admin/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
                 .requestMatchers("/financeiro/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
-                
-                // --- PERMISSÕES DE PROFISSIONAIS (Preservadas) ---
-                .requestMatchers("/profissional/**").hasAnyAuthority(
-                    "MEDICO", "ROLE_MEDICO", 
-                    "ENFERMEIRO", "ROLE_ENFERMEIRO", 
-                    "MOTORISTA", "ROLE_MOTORISTA", 
-                    "ADMIN", "ROLE_ADMIN",
-                    "TECNICO", "ROLE_TECNICO",
-                    "AUXILIAR", "ROLE_AUXILIAR",
-                    "RECEPCAO", "ROLE_RECEPCAO",
-                    "SERVICOS_GERAIS", "ROLE_SERVICOS_GERAIS"
-                )
-                
-                // Áreas específicas que exigem login
+                .requestMatchers("/profissional/**").hasAnyAuthority("MEDICO", "ROLE_MEDICO", "ENFERMEIRO", "ROLE_ENFERMEIRO", "MOTORISTA", "ROLE_MOTORISTA", "ADMIN", "ROLE_ADMIN", "TECNICO", "ROLE_TECNICO", "AUXILIAR", "ROLE_AUXILIAR", "RECEPCAO", "ROLE_RECEPCAO", "SERVICOS_GERAIS", "ROLE_SERVICOS_GERAIS")
                 .requestMatchers("/pacientes/**", "/agendamentos/**", "/documentos/**", "/telemedicina/**").authenticated()
                 
-                // Qualquer outra rota exige login
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -117,6 +85,23 @@ public class SecurityConfig {
             .authenticationProvider(authenticationProvider());
 
         return http.build();
+    }
+
+    // 3. BEAN DE CONFIGURAÇÃO DE ORIGENS (Onde o "Oi" é permitido)
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList(
+            "https://pixelti.app.br", 
+            "https://www.pixelti.app.br", 
+            "http://localhost:8080"
+        ));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean
