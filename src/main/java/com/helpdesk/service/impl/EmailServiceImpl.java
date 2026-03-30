@@ -17,7 +17,10 @@ public class EmailServiceImpl implements EmailService {
     public void enviarEmail(String para, String assunto, String texto) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom("nao-responda@vidaplus.com"); // Atualizado para o novo nome do projeto
+            
+            // CORREÇÃO: Nome Amigável + E-mail Real (Formato RFC 822)
+            message.setFrom("PIXEL TI Helpdesk <ticpixelti@gmail.com>"); 
+            
             message.setTo(para);
             message.setSubject(assunto);
             message.setText(texto);
