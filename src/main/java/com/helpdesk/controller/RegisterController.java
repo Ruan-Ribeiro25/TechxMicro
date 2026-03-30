@@ -85,8 +85,8 @@ public class RegisterController {
             return "redirect:/verificar-conta?email=" + usuario.getEmail();
             
         } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("error", "Erro ao realizar cadastro: " + e.getMessage());
+            System.err.println("Erro no cadastro: " + e.getMessage()); // O erro gigante fica escondido no terminal
+            model.addAttribute("error", "Ocorreu um erro interno ao processar seu cadastro. Verifique os dados ou contate o suporte.");
             return "register";
         }
     }

@@ -306,6 +306,8 @@ nav h1 { font-size: 1.6rem; font-weight: 700; margin: 0; letter-spacing: 0.5px; 
             box-shadow: 0 15px 35px rgba(0,0,0,0.2) !important; /* Aumenta a sombra projetada */
             cursor: pointer; /* Muda o cursor para mãozinha */
         }
+        
+
 
 /* ============================================================
    6. RESPONSIVIDADE (CRÍTICO PARA NÃO QUEBRAR)

@@ -12,13 +12,17 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // --- EXIGÊNCIAS NOT NULL APLICADAS ---
+    @Column(nullable = false)
     private String nome;
     
     @Column(unique = true, nullable = false)
     private String cpf;
     
+    @Column(nullable = false)
     private String rg; 
-    private String cartaoSus;
+
+    // CARTÃO SUS REMOVIDO DEFINITIVAMENTE!
 
     @Column(name = "data_nascimento")
     private LocalDate dataNascimento;
@@ -26,10 +30,10 @@ public class Usuario {
     @Column(unique = true)
     private String username;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(name = "password") 
+    @Column(name = "password", nullable = false) 
     private String senha;
 
     private String perfil; 
@@ -38,7 +42,9 @@ public class Usuario {
     private String tokenReset;
 
     // ENDEREÇO
-    private String telefone;
+    @Column(nullable = false)
+    private String telefone; // CELULAR
+    
     private String cep;
     private String cidade;
     private String uf;
@@ -51,9 +57,6 @@ public class Usuario {
     @Column(columnDefinition = "LONGTEXT")
     private String fotoPerfil;
 
-    // --- CORREÇÃO DE RELACIONAMENTO (GEOLOCALIZAÇÃO) ---
-    // Alterado de @OneToMany para @ManyToMany para suportar múltiplos polos por usuário
-    // e múltiplos usuários por polo. Conecta com a tabela 'usuarios_polos'.
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "usuarios_polos",
@@ -62,7 +65,6 @@ public class Usuario {
     )
     private List<Polo> polos;
 
-    // --- OUTROS RELACIONAMENTOS (MANTIDOS) ---
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Documento> documentos;
 
@@ -72,11 +74,8 @@ public class Usuario {
     @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SinaisVitais> sinaisVitais;
 
-    // Atualizado: Em relacionamentos @ManyToMany, não precisamos 'zerar' o pai manualmente
-    // O Hibernate cuida de limpar a tabela de junção 'usuarios_polos'.
     @PreRemove
     private void preRemove() {
-        // Lógica de limpeza específica removida para evitar conflito com M2M
     }
 
     // --- GETTERS E SETTERS ---
@@ -92,8 +91,7 @@ public class Usuario {
     public String getRg() { return rg; }
     public void setRg(String rg) { this.rg = rg; }
     
-    public String getCartaoSus() { return cartaoSus; }
-    public void setCartaoSus(String cartaoSus) { this.cartaoSus = cartaoSus; }
+    // Getters e Setters do Cartão SUS removidos!
 
     public LocalDate getDataNascimento() { return dataNascimento; }
     public void setDataNascimento(LocalDate dataNascimento) { this.dataNascimento = dataNascimento; }
