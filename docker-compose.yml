@@ -7,13 +7,13 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: admin
-      MYSQL_DATABASE: copamir_db
+      MYSQL_DATABASE: helpdesk_db
       MYSQL_USER: user_dev
       MYSQL_PASSWORD: user_dev
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
-      - db_data:/var/lib/mysql
+      - pixelti_db_data:/var/lib/mysql
     deploy:
       resources:
         limits:
@@ -22,26 +22,26 @@ services:
     networks:
       default:
         aliases:
-          - copamir-db
+          - pixelti-db
 
   # 2. BACKEND (AQUI ESTÁ A CORREÇÃO DO SITE)
   app:
     build: .
     restart: always
     ports:
-      - "80:8080"
+      - "8081:8080"
     depends_on:
       - db
     environment:
       # O backend acessa o banco pelo nome do SERVIÇO 'db'
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/copamir_db?allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/helpdesk_db?allowPublicKeyRetrieval=true&useSSL=false
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=admin
-    # O truque: dizemos ao Docker "Este container também atende por vidaplus-app"
+    # O truque: dizemos ao Docker "Este container também atende por pixelti-app"
     networks:
       default:
         aliases:
-          - copamir-app
+          - pixelti-app
 
   # 3. TÚNEL CLOUDFLARE
   tunnel:
@@ -49,36 +49,36 @@ services:
     restart: always
     command: tunnel run
     environment:
-      - TUNNEL_TOKEN=eyJhIjoiYjQ1MTU1MjdjNjI2MmZiNzUzZTRhMmYxODEwMTk0ZjciLCJ0IjoiMzFkODBmN2QtZmM0OS00MzhmLWE1NGYtY2FjNjQ3ODQzYTQyIiwicyI6Ik5qYzJNMk0wTURjdE5UbG1OeTAwTXpRMUxXRTNZV1l0TldNNU1HSXpNR0ZtTkRSaiJ9
-
+      - TUNNEL_TOKEN=eyJhIjoiYjQ1MTU1MjdjNjI2MmZiNzUzZTRhMmYxODEwMTk0ZjciLCJ0IjoiODIwZWVkNjgtMTllYS00MmMwLWI0ZTktZDRhMzM5YTUyZjlmIiwicyI6Ik5tTm1Nakl6WmprdE5EazFPQzAwT0dFMUxXRmhObU10TTJRd09UWTBZbU0yTnpCaSJ9
+      
   # 4. MONITORAMENTO
   prometheus:
     image: prom/prometheus
     restart: always
     ports:
-      - "9090:9090"
+      - "9091:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       default:
         aliases:
-          - copamir-prometheus
+          - pixelti-prometheus
 
   # 5. DASHBOARD
   grafana:
     image: grafana/grafana
     restart: always
     ports:
-      - "3000:3000"
+      - "3001:3000"
     depends_on:
       - prometheus
     volumes:
-      - grafana_data:/var/lib/grafana
+      - pixelti_grafana_data:/var/lib/grafana
     networks:
       default:
         aliases:
-          - copamir-grafana
+          - pixelti-grafana
 
 volumes:
-  db_data:
-  grafana_data:
+  pixelti_db_data:
+  pixelti_grafana_data:

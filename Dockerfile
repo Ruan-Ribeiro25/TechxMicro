@@ -6,7 +6,7 @@ WORKDIR /app
 
 # COPIA O ARQUIVO QUE VOCÊ JÁ CRIOU NO TERMINAL
 # (Isso garante que o código novo vai para o ar)
-COPY target/copamir.jar app.jar
+COPY target/helpdesk.jar app.jar
 
 # Libera a porta
 EXPOSE 8080
