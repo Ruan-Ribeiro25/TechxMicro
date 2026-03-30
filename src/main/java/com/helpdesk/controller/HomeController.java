@@ -291,6 +291,7 @@ public class HomeController {
         return "redirect:/helpdesk/visualizar-chamado?id=" + id;
     }
 
+    @Transactional
     @PostMapping("/helpdesk/responder")
     public String responderChamado(@RequestParam("chamadoId") Long chamadoId,
                                    @RequestParam("mensagem") String texto,
@@ -299,23 +300,25 @@ public class HomeController {
 
         try {
             Usuario autor = usuarioRepository.findByUsernameOrCpf(principal.getName());
-            Chamado chamado = chamadoRepository.findById(chamadoId).orElse(null);
+            Chamado chamado = chamadoRepository.findById(chamadoId).orElseThrow(() -> new RuntimeException("Chamado não encontrado"));
 
-            if (chamado != null && texto != null && !texto.trim().isEmpty()) {
+            if (texto != null && !texto.trim().isEmpty()) {
                 InteracaoChamado interacao = new InteracaoChamado();
                 interacao.setChamado(chamado);
                 interacao.setAutor(autor);
                 interacao.setTexto(texto);
                 interacao.setDataEnvio(LocalDateTime.now());
                 
-                interacaoRepository.save(interacao);
+                // O saveAndFlush obriga o Java a injetar o dado no MySQL neste exato milissegundo
+                interacaoRepository.saveAndFlush(interacao);
             }
         } catch (Exception e) {
-            System.err.println("ERRO CRÍTICO AO SALVAR A MENSAGEM NO CHAT: " + e.getMessage());
-            e.printStackTrace();
+            // Se houver falha no banco, o sistema vai estourar um erro na sua tela e não vai mais esconder!
+            throw new RuntimeException("Erro ao salvar mensagem no banco de dados: " + e.getMessage(), e);
         }
 
-        return "redirect:/helpdesk/visualizar-chamado?id=" + chamadoId;
+        // O segredo do Cache: Adicionar o timestamp (&t=...) no link obriga o navegador/Cloudflare a carregar a página fresca!
+        return "redirect:/helpdesk/visualizar-chamado?id=" + chamadoId + "&t=" + System.currentTimeMillis();
     }
     
  // =================================================================================
