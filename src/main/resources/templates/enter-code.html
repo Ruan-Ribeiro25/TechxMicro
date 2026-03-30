@@ -2,7 +2,7 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Verificar Código - VidaPlus</title>
+    <title>Verificar Código - Helpdesk PIXELTI</title>
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -18,16 +18,16 @@
     <main>
         <div class="login-container" style="max-width: 400px; padding: 30px; text-align: center;">
             <div style="margin-bottom: 20px;">
-                <i class="fas fa-envelope-open-text" style="font-size: 3rem; color: #20c997;"></i>
+                <i class="fas fa-envelope-open-text" style="font-size: 3rem; color: #b6d441;"></i>
             </div>
             <h2 style="color: #333;">Código de Segurança</h2>
             <p style="color: #666; margin-bottom: 20px;">Digite o código de 6 dígitos enviado para o seu e-mail.</p>
 
-            <div th:if="${param.error}" class="alert-erro" style="color: red; margin-bottom: 10px;">Código inválido ou expirado.</div>
+            <div th:if="${param.error}" class="alert-erro" style="color: orange; margin-bottom: 10px;">Código inválido ou expirado.</div>
 
             <form th:action="@{/verify-reset-code}" method="post">
                 <input type="text" name="token" class="form-control" placeholder="000000" style="text-align: center; font-size: 1.5rem; letter-spacing: 5px; width: 60%; margin: 0 auto;" required maxlength="6">
-                <button type="submit" class="btn-custom" style="width: 100%; margin-top: 20px; background-color: #20c997; border: none; padding: 10px; color: white; border-radius: 5px; cursor: pointer;">
+                <button type="submit" class="btn-custom" style="width: 100%; margin-top: 20px; background-color: #b6d441; border: none; padding: 10px; color: white; border-radius: 5px; cursor: pointer;">
                     Verificar
                 </button>
             </form>

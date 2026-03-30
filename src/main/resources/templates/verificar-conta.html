@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificar Conta - VidaPlus</title>
+    <title>Verificar Conta - Helpdesk PIXELTI</title>
     
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link rel="stylesheet" th:href="@{/css/style.css}">
@@ -21,11 +21,11 @@
                 Digite o código enviado para o seu e-mail<span th:if="${email}" th:text="' (' + ${email} + ')'"></span>.
             </p>
 
-            <div th:if="${mensagem}" style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 6px; margin-bottom: 20px; text-align: center; border: 1px solid #c3e6cb;">
+            <div th:if="${mensagem}" style="background-color: #d4edda; color: #b6d441; padding: 12px; border-radius: 6px; margin-bottom: 20px; text-align: center; border: 1px solid #c3e6cb;">
                 <span th:text="${mensagem}"></span>
             </div>
 
-            <div th:if="${param.error}" class="error" style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 20px; text-align: center; border: 1px solid #f5c6cb;">
+            <div th:if="${param.error}" class="error" style="background-color: #f8d7da; color: #f07d35; padding: 12px; border-radius: 6px; margin-bottom: 20px; text-align: center; border: 1px solid #f5c6cb;">
                 Código inválido ou expirado. Tente novamente.
             </div>
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bem-vindo ao VidaPlus</title>
+    <title>Bem-vindo à PIXEL TI</title>
     
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link rel="stylesheet" th:href="@{/css/style.css}">
@@ -19,17 +19,18 @@
             padding: 50px;
             text-align: center;
             animation: fadeIn 0.8s ease-in-out;
+            border-top: 6px solid #b6d441; /* Borda superior verde PIXEL TI */
         }
 
         .icon-success {
             font-size: 5rem;
-            color: #20c997; /* Verde VidaPlus */
+            color: #b6d441; /* Verde PIXEL TI */
             margin-bottom: 25px;
             animation: pulse 2s infinite;
         }
 
         h1 {
-            color: #333;
+            color: #000000; /* Preto PIXEL TI */
             font-size: 2.2rem;
             margin-bottom: 15px;
             font-weight: 700;
@@ -60,37 +61,37 @@
             background: #f8f9fa;
             border-radius: 10px;
             border: 1px solid #eee;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, border-color 0.3s ease;
         }
 
         .feature-item:hover {
             transform: translateY(-5px);
-            border-color: #20c997;
+            border-color: #f07d35; /* Laranja PIXEL TI no Hover */
         }
 
         .feature-item i {
             font-size: 1.8rem;
-            color: #0d6efd;
             margin-bottom: 10px;
         }
 
         .btn-start {
-            background: linear-gradient(135deg, #20c997 0%, #198754 100%);
-            color: white;
+            background-color: #b6d441; /* Verde PIXEL TI */
+            color: #000000; /* Preto absoluto para contraste */
             padding: 15px 40px;
             font-size: 1.2rem;
             border-radius: 50px;
             text-decoration: none;
             font-weight: bold;
-            box-shadow: 0 4px 15px rgba(32, 201, 151, 0.4);
+            box-shadow: 0 4px 15px rgba(182, 212, 65, 0.4);
             transition: all 0.3s ease;
             display: inline-block;
         }
 
         .btn-start:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(32, 201, 151, 0.6);
-            filter: brightness(1.1);
+            box-shadow: 0 6px 20px rgba(182, 212, 65, 0.6);
+            background-color: #9cbd35; /* Um tom ligeiramente mais escuro no hover */
+            color: #000000;
         }
 
         @keyframes fadeIn {
@@ -115,27 +116,24 @@
                 <i class="fas fa-check-circle"></i>
             </div>
 
-            <h1>Cadastro Concluído com Sucesso!</h1>
+            <h1>Cadastro Validado com Sucesso!</h1>
             <p class="subtitle">
-                Seja bem-vindo ao <strong>VidaPlus</strong>. Seu perfil já está ativo e conectado à nossa rede integrada de saúde. 
-                Agora você tem o controle do seu histórico médico, agendamentos e telemedicina na palma da mão.
+                Seja bem-vindo à <strong>PIXEL TI</strong>. Seu perfil já está ativo e conectado à nossa plataforma. 
+                Agora você tem o controle total sobre seus chamados, solicitações de suporte e infraestrutura na palma da mão.
             </p>
 
             <div class="feature-grid">
                 <div class="feature-item">
-                    <i class="fas fa-map-marker-alt" style="color: #fd7e14;"></i>
-                    <h4>Geolocalização</h4>
-                    <p style="font-size: 0.9rem; color: #777;">Encontre serviços próximos onde quer que esteja.</p>
+                    <i class="fas fa-map-marker-alt" style="color: #f07d35;"></i> <h4 style="color: #000000;">Geolocalização</h4>
+                    <p style="font-size: 0.9rem; color: #777;">Identificação automática da sua filial de atuação.</p>
                 </div>
                 <div class="feature-item">
-                    <i class="fas fa-file-medical-alt" style="color: #0d6efd;"></i>
-                    <h4>Histórico Unificado</h4>
-                    <p style="font-size: 0.9rem; color: #777;">Seus dados seguros e acessíveis.</p>
+                    <i class="fas fa-ticket-alt" style="color: #b6d441;"></i> <h4 style="color: #000000;">Gestão de Chamados</h4>
+                    <p style="font-size: 0.9rem; color: #777;">Acompanhe e interaja com seus tickets em tempo real.</p>
                 </div>
                 <div class="feature-item">
-                    <i class="fas fa-user-md" style="color: #d63384;"></i>
-                    <h4>Profissionais</h4>
-                    <p style="font-size: 0.9rem; color: #777;">Acesso rápido a especialistas.</p>
+                    <i class="fas fa-laptop-code" style="color: #000000;"></i> <h4 style="color: #000000;">Suporte Especializado</h4>
+                    <p style="font-size: 0.9rem; color: #777;">Conexão direta com nossa equipe técnica de TI.</p>
                 </div>
             </div>
 

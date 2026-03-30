@@ -159,6 +159,33 @@ h3.header-white,
 .empty-logs-state i { color: #d7ccc8; margin-bottom: 15px; }
 .empty-logs-state h4 { font-family: 'Georgia', serif; color: #8d6e63; }
 
+footer { 
+    background: #000000 !important; /* Aqui está o Preto absoluto! */
+    color: #ffffff !important; /* Texto branco para contrastar */
+    text-align: center !important; 
+    padding: 10px 15px !important; /* Super fino na vertical (10px) */
+    font-size: 0.9rem !important; 
+    margin-top: auto !important; 
+    /* Removi o blur e a sombra do texto, pois no fundo preto puro fica melhor sem eles */
+    text-shadow: none !important; 
+    
+    /* Força o alinhamento perfeito ao centro: */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* 🎯 MATADOR DE MARGENS: Remove a "gordura" invisível do Bootstrap e quebras de linha */
+footer p, footer span, footer div {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+}
+
+footer br {
+    display: none !important;
+}
+
 /* RESPONSIVIDADE */
 @media (max-width: 768px) {
     main.container-fluid { 

@@ -7,9 +7,9 @@
 
 /* 1. VARIÁVEIS E FUNDAMENTOS */
 :root {
-    --primary-color: #20c997;
+    --primary-color: #f07d35;
     --secondary-color: #3498db;
-    --danger-color: #e74c3c;
+    --danger-color: #f07d35;
     --text-color: #333;
     --tele-bg-dark: #0f172a;
     --tele-panel-bg: #1e293b;
@@ -17,7 +17,7 @@
     --tele-border: #334155;
     --tele-text-main: #f8fafc;
     --tele-text-muted: #94a3b8;
-    --tele-success: #10b981;
+    --tele-success: #f07d35;
     --tele-danger: #ef4444;
 }
 
@@ -201,11 +201,31 @@ main.tele-main {
 .tele-timeline-cid { font-weight: bold; color: var(--tele-primary); font-size: 0.8rem; }
 .tele-timeline-text { font-size: 0.8rem; margin-top: 4px; color: #ddd; }
 
-/* 6. RODAPÉ */
-footer {
-    background: #1e293b; color: #94a3b8; text-align: center;
-    padding: 8px; font-size: 0.7rem; height: 35px; flex-shrink: 0;
-    border-top: 1px solid var(--tele-border);
+footer { 
+    background: #000000 !important; /* Aqui está o Preto absoluto! */
+    color: #ffffff !important; /* Texto branco para contrastar */
+    text-align: center !important; 
+    padding: 10px 15px !important; /* Super fino na vertical (10px) */
+    font-size: 0.9rem !important; 
+    margin-top: auto !important; 
+    /* Removi o blur e a sombra do texto, pois no fundo preto puro fica melhor sem eles */
+    text-shadow: none !important; 
+    
+    /* Força o alinhamento perfeito ao centro: */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* 🎯 MATADOR DE MARGENS: Remove a "gordura" invisível do Bootstrap e quebras de linha */
+footer p, footer span, footer div {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+}
+
+footer br {
+    display: none !important;
 }
 
 /* ============================================================

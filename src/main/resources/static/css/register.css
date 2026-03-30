@@ -10,7 +10,7 @@
     --secondary-color: #3498db;     /* Azul Enfermeiro */
     --bg-color: #f4f7f6;
     --text-color: #333;
-    --danger-color: #e74c3c;
+    --danger-color: #f07d35;
     --warning-color: #f1c40f;
     --border-color: #dee2e6;
     --light-gray: #f8f9fa;
@@ -169,7 +169,7 @@ input:focus, .form-control:focus, select:focus {
 /* Alertas de Erro no Topo */
 .alert-erro {
     background-color: #fee2e2; 
-    color: #991b1b; 
+    color: #f07d35; 
     border: 1px solid #fecaca;
     padding: 12px;
     border-radius: 10px;
@@ -214,17 +214,31 @@ input:focus, .form-control:focus, select:focus {
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
-/* ============================================================
-   7. RODAPÉ (FOOTER)
-   ============================================================ */
 footer { 
-    background: rgba(32, 201, 151, 0.95); 
-    color: white; 
-    text-align: center; 
-    padding: 20px; 
-    font-size: 0.9rem; 
-    margin-top: auto; 
-    backdrop-filter: blur(5px); 
+    background: #000000 !important; /* Aqui está o Preto absoluto! */
+    color: #ffffff !important; /* Texto branco para contrastar */
+    text-align: center !important; 
+    padding: 10px 15px !important; /* Super fino na vertical (10px) */
+    font-size: 0.9rem !important; 
+    margin-top: auto !important; 
+    /* Removi o blur e a sombra do texto, pois no fundo preto puro fica melhor sem eles */
+    text-shadow: none !important; 
+    
+    /* Força o alinhamento perfeito ao centro: */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* 🎯 MATADOR DE MARGENS: Remove a "gordura" invisível do Bootstrap e quebras de linha */
+footer p, footer span, footer div {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+}
+
+footer br {
+    display: none !important;
 }
 
 /* ============================================================

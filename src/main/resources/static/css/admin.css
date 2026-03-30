@@ -307,7 +307,32 @@ nav h1 { font-size: 1.6rem; font-weight: 700; margin: 0; letter-spacing: 0.5px; 
             cursor: pointer; /* Muda o cursor para mãozinha */
         }
         
+footer { 
+    background: #000000 !important; /* Aqui está o Preto absoluto! */
+    color: #ffffff !important; /* Texto branco para contrastar */
+    text-align: center !important; 
+    padding: 10px 15px !important; /* Super fino na vertical (10px) */
+    font-size: 0.9rem !important; 
+    margin-top: auto !important; 
+    /* Removi o blur e a sombra do texto, pois no fundo preto puro fica melhor sem eles */
+    text-shadow: none !important; 
+    
+    /* Força o alinhamento perfeito ao centro: */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
 
+/* 🎯 MATADOR DE MARGENS: Remove a "gordura" invisível do Bootstrap e quebras de linha */
+footer p, footer span, footer div {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+}
+
+footer br {
+    display: none !important;
+}
 
 /* ============================================================
    6. RESPONSIVIDADE (CRÍTICO PARA NÃO QUEBRAR)
