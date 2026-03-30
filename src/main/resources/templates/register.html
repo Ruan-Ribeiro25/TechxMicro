@@ -2,7 +2,7 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Cadastro - Copamir</title>
+    <title>Cadastro - Helpdesk PIXELTI</title>
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link rel="stylesheet" th:href="@{/css/register.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -15,7 +15,7 @@
     <main>
         <div class="login-container" style="width: 100%; max-width: 600px; padding: 30px;">
             <div class="login-header" style="text-align: center;">
-                <h2 style="color: #20c997;">Criar Conta</h2>
+                <h2 style="color: #b6d441;">Criar Conta</h2>
                 <p>Preencha todos os dados abaixo</p>
             </div>
 
@@ -46,15 +46,10 @@
                     <input type="date" th:field="*{dataNascimento}" class="form-control" required>
                 </div>
 
-                <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div>
-                        <label>Celular / WhatsApp</label>
-                        <input type="text" th:field="*{telefone}" id="telefone" class="form-control" placeholder="(00) 90000-0000" maxlength="15" required>
-                    </div>
-                    <div>
-                        <label>Cartão SUS</label>
-                        <input type="text" th:field="*{cartaoSus}" class="form-control" placeholder="Número do SUS" required>
-                    </div>
+               
+                   <div class="form-group">
+                    <label>Celular / WhatsApp</label>
+                    <input type="text" th:field="*{telefone}" id="telefone" class="form-control" placeholder="(00) 90000-0000" maxlength="15" required>
                 </div>
 
                 <h4 style="color: #666; margin: 15px 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 5px;">Endereço e Polo</h4>
@@ -113,13 +108,13 @@
                     <small id="msgConfirmacao" style="display:none; font-weight:bold; margin-top:5px;"></small>
                 </div>
 
-                <button type="submit" id="btnRegistrar" class="btn-custom" disabled style="width:100%; padding:10px; background:#20c997; color:white; border:none; border-radius:5px; margin-top:10px; opacity:0.6; cursor:not-allowed;">
+                <button type="submit" id="btnRegistrar" class="btn-custom" disabled style="width:100%; padding:10px; background:#b6d441; color:white; border:none; border-radius:5px; margin-top:10px; opacity:0.6; cursor:not-allowed;">
                     Cadastrar
                 </button>
             </form>
 
             <div class="login-footer" style="text-align: center; margin-top: 15px;">
-                <a th:href="@{/login}" style="color: #20c997;">Já tenho conta</a>
+                <a th:href="@{/login}" style="color: #b6d441;">Já tenho conta</a>
             </div>
         </div>
     </main>

@@ -74,8 +74,8 @@
                     </div>
                 </div>
 
-                <div class="forgot-wrapper">
-                    <a th:href="@{/forgot-password}" class="forgot-link">Esqueceu a senha?</a>
+               <div class="forgot-wrapper">
+                    <center><a th:href="@{/forgot-password}" class="forgot-link" style="color: #b6d441; text-decoration: none; transition: 0.3s;">Esqueceu a senha?</a></center>
                 </div>
                 
 				<br>
@@ -85,10 +85,11 @@
                 </button>
             </form>
 
-            <div class="login-footer">
-                <p>Não possui acesso?</p>
-                <br>
-                <a th:href="@{/register}">Solicitar Cadastro</a>
+            <div class="login-footer" style="text-align: center; margin-top: 15px;">
+                <p style="margin-bottom: 10px;">Não possui acesso?</p>
+                <a th:href="@{/register}" style="display: inline-block; background-color: #b6d441; color: white; padding: 10px 30px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: 0.3s;">
+                    Solicitar Cadastro
+                </a>
             </div>
         </div>
     </main>
