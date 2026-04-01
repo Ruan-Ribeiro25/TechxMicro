@@ -133,9 +133,18 @@ public class AuthController {
             String token = String.format("%06d", new Random().nextInt(999999));
             usuario.setTokenReset(token);
             usuarioRepository.save(usuario);
-            emailService.enviarEmail(usuario.getEmail(), "Reset Senha", "Token: " + token);
+            
+            // Injeção de visual HTML
+            String htmlTexto = "<h2 style='color: #f07d35;'>Recuperação de Acesso</h2>" +
+                               "<p>Recebemos uma solicitação para redefinir sua senha na plataforma PIXEL TI.</p>" +
+                               "<p>Seu código de segurança é: <b style='font-size: 1.5rem; letter-spacing: 3px; color: #b6d441;'>" + token + "</b></p>" +
+                               "<p>Se você não solicitou esta alteração, por favor ignore este aviso.</p>";
+                               
+            emailService.enviarEmail(usuario.getEmail(), "PIXEL TI - Recuperação de Senha", htmlTexto);
+            
             return "redirect:/enter-code";
-        }
+        } // <--- A CHAVE QUE FALTAVA ESTÁ AQUI!
+        
         model.addAttribute("error", "CPF não encontrado.");
         return "forgot-password";
     }

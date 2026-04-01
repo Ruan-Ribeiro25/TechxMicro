@@ -1,4 +1,6 @@
-const CACHE_NAME = 'Helpdesk-v2';
+const CACHE_NAME = 'Helpdesk-v3'; // Versão atualizada para forçar a limpeza
+
+// (Mantenha o resto do código do sw.js exatamente igual)
 
 // Evento de Ativação: Limpa caches antigos
 self.addEventListener('activate', (event) => {

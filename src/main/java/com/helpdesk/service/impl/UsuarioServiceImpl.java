@@ -2,11 +2,10 @@ package com.helpdesk.service.impl;
 
 import com.helpdesk.entity.Usuario;
 import com.helpdesk.repository.UsuarioRepository;
+import com.helpdesk.service.EmailService; // Importação corrigida
 import com.helpdesk.service.UsuarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +21,9 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // Agora chamamos o carteiro oficial do sistema!
     @Autowired
-    private JavaMailSender mailSender;
+    private EmailService emailService;
 
     @Override
     public Usuario findById(Long id) {
@@ -36,46 +36,27 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    @Transactional // Garante que se o e-mail falhar drasticamente, o user não fica salvo num estado inválido
+    @Transactional
     public Usuario cadastrar(Usuario usuario) {
-        // 1. Criptografia de Senha (CORRIGIDO: setSenha em vez de setPassword)
-        // Verifica se a senha já não está codificada para evitar dupla codificação
         if (!usuario.getSenha().startsWith("$2a$")) {
             usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         }
 
-        // 2. BLOQUEIO INICIAL (Conta inativa até validar e-mail)
         usuario.setAtivo(false);
 
-        // 3. GERAÇÃO DO CÓDIGO DE 6 DÍGITOS
         String codigo = String.format("%06d", new Random().nextInt(999999));
         usuario.setCodigoVerificacao(codigo);
 
-        // 4. SALVAMENTO
         Usuario salvo = usuarioRepository.save(usuario);
 
-        // 5. DISPARO DO E-MAIL
-        enviarEmail(salvo.getEmail(), codigo);
+        // Texto HTML personalizado e com as cores PIXEL TI
+        String htmlTexto = "<h2 style='color: #b6d441;'>Bem-vindo à PIXEL TI!</h2>" +
+                           "<p>Seu perfil foi criado com sucesso.</p>" +
+                           "<p>Seu código de verificação é: <b style='font-size: 1.5rem; letter-spacing: 3px; color: #f07d35;'>" + codigo + "</b></p>" +
+                           "<p>Insira este código na tela de cadastro para ativar sua conta e acessar nosso Helpdesk.</p>";
+
+        emailService.enviarEmail(salvo.getEmail(), "PIXEL TI - Código de Ativação", htmlTexto);
 
         return salvo;
-    }
-
-    private void enviarEmail(String destinatario, String codigo) {
-        try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom("vidapluscontato@gmail.com");
-            message.setTo(destinatario);
-            message.setSubject("VidaPlus - Código de Ativação");
-            message.setText("Seja bem-vindo ao VidaPlus!\n\n" +
-                            "Seu código de verificação é: " + codigo + "\n\n" +
-                            "Insira este código na tela de cadastro para ativar sua conta.");
-            
-            mailSender.send(message);
-            System.out.println(">>> EMAIL ENVIADO COM SUCESSO PARA: " + destinatario);
-        } catch (Exception e) {
-            // Log de erro crítico, mas não paramos o fluxo para não perder o cadastro
-            System.err.println("ERRO CRÍTICO AO ENVIAR E-MAIL: " + e.getMessage());
-            e.printStackTrace();
-        }
     }
 }

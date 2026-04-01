@@ -424,6 +424,28 @@ footer br {
     display: none !important;
 }
 
+/* ============================================================
+   INTEGRAÇÃO PWA: FUSÃO DA BARRA NATIVA (WINDOW CONTROLS OVERLAY)
+   ============================================================ */
+@media (display-mode: window-controls-overlay) {
+    nav {
+        /* Puxa a barra para dentro da área do sistema operativo */
+        padding-top: env(titlebar-area-y) !important;
+        padding-left: env(titlebar-area-x, 20px) !important;
+        /* Protege o lado direito para não sobrepor os botões de Fechar/Minimizar do SO */
+        padding-right: calc(env(titlebar-area-width, 150px) + 20px) !important;
+        height: env(titlebar-area-height, 60px) !important;
+        
+        /* Transforma a sua navbar preta na área de arrastar a janela! */
+        -webkit-app-region: drag; 
+    }
+    
+    /* Garante que os botões continuam a poder ser clicados (não arrastam a tela) */
+    nav h1, nav .user-info, nav a, nav button, .btn-sair {
+        -webkit-app-region: no-drag;
+    }
+}
+
 /* Ajuste Responsivo */
 @media (max-width: 1200px) {
     nav { padding: 5px 10px; gap: 5px; flex-direction: row; justify-content: space-between; align-items: center; width: 100%; }
