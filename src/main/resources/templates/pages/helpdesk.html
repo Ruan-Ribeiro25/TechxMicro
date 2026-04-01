@@ -8,6 +8,11 @@
     <link rel="stylesheet" th:href="@{/css/global.css?v=1.2}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Animação para o status Ao Vivo */
+        @keyframes blink { 50% { opacity: 0; } }
+        .blink-anim { animation: blink 2s linear infinite; }
+    </style>
 </head>
 <body>
 
@@ -22,20 +27,20 @@
                     <div><h2>Painel Helpdesk</h2><p>Monitorização em Tempo Real</p></div>
                 </div>
                 <div class="action-buttons">
-    <a th:href="@{/helpdesk/auditoria}" class="btn-tech" style="background-color: #000000; color: #b6d441; border: 2px solid #b6d441; margin-right: 10px;">
-        <i class="fas fa-history"></i> Auditoria
-    </a>
-    
-    <a th:href="@{/helpdesk/cadastrar-tecnico}" class="btn-tech" style="margin-right: 10px;">
-        <i class="fas fa-user-plus"></i> Cadastrar Técnico
-    </a>
-    <a th:href="@{/helpdesk/novo-chamado}" class="btn-novo-chamado">
-        <i class="fas fa-plus-circle"></i> Novo Chamado
-    </a>
-</div>
+                    <a th:href="@{/helpdesk/auditoria}" class="btn-tech" style="background-color: #000000; color: #b6d441; border: 2px solid #b6d441; margin-right: 10px;">
+                        <i class="fas fa-history"></i> Auditoria
+                    </a>
+                    
+                    <a th:href="@{/helpdesk/cadastrar-tecnico}" class="btn-tech" style="margin-right: 10px;">
+                        <i class="fas fa-user-plus"></i> Cadastrar Técnico
+                    </a>
+                    <a th:href="@{/helpdesk/novo-chamado}" class="btn-novo-chamado">
+                        <i class="fas fa-plus-circle"></i> Novo Chamado
+                    </a>
+                </div>
             </div>
 
-            <div class="kpi-grid">
+            <div class="kpi-grid" id="kpiContainer">
                 <div class="kpi-card border-pendente">
                     <div class="kpi-info"><h3 style="color: #000000;">Pendentes (Infra)</h3><span class="kpi-number" th:text="${pendentesInfra}">0</span></div>
                     <i class="fas fa-server kpi-icon text-pendente"></i>
@@ -60,9 +65,15 @@
             </div>
 
             <div class="history-section">
-                <h4 class="chart-title" style="margin-bottom: 15px;"><i class="fas fa-list-alt" style="color: #000000;"></i> Histórico Recente de Chamados</h4>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h4 class="chart-title" style="margin: 0;"><i class="fas fa-list-alt" style="color: #000000;"></i> Histórico Recente de Chamados</h4>
+                    <div style="font-size: 0.8rem; color: #b6d441; font-weight: bold; background: #000000; padding: 4px 10px; border-radius: 50px;">
+                        <i class="fas fa-circle blink-anim"></i> Radar Ao Vivo
+                    </div>
+                </div>
+                
                 <div class="table-responsive">
-                    <table class="helpdesk-table">
+                    <table class="helpdesk-table" id="tabelaChamados">
                         <thead>
                             <tr>
                                 <th>Ticket</th>
@@ -82,18 +93,13 @@
                                 
                                 <td>
                                     <span th:if="${chamado.categoria != null and chamado.categoria.name() == 'TI'}" 
-          class="categoria-badge categoria-ti">
-        Suporte TI
-    </span>
+                                          class="categoria-badge categoria-ti">Suporte TI</span>
                                     
                                     <span th:if="${chamado.categoria != null and chamado.categoria.name() == 'SOFTWARE'}" 
-          class="categoria-badge categoria-software">
-        Software Helpdesk
-    </span>
+                                          class="categoria-badge categoria-software">Software Helpdesk</span>
+                                          
                                     <span th:if="${chamado.categoria == null}" 
-          class="categoria-badge categoria-vazia" title="Chamado criado antes da correção">
-        Antigo/Vazio
-    </span>
+                                          class="categoria-badge categoria-vazia" title="Chamado criado antes da correção">Antigo/Vazio</span>
                                 </td>
                                 
                                 <td th:text="${chamado.assunto}">Assunto do problema</td>
@@ -120,12 +126,12 @@
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(chamados)}">
-                                <td colspan="8" style="text-align: center; padding: 20px; color: #000000;">Nenhum chamado registrado.</td>
+                                <td colspan="8" style="text-align: center; padding: 20px; color: #000000;">Nenhum chamado registrado no radar.</td>
                             </tr>
                         </tbody>
                     </table>
                     
-                    <div th:if="${totalPages > 1}" style="display: flex; justify-content: center; gap: 8px; margin-top: 15px;">
+                    <div id="paginacaoChamados" th:if="${totalPages > 1}" style="display: flex; justify-content: center; gap: 8px; margin-top: 15px;">
                         <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
                             <a th:href="@{/helpdesk(page=${i})}" th:text="${i + 1}" 
                                th:style="${currentPage == i ? 'background: #b6d441; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-weight: bold;' : 'background: #000000; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none;'}">
@@ -140,57 +146,45 @@
 
     <div th:replace="~{fragments/footer :: rodape}"></div>
 
-  <script th:inline="javascript">
+    <script th:inline="javascript">
         /*<![CDATA[*/
-        // 1. Recebendo as variáveis do Java da forma CORRETA para o Thymeleaf e Eclipse
+        // 1. DADOS DOS GRÁFICOS (Gerados pelo Java)
         const dadosHora = /*[[${infraPorHora}]]*/ [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
         const dadosDia = /*[[${infraPorDia}]]*/ [0,0,0,0,0,0,0];
         const dadosMes = /*[[${infraPorMes}]]*/ [0,0,0,0,0,0,0,0,0,0,0,0];
         const dadosAno = /*[[${infraPorAno}]]*/ [0,0,0,0,0,0,0,0,0,0];
         const anoAtual = /*[[${anoAtual}]]*/ 2026;
 
-        // 2. Criando as legendas (eixo X)
         const labelsHora = Array.from({length: 24}, (_, i) => i + 'h');
         const labelsDia = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
         const labelsMes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
         const labelsAno = Array.from({length: 10}, (_, i) => (anoAtual - 9) + i);
 
-        // Variáveis do gráfico de Software
         const softRes = /*[[${softResolvidos}]]*/ 0;
         const softPen = /*[[${softPendentes}]]*/ 0;
         const softCan = /*[[${softCancelados}]]*/ 0;
 
-        // 3. Inicializando o Gráfico de TI (Infra)
+        // 2. INICIALIZAR GRÁFICO TI (Infra)
         const ctxTI = document.getElementById('chartSuporteTI').getContext('2d');
         let chartTI = new Chart(ctxTI, {
             type: 'bar',
             data: {
-                labels: labelsDia, // Começa mostrando a Semana
+                labels: labelsDia,
                 datasets: [{ label: 'Chamados Infra', data: dadosDia, backgroundColor: '#f07d35', borderRadius: 4 }]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'top' } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
         });
 
-        // 4. O "Ouvinte" do Select: muda o gráfico na hora!
         document.getElementById('filtroTempoTI').addEventListener('change', function() {
             let val = this.value;
-            if (val === 'dia') { 
-                chartTI.data.labels = labelsHora; 
-                chartTI.data.datasets[0].data = dadosHora; 
-            } else if (val === 'semana') { 
-                chartTI.data.labels = labelsDia; 
-                chartTI.data.datasets[0].data = dadosDia; 
-            } else if (val === 'ano') { 
-                chartTI.data.labels = labelsMes; 
-                chartTI.data.datasets[0].data = dadosMes; 
-            } else if (val === 'dez_anos') { 
-                chartTI.data.labels = labelsAno; 
-                chartTI.data.datasets[0].data = dadosAno; 
-            }
-            chartTI.update(); // Atualiza a tela
+            if (val === 'dia') { chartTI.data.labels = labelsHora; chartTI.data.datasets[0].data = dadosHora; } 
+            else if (val === 'semana') { chartTI.data.labels = labelsDia; chartTI.data.datasets[0].data = dadosDia; } 
+            else if (val === 'ano') { chartTI.data.labels = labelsMes; chartTI.data.datasets[0].data = dadosMes; } 
+            else if (val === 'dez_anos') { chartTI.data.labels = labelsAno; chartTI.data.datasets[0].data = dadosAno; }
+            chartTI.update();
         });
 
-        // Inicializando o Gráfico de Software (Donut)
+        // 3. INICIALIZAR GRÁFICO SOFTWARE (Donut)
         const ctxSoft = document.getElementById('chartSoftware').getContext('2d');
         new Chart(ctxSoft, {
             type: 'doughnut',
@@ -200,6 +194,47 @@
             },
             options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { display: true, position: 'top' } } }
         });
+
+        // =========================================================================
+        // 4. ATUALIZAÇÃO EM TEMPO REAL (POLLING: TABELA E KPIs)
+        // =========================================================================
+        async function atualizarDashboardAoVivo() {
+            try {
+                // Fetch silencioso da página atual
+                const response = await fetch(window.location.href);
+                if (response.ok) {
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    // A. Atualizar Tabela de Chamados
+                    const novaTabela = doc.querySelector('#tabelaChamados tbody');
+                    const tabelaAtual = document.querySelector('#tabelaChamados tbody');
+                    if (novaTabela && tabelaAtual && novaTabela.innerHTML !== tabelaAtual.innerHTML) {
+                        tabelaAtual.innerHTML = novaTabela.innerHTML;
+                    }
+
+                    // B. Atualizar Paginação (caso entre um chamado que crie nova página)
+                    const novaPaginacao = doc.getElementById('paginacaoChamados');
+                    const paginacaoAtual = document.getElementById('paginacaoChamados');
+                    if (novaPaginacao && paginacaoAtual && novaPaginacao.innerHTML !== paginacaoAtual.innerHTML) {
+                        paginacaoAtual.innerHTML = novaPaginacao.innerHTML;
+                    }
+
+                    // C. Atualizar os Contadores (KPIs) no Topo
+                    const novosKpis = doc.getElementById('kpiContainer');
+                    const kpisAtuais = document.getElementById('kpiContainer');
+                    if (novosKpis && kpisAtuais && novosKpis.innerHTML !== kpisAtuais.innerHTML) {
+                        kpisAtuais.innerHTML = novosKpis.innerHTML;
+                    }
+                }
+            } catch (e) {
+                // Falha de rede: ignora silenciosamente para não atrapalhar o utilizador
+            }
+        }
+
+        // Configurado para verificar a base de dados a cada 3 segundos (3000ms)
+        setInterval(atualizarDashboardAoVivo, 3000);
         /*]]>*/
     </script>
 </body>
