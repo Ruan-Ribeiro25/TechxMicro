@@ -6,28 +6,82 @@
     
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link rel="stylesheet" th:href="@{/css/global.css}">
-   
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    </head>
+    <style>
+        /* MÁGICA DA TELA CHEIA */
+        .fullscreen-mode {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 9999 !important; /* Fica por cima da Navbar e do Footer */
+            margin: 0 !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+            background-color: #ffffff !important;
+        }
+        
+        .fullscreen-mode .network-header {
+            padding: 15px 25px !important;
+            margin-bottom: 0 !important;
+            background-color: #f8f9fa !important;
+            border-bottom: 2px solid #b6d441 !important;
+        }
+        
+        .fullscreen-mode .erp-frame-fluid {
+            height: calc(100vh - 75px) !important; /* Desconta a altura do cabeçalho */
+            border: none !important;
+            border-radius: 0 !important;
+        }
+
+        /* Trava a rolagem da página atrás do Iframe */
+        body.no-scroll {
+            overflow: hidden !important;
+        }
+        
+        /* Botão de Expansão Padrão */
+        .btn-expandir {
+            background-color: #b6d441;
+            color: #000000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(182, 212, 65, 0.3);
+        }
+        
+        .btn-expandir:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(182, 212, 65, 0.5);
+        }
+    </style>
+</head>
 
 <body>
 
     <div th:replace="~{fragments/header :: navbar}"></div>
-    
-    
-    
 
     <main>
-        <div class="page-sheet-erp">
+        <div class="page-sheet-erp" id="erpContainer">
             
-            <div class="network-header">
-                <a href="/home" class="btn-circle-back" title="Voltar ao Painel"><i class="fas fa-arrow-left"></i></a>
-                <h2 style="margin:0; color: #ffffff;">ERP Compels</h2>
+            <div class="network-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center;">
+                    <a href="/home" class="btn-circle-back" title="Voltar ao Painel"><i class="fas fa-arrow-left"></i></a>
+                    <h2 style="margin:0; color: #000000; font-weight: 800;">ERP Compels</h2>
+                </div>
+                
+                <button onclick="toggleFullscreen()" id="btnToggleSize" class="btn-expandir">
+                    <i class="fas fa-expand"></i> <span id="textToggle">Tela Cheia</span>
+                </button>
             </div>
             
-            
-    		            
             <iframe 
                 class="erp-frame-fluid"
                 src="https://web.erpeasy.compels.net/#home" 
@@ -37,21 +91,38 @@
                 referrerpolicy="no-referrer-when-downgrade"
                 allowfullscreen>
             </iframe>
-            
-            
 
         </div>
     </main>
-    
-    		<br>
-            <br>
-            <br>
-            <br>
-            
-            
-           
-    
+
     <div th:replace="~{fragments/footer :: rodape}"></div>
 
+    <script>
+        function toggleFullscreen() {
+            const container = document.getElementById('erpContainer');
+            const btn = document.getElementById('btnToggleSize');
+            const icon = btn.querySelector('i');
+            const text = document.getElementById('textToggle');
+            
+            // Alterna as classes
+            container.classList.toggle('fullscreen-mode');
+            document.body.classList.toggle('no-scroll'); // Trava o scroll de trás
+            
+            // Muda o visual do botão dependendo do estado
+            if (container.classList.contains('fullscreen-mode')) {
+                icon.className = 'fas fa-compress';
+                text.innerText = 'Restaurar';
+                btn.style.backgroundColor = '#f07d35'; // Fica Laranja ao expandir
+                btn.style.color = '#ffffff';
+                btn.style.boxShadow = '0 4px 10px rgba(240, 125, 53, 0.3)';
+            } else {
+                icon.className = 'fas fa-expand';
+                text.innerText = 'Tela Cheia';
+                btn.style.backgroundColor = '#b6d441'; // Volta ao Verde
+                btn.style.color = '#000000';
+                btn.style.boxShadow = '0 4px 10px rgba(182, 212, 65, 0.3)';
+            }
+        }
+    </script>
 </body>
 </html>

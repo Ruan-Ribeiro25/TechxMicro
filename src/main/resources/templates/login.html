@@ -23,7 +23,17 @@
 </head>
 <body>
 
-    <div th:replace="~{fragments/header :: navbar}"></div>
+    <nav style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: #000000; border-bottom: 2px solid #b6d441; -webkit-app-region: drag; z-index: 1000; position: relative;">
+        
+        <div class="logo" style="-webkit-app-region: no-drag;">
+            <img th:src="@{/img/LogoSite.V1.White.png}" alt="PIXEL TI" style="height: 35px;">
+        </div>
+        
+        <div style="color: #ffffff; font-weight: 600; font-size: 1rem; -webkit-app-region: no-drag;">
+            Olá, <span style="color: #f07d35;">Visitante</span>
+        </div>
+        
+    </nav>
 
     <main class="main-center">
         <div class="login-container">

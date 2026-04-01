@@ -3,46 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificar Conta - Helpdesk PIXELTI</title>
+    <title>Verificar Conta - Helpdesk PIXEL TI</title>
     
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
+<body style="background-color: #f4f7f6;">
 
     <div th:replace="~{fragments/header :: navbar}"></div>
 
     <main>
-        <div class="card-container login-size">
-            <h2>Ativação de Conta</h2>
+        <div class="card-container login-size" style="max-width: 450px; padding: 40px 30px; background: #ffffff; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: 40px auto; border-top: 6px solid #b6d441;">
             
-            <p style="text-align: center; margin-bottom: 20px; color: #555;">
-                Digite o código enviado para o seu e-mail<span th:if="${email}" th:text="' (' + ${email} + ')'"></span>.
-            </p>
-
-            <div th:if="${mensagem}" style="background-color: #d4edda; color: #b6d441; padding: 12px; border-radius: 6px; margin-bottom: 20px; text-align: center; border: 1px solid #c3e6cb;">
-                <span th:text="${mensagem}"></span>
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h2 style="color: #000000; font-weight: 800; font-size: 1.8rem;"><i class="fas fa-shield-alt" style="color: #b6d441;"></i> Ativação de Conta</h2>
+                <p style="color: #666; font-size: 0.95rem; margin-top: 10px;">
+                    Digite o código de segurança enviado para o e-mail<br><strong th:if="${email}" th:text="${email}" style="color: #f07d35;"></strong>
+                </p>
             </div>
 
-            <div th:if="${param.error}" class="error" style="background-color: #f8d7da; color: #f07d35; padding: 12px; border-radius: 6px; margin-bottom: 20px; text-align: center; border: 1px solid #f5c6cb;">
-                Código inválido ou expirado. Tente novamente.
+            <div th:if="${mensagem}" style="background-color: #f8f9fa; color: #000000; padding: 15px; border-radius: 8px; margin-bottom: 25px; text-align: center; border-left: 5px solid #b6d441; font-weight: 600; font-size: 0.9rem;">
+                <i class="fas fa-envelope-open-text" style="color: #b6d441; font-size: 1.2rem; margin-right: 5px;"></i> <span th:text="${mensagem}"></span>
+            </div>
+
+            <div th:if="${param.error}" class="error" style="background-color: #f8f9fa; color: #000000; padding: 15px; border-radius: 8px; margin-bottom: 25px; text-align: center; border-left: 5px solid #f07d35; font-weight: 600; font-size: 0.9rem;">
+                <i class="fas fa-exclamation-triangle" style="color: #f07d35; font-size: 1.2rem; margin-right: 5px;"></i> Código inválido ou expirado.
             </div>
 
             <form th:action="@{/verificar-conta}" method="post">
-                <div class="form-group">
-                    <label for="codigo">Código de Verificação:</label>
+                <div class="form-group" style="margin-bottom: 25px;">
+                    <label for="codigo" style="color: #000000 !important; font-weight: 800; display: block; margin-bottom: 10px; font-size: 1rem; text-transform: uppercase;">Código de Verificação:</label>
                     <input type="text" id="codigo" name="codigo" th:value="${param.codigo}" 
-                           placeholder="Ex: 34F237" required autofocus
-                           style="text-align: center; letter-spacing: 4px; font-size: 20px; text-transform: uppercase;">
+                           placeholder="EX: 34F237" required autofocus
+                           style="width: 100%; padding: 15px; text-align: center; letter-spacing: 6px; font-size: 1.5rem; text-transform: uppercase; font-weight: bold; border: 2px solid #e2e8f0; border-radius: 8px; outline: none; transition: border-color 0.3s; color: #000000;">
                 </div>
 
-                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">Ativar Conta</button>
+                <button type="submit" style="width: 100%; padding: 15px; background-color: #f07d35; color: #ffffff; border: none; border-radius: 8px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(240, 125, 53, 0.3); text-transform: uppercase;">
+                    Ativar Conta <i class="fas fa-check-circle" style="margin-left: 5px;"></i>
+                </button>
             </form>
             
-            <div class="links" style="margin-top: 20px; text-align: center;">
-                 <a th:href="@{/login}" style="color: #666; text-decoration: none; font-size: 0.9rem;">
-                    <i class="fas fa-arrow-left"></i> Voltar para Login
+            <div class="links" style="margin-top: 25px; text-align: center;">
+                 <a th:href="@{/login}" style="color: #000000; text-decoration: none; font-weight: 700; transition: color 0.2s; font-size: 0.95rem;">
+                    <i class="fas fa-arrow-left" style="color: #b6d441; margin-right: 5px;"></i> Voltar para Login
                  </a>
             </div>
         </div>

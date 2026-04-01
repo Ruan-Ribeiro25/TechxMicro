@@ -88,8 +88,9 @@
                 </div>
 
                 <div class="chat-box">
-                    <div class="chat-header">
-                        <i class="far fa-comments" style="color: #000000;"></i> Diálogo do Atendimento
+                    <div class="chat-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div><i class="far fa-comments" style="color: #000000;"></i> Diálogo do Atendimento</div>
+                        <div style="font-size: 0.7rem; color: #b6d441;"><i class="fas fa-circle blink-anim"></i> Online</div>
                     </div>
                     
                     <div class="chat-messages" id="chatContainer" style="max-height: 350px; overflow-y: auto; padding-right: 10px;">
@@ -106,7 +107,7 @@
 						</div>
                     </div>
 
-                    <form th:action="@{/helpdesk/responder}" method="POST" class="chat-input-area" th:if="${chamado.status.name() == 'PENDENTE'}">
+                    <form th:action="@{/helpdesk/responder}" method="POST" class="chat-input-area" id="chatForm" th:if="${chamado.status.name() == 'PENDENTE'}">
                         <input type="hidden" name="chamadoId" th:value="${chamado.id}" />
                         
                         <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
@@ -127,13 +128,103 @@
 
     <div th:replace="~{fragments/footer :: rodape}"></div>
 
+    <style>
+        /* Animação para o status de conexão no header do chat */
+        @keyframes blink { 50% { opacity: 0; } }
+        .blink-anim { animation: blink 2s linear infinite; }
+    </style>
+
     <script>
-        window.onload = function() {
-            var chatContainer = document.getElementById("chatContainer");
+        // Função para manter o chat colado no fundo
+        function scrollChatToBottom() {
+            const chatContainer = document.getElementById("chatContainer");
             if (chatContainer) {
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
-        };
+        }
+
+        // Rola para o fundo ao abrir a página
+        window.onload = scrollChatToBottom;
+
+        // ==========================================
+        // ATUALIZAÇÃO EM TEMPO REAL (POLLING)
+        // ==========================================
+        async function atualizarChat() {
+            try {
+                const response = await fetch(window.location.href);
+                if (response.ok) {
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    const novoChat = doc.getElementById('chatContainer');
+                    const chatAtual = document.getElementById('chatContainer');
+
+                    if (novoChat && chatAtual && novoChat.innerHTML !== chatAtual.innerHTML) {
+                        // Verifica se o usuário já estava a ver as mensagens antigas lá em cima
+                        let isAtBottom = chatAtual.scrollHeight - chatAtual.scrollTop <= chatAtual.clientHeight + 50;
+                        
+                        // Atualiza as mensagens
+                        chatAtual.innerHTML = novoChat.innerHTML;
+                        
+                        // Se ele estava lá no fundo, rola novamente para mostrar a mensagem recém-chegada
+                        if (isAtBottom) {
+                            scrollChatToBottom();
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn("PIXEL TI: Aguardando reconexão de rede...");
+            }
+        }
+
+        // Verifica se há mensagens novas a cada 2 segundos
+        setInterval(atualizarChat, 2000);
+
+        // ==========================================
+        // ENVIO DE MENSAGEM INSTANTÂNEO (AJAX)
+        // ==========================================
+        document.addEventListener("DOMContentLoaded", function() {
+            const chatForm = document.getElementById('chatForm');
+            
+            if (chatForm) {
+                chatForm.addEventListener('submit', async function(e) {
+                    e.preventDefault(); // Trava o recarregamento da página
+
+                    const submitBtn = chatForm.querySelector('.btn-send');
+                    const textarea = chatForm.querySelector('textarea[name="mensagem"]');
+                    const originalBtnHtml = submitBtn.innerHTML;
+
+                    // Efeito visual de carregamento no botão
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                    submitBtn.disabled = true;
+
+                    const formData = new FormData(chatForm);
+
+                    try {
+                        const response = await fetch(chatForm.action, {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (response.ok) {
+                            textarea.value = ''; // Limpa a caixa de texto
+                            await atualizarChat(); // Puxa a nova mensagem imediatamente
+                            scrollChatToBottom();  // Garante que a barra rola para baixo
+                        } else {
+                            alert("Falha ao enviar a mensagem. Tente novamente.");
+                        }
+                    } catch (err) {
+                        console.error("PIXEL TI Erro: ", err);
+                    } finally {
+                        // Restaura o botão
+                        submitBtn.innerHTML = originalBtnHtml;
+                        submitBtn.disabled = false;
+                        textarea.focus(); // Devolve o cursor para o utilizador continuar a digitar
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
