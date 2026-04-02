@@ -21,6 +21,10 @@
                 <p style="color: #666; font-size: 0.95rem; margin-top: 10px;">
                     Digite o código de segurança enviado para o e-mail<br><strong th:if="${email}" th:text="${email}" style="color: #f07d35;"></strong>
                 </p>
+                
+                <div style="margin-top: 15px; padding: 12px; background-color: #fff9f5; border-left: 4px solid #f07d35; border-radius: 4px; text-align: left; font-size: 0.85rem; color: #555;">
+                    <i class="fas fa-info-circle" style="color: #f07d35; margin-right: 5px;"></i> <strong>Dica:</strong> Não encontrou o e-mail na caixa principal? Verifique também a sua pasta de <strong>SPAM</strong> ou Lixo Eletrônico.
+                </div>
             </div>
 
             <div th:if="${mensagem}" style="background-color: #f8f9fa; color: #000000; padding: 15px; border-radius: 8px; margin-bottom: 25px; text-align: center; border-left: 5px solid #b6d441; font-weight: 600; font-size: 0.9rem;">
