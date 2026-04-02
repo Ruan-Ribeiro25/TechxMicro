@@ -2,7 +2,6 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    
     <title>Painel Geral - PIXELTI</title>
     <meta name="viewport" content="width=device-width, initial-scale=0.4">
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
@@ -12,7 +11,53 @@
 </head>
 <body>
 
-    <div th:replace="~{fragments/header :: navbar}"></div>
+    <nav id="main-navbar" class="navbar" style="background-color: #000000; padding: 15px 30px; border-bottom: 2px solid #b6d441; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; justify-content: space-between; align-items: center; font-family: 'Segoe UI', sans-serif; -webkit-app-region: drag; z-index: 1000; position: relative;">
+        
+        <div class="logo" style="-webkit-app-region: no-drag;">
+            <a th:href="@{/home}" style="text-decoration: none; display: flex; align-items: center;">
+                <img th:src="@{/img/LogoSite.V1.White.png}" alt="PIXEL TI" style="height: 35px;">
+            </a>
+        </div>
+
+        <div class="menu" style="display: flex; align-items: center; gap: 25px; -webkit-app-region: no-drag;">
+            
+            <span style="color: #ffffff; font-size: 1rem; font-weight: 500;">
+                Olá, <strong th:text="${usuario != null ? usuario.nome : 'Usuário'}" style="color: #f07d35; font-weight: 800;">Usuário</strong>
+            </span>
+
+            <a th:href="@{/logout}" style="text-decoration: none; color: #ffffff; font-weight: 600; border: 1px solid #555; padding: 8px 25px; border-radius: 50px; transition: 0.3s; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-sign-out-alt" style="color: #b6d441;"></i> Sair
+            </a>
+
+        </div>
+
+        <script th:inline="javascript">
+            document.addEventListener("DOMContentLoaded", function() {
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        const dadosGeo = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude
+                        };
+
+                        fetch('/api/geo/check-in', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(dadosGeo)
+                        })
+                        .then(response => response.text())
+                        .then(msg => {
+                            if(msg && msg.startsWith("UPDATE")) {
+                                console.log("PIXEL TI: Novo polo detectado. Atualizando contexto...");
+                                window.location.reload();
+                            }
+                        })
+                        .catch(err => console.warn("PIXEL TI Geo: Acesso à localização ignorado.", err));
+                    }, function(error) {});
+                }
+            });
+        </script>
+    </nav>
 
     <main>
         <div class="welcome-section">
@@ -23,35 +68,18 @@
             </div>
         </div>
                                         				
-		
         <div class="dashboard-grid">
-            
-          	<!--  <a th:href="@{/pastores}" class="card-action card-pastor">
-    			<div class="icon-box"><i class="fas fa-user-tie"><!-- fa-file-invoice-dollar </i></div> 
-    
-    			<h3>HELPDESK</h3>
-    
-    			<p>Gestão de chamados!</p>
-		   </a> -->
-
-           <!-- <a th:href="@{/acesso-profissional}" class="card-action card-profissional">
-                <div class="icon-box"><i class="fas fa-users-cog"><!-- fa-sitemap, fa-bullhorn,  </i></div>
-                <h3>ERP</h3>
-                <p>Sistema Compels, otimizador de processos empresariais.</p>
-            </a> -->
-
           
             <a th:href="@{/helpdesk}" class="card-action" style="border-bottom: 5px solid #fd7e14;">
-                <div class="icon-box" style="background: #fff5f5; color: #fd7e14;"><i class="fas fa-headset"><!-- fa-map-marked-alt --></i></div>
+                <div class="icon-box" style="background: #fff5f5; color: #fd7e14;"><i class="fas fa-headset"></i></div>
                 <h3>HELPDESK</h3>
                 <p style="font-size: 0.85rem; line-height: 1.4;">
                     Sistema Inteligente para Gestão de Chamados.
                 </p>
             </a>
             
-                          
             <a th:href="@{/qualidade}" class="card-action" style="border-bottom: 5px solid #fd7e14;">
-                <div class="icon-box" style="background: #fff5f5; color: #fd7e14;"><i class="fas fa-clipboard-check"><!-- fa-map-marked-alt --></i></div>
+                <div class="icon-box" style="background: #fff5f5; color: #fd7e14;"><i class="fas fa-clipboard-check"></i></div>
                 <h3>QUALIDADE</h3>
                 <p style="font-size: 0.85rem; line-height: 1.4;">
                     Gestão de Processos.
@@ -59,29 +87,27 @@
             </a>
 
             <a th:href="@{/conferencias}" class="card-action card-tele">
-                <div class="icon-box"><i class="fas fa-broadcast-tower"><!-- fa-file-invoice-dollar --></i></div>
+                <div class="icon-box"><i class="fas fa-broadcast-tower"></i></div>
                 <h3>CONFERÊNCIAS</h3>
                 <p>Reunião e alinhamento empresarial.</p>
             </a>
 
             <a th:href="@{/admin/login}" class="card-action card-admin">
-                <div class="icon-box"><i class="fas fa-cogs"><!-- fa-file-invoice-dollar --></i></div>
+                <div class="icon-box"><i class="fas fa-cogs"></i></div>
                 <h3>ADMINISTRAÇÃO</h3>
                 <p>Configurações do sistema.</p>
             </a>
             
-                        
-              <a th:href="@{/agenda}" class="card-action" style="border-bottom: 5px solid #fd7e14;">
-                <div class="icon-box" style="background: #fff5f5; color: #fd7e14;"><i class="fas fa-calendar-alt"><!-- fa-map-marked-alt --></i></div>
+            <a th:href="@{/agenda}" class="card-action" style="border-bottom: 5px solid #fd7e14;">
+                <div class="icon-box" style="background: #fff5f5; color: #fd7e14;"><i class="fas fa-calendar-alt"></i></div>
                 <h3>AGENDA</h3>
                 <p style="font-size: 0.85rem; line-height: 1.4;">
                     Agendamentos e compromissos PIXEL TI.
                 </p>
             </a>
             
-                                               
             <a th:href="@{/erp}" class="card-action" style="border-bottom: 5px solid #fd7e14;">
-                <div class="icon-box" style="background: #fff5f5; color: #fd7e14;"><i class="fas fa-cubes"><!-- fa-map-marked-alt --></i></div>
+                <div class="icon-box" style="background: #fff5f5; color: #fd7e14;"><i class="fas fa-cubes"></i></div>
                 <h3>ERP</h3>
                 <p style="font-size: 0.85rem; line-height: 1.4;">
                     Sistema Compels, otimizador de processos empresariais.
