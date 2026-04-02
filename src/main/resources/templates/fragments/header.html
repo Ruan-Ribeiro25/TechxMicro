@@ -82,6 +82,31 @@
                 } catch (e) {}
             }, 1000);
         </script>
+
+        <script>
+            let tempoInativo;
+
+            // Função que encerra a sessão e manda para o login
+            function realizarLogout() {
+                console.log("PIXEL TI: Inatividade de 5 minutos detectada. Encerrando sessão por segurança...");
+                window.location.href = '/logout';
+            }
+
+            // Função que zera o cronómetro sempre que há atividade humana
+            function zerarCronometro() {
+                clearTimeout(tempoInativo);
+                // 5 minutos = 5 * 60 * 1000 milissegundos = 300000
+                tempoInativo = setTimeout(realizarLogout, 300000); 
+            }
+
+            // Observadores de atividade do utilizador (Rato, Teclado, Toque na tela, Scroll)
+            window.onload = zerarCronometro;
+            document.onmousemove = zerarCronometro;
+            document.onkeypress = zerarCronometro;
+            document.ontouchstart = zerarCronometro; 
+            document.onclick = zerarCronometro;
+            document.onscroll = zerarCronometro;
+        </script>
     </nav>
 </body>
 </html>

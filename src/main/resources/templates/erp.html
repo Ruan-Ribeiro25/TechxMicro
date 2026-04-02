@@ -41,7 +41,7 @@
             overflow: hidden !important;
         }
         
-        /* Botão de Expansão Padrão */
+        /* Botão de Expansão e Nova Aba */
         .btn-expandir {
             background-color: #b6d441;
             color: #000000;
@@ -61,6 +61,17 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(182, 212, 65, 0.5);
         }
+        
+        .btn-dark {
+            background-color: #000000;
+            color: #ffffff;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-dark:hover {
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+        }
     </style>
 </head>
 
@@ -77,9 +88,15 @@
                     <h2 style="margin:0; color: #000000; font-weight: 800;">ERP Compels</h2>
                 </div>
                 
-                <button onclick="toggleFullscreen()" id="btnToggleSize" class="btn-expandir">
-                    <i class="fas fa-expand"></i> <span id="textToggle">Tela Cheia</span>
-                </button>
+                <div style="display: flex; gap: 12px;">
+                    <a href="https://web.erpeasy.compels.net/#home" target="_blank" class="btn-expandir btn-dark" title="Abrir em Nova Aba">
+                        <i class="fas fa-external-link-alt"></i> <span>Nova Aba</span>
+                    </a>
+                    
+                    <button onclick="toggleFullscreen()" id="btnToggleSize" class="btn-expandir">
+                        <i class="fas fa-expand"></i> <span id="textToggle">Tela Cheia</span>
+                    </button>
+                </div>
             </div>
             
             <iframe 
@@ -87,7 +104,6 @@
                 src="https://web.erpeasy.compels.net/#home" 
                 title="Sistema ERP Compels"
                 loading="lazy"
-                sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
                 referrerpolicy="no-referrer-when-downgrade"
                 allowfullscreen>
             </iframe>
