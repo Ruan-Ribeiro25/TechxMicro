@@ -65,10 +65,11 @@ public class HomeController {
         if (principal == null) return "redirect:/login";
         Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
         
+        // CORREÇÃO: Liberando acesso ao botão 'Assumir' para TODAS as variáveis de Técnico
         boolean isTechOrAdmin = usuario.getPerfil() != null && (
                 usuario.getPerfil().toUpperCase().contains("ADMIN") ||
-                usuario.getPerfil().toUpperCase().contains("TI") ||
-                usuario.getPerfil().toUpperCase().contains("MASTER")
+                usuario.getPerfil().toUpperCase().contains("MASTER") ||
+                usuario.getPerfil().toUpperCase().contains("TECNICO") // Pega TECNICO_TI, TECNICO_SOFTWARE, etc.
         );
 
         List<Chamado> todosChamados = chamadoRepository.findAll();
@@ -78,7 +79,7 @@ public class HomeController {
         long resolvidos = todosChamados.stream().filter(c -> c.getStatus() == StatusChamado.RESOLVIDO).count();
         long cancelados = todosChamados.stream().filter(c -> c.getStatus() == StatusChamado.CANCELADO).count();
 
-     // PREPARAÇÃO DOS DADOS PARA A LINHA DO TEMPO DO GRÁFICO
+        // PREPARAÇÃO DOS DADOS PARA A LINHA DO TEMPO DO GRÁFICO
         int[] infraPorHora = new int[24];
         int[] infraPorDia = new int[7];
         int[] infraPorMes = new int[12];
@@ -131,7 +132,7 @@ public class HomeController {
         model.addAttribute("resolvidos", resolvidos);
         model.addAttribute("cancelados", cancelados);
         
-        model.addAttribute("infraPorDia", infraPorDia); // Você já tem essa linha
+        model.addAttribute("infraPorDia", infraPorDia);
         model.addAttribute("infraPorHora", infraPorHora);
         model.addAttribute("infraPorMes", infraPorMes);
         model.addAttribute("infraPorAno", infraPorAno);
@@ -153,7 +154,6 @@ public class HomeController {
         return "pages/cadastrar-tecnico"; 
     }
 
-    // ==================== NOVA ROTA DE REGISTO DO TÉCNICO ====================
     @PostMapping("/helpdesk/cadastrar-tecnico")
     public String salvarNovoTecnico(
             @RequestParam("nome") String nome,
@@ -168,25 +168,18 @@ public class HomeController {
         Usuario novoTecnico = new Usuario();
         novoTecnico.setNome(nome);
         novoTecnico.setCpf(cpf);
-        novoTecnico.setUsername(cpf); // Define o CPF como nome de utilizador para login
+        novoTecnico.setUsername(cpf); 
         novoTecnico.setEmail(email);
-        
-        // CORREÇÃO 1: Seta o perfil diretamente como String
         novoTecnico.setPerfil(perfilTecnico); 
 
-        // CORREÇÃO 2: Instancia o encoder e utiliza setSenha() (conforme seu Usuario.java)
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         novoTecnico.setSenha(encoder.encode(senha)); 
-        
-        // REGRA DE NEGÓCIO: O técnico nasce INATIVO para forçar a aprovação do Administrador
         novoTecnico.setAtivo(false); 
 
         usuarioRepository.save(novoTecnico);
 
-        // Redireciona devolvendo a variável de sucesso para ativar o alerta verde no HTML
         return "redirect:/helpdesk/cadastrar-tecnico?sucesso=true";
     }
-    // =========================================================================
 
     @GetMapping("/helpdesk/novo-chamado")
     public String novoChamado(Model model, Principal principal) {
@@ -225,10 +218,11 @@ public class HomeController {
         if (principal == null) return "redirect:/login";
         Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
 
+        // CORREÇÃO REPLICADA PARA A PÁGINA DE DETALHES
         boolean isTechOrAdmin = usuario.getPerfil() != null && (
                 usuario.getPerfil().toUpperCase().contains("ADMIN") ||
-                usuario.getPerfil().toUpperCase().contains("TI") ||
-                usuario.getPerfil().toUpperCase().contains("MASTER")
+                usuario.getPerfil().toUpperCase().contains("MASTER") ||
+                usuario.getPerfil().toUpperCase().contains("TECNICO")
         );
 
         if (id == null) return "redirect:/helpdesk";
@@ -251,12 +245,10 @@ public class HomeController {
         if (chamado != null && chamado.getResponsavel() == null) {
             String perfil = tecnico.getPerfil() != null ? tecnico.getPerfil().toUpperCase() : "";
             
-            // Regras de liberação
             boolean isMaster = perfil.contains("ADMIN") || perfil.contains("MASTER");
             boolean isAmbos = perfil.contains("TECNICO_AMBOS");
             boolean podeAssumir = isMaster || isAmbos;
 
-            // Validação cruzada
             if (!podeAssumir) {
                 if (chamado.getCategoria() == CategoriaChamado.TI && perfil.contains("TECNICO_TI")) {
                     podeAssumir = true;
@@ -269,7 +261,6 @@ public class HomeController {
                 chamado.setResponsavel(tecnico);
                 chamadoRepository.save(chamado);
             } else {
-                // Devolve um erro na tela se ele tentar pegar da fila errada
                 redirectAttributes.addFlashAttribute("erroFila", "Acesso Negado: Sua especialidade não permite assumir chamados desta categoria.");
             }
         }
@@ -309,31 +300,25 @@ public class HomeController {
                 interacao.setTexto(texto);
                 interacao.setDataEnvio(LocalDateTime.now());
                 
-                // O saveAndFlush obriga o Java a injetar o dado no MySQL neste exato milissegundo
                 interacaoRepository.saveAndFlush(interacao);
             }
         } catch (Exception e) {
-            // Se houver falha no banco, o sistema vai estourar um erro na sua tela e não vai mais esconder!
             throw new RuntimeException("Erro ao salvar mensagem no banco de dados: " + e.getMessage(), e);
         }
 
-        // O segredo do Cache: Adicionar o timestamp (&t=...) no link obriga o navegador/Cloudflare a carregar a página fresca!
         return "redirect:/helpdesk/visualizar-chamado?id=" + chamadoId + "&t=" + System.currentTimeMillis();
     }
     
- // =================================================================================
-    // MÓDULO DE AUDITORIA EXCLUSIVA DO HELPDESK (CHAMADOS E INTERAÇÕES)
-    // =================================================================================
-
     @GetMapping("/helpdesk/auditoria")
     public String auditoriaHelpdesk(Model model, Principal principal) {
         if (principal == null) return "redirect:/login";
         Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
         
+        // CORREÇÃO REPLICADA PARA A ROTA DA AUDITORIA
         boolean isTechOrAdmin = usuario.getPerfil() != null && (
                 usuario.getPerfil().toUpperCase().contains("ADMIN") ||
-                usuario.getPerfil().toUpperCase().contains("TI") ||
-                usuario.getPerfil().toUpperCase().contains("MASTER")
+                usuario.getPerfil().toUpperCase().contains("MASTER") ||
+                usuario.getPerfil().toUpperCase().contains("TECNICO")
         );
         if (!isTechOrAdmin) return "redirect:/helpdesk";
 
@@ -344,7 +329,6 @@ public class HomeController {
         return "pages/helpdesk-auditoria"; 
     }
 
-    // --- ROTA PARA DOWNLOAD DO RELATÓRIO DO HELPDESK ---
     @GetMapping("/helpdesk/download-auditoria/{formato}")
     public ResponseEntity<ByteArrayResource> downloadAuditoriaHelpdesk(@PathVariable String formato, Principal principal) {
         List<Object[]> dados = gerarLinhaDoTempoHelpdesk();
@@ -412,13 +396,11 @@ public class HomeController {
                 .body(resource);
     }
 
-    // --- MOTOR QUE VARRE O BANCO E GERA A LINHA DO TEMPO ---
     private List<Object[]> gerarLinhaDoTempoHelpdesk() {
         List<Chamado> chamados = chamadoRepository.findAll();
         List<Object[]> logsHelpdesk = new ArrayList<>();
 
         for (Chamado c : chamados) {
-            // 1. Registro de Abertura do Chamado
             logsHelpdesk.add(new Object[]{
                 c.getDataAbertura() != null ? c.getDataAbertura() : LocalDateTime.now(),
                 "ABERTURA DE TICKET",
@@ -426,7 +408,6 @@ public class HomeController {
                 c.getSolicitante() != null ? c.getSolicitante().getNome() : "Usuário Desconhecido"
             });
 
-            // 2. Registro de Fechamento (Resolvido ou Cancelado)
             if (c.getDataFechamento() != null) {
                 String acao = c.getStatus().name().equals("RESOLVIDO") ? "TICKET RESOLVIDO" : "TICKET CANCELADO";
                 logsHelpdesk.add(new Object[]{
@@ -437,7 +418,6 @@ public class HomeController {
                 });
             }
 
-            // 3. Registro de Interações (Respostas no Chat)
             if (c.getInteracoes() != null) {
                 for (InteracaoChamado i : c.getInteracoes()) {
                     logsHelpdesk.add(new Object[]{
@@ -450,7 +430,6 @@ public class HomeController {
             }
         }
 
-        // Ordenar do mais recente para o mais antigo
         logsHelpdesk.sort((a, b) -> {
             LocalDateTime dataA = (LocalDateTime) a[0];
             LocalDateTime dataB = (LocalDateTime) b[0];
