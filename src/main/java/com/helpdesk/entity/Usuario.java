@@ -16,10 +16,12 @@ public class Usuario {
     @Column(nullable = false)
     private String nome;
     
-    @Column(unique = true, nullable = false)
+    // CORREÇÃO: Removido o 'nullable = false'. Agora o CPF aceita ficar vazio.
+    @Column(unique = true)
     private String cpf;
     
-    @Column(nullable = false)
+    // CORREÇÃO: Removido o 'nullable = false'. O RG agora aceita ficar vazio.
+    @Column
     private String rg; 
 
     // CARTÃO SUS REMOVIDO DEFINITIVAMENTE!
@@ -91,8 +93,6 @@ public class Usuario {
     public String getRg() { return rg; }
     public void setRg(String rg) { this.rg = rg; }
     
-    // Getters e Setters do Cartão SUS removidos!
-
     public LocalDate getDataNascimento() { return dataNascimento; }
     public void setDataNascimento(LocalDate dataNascimento) { this.dataNascimento = dataNascimento; }
 

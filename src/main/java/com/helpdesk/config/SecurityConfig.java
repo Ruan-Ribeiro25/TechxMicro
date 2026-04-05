@@ -48,11 +48,11 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/", "/login", "/login-professional", "/admin/login", "/register", "/register-professional", "/register-medico", "/register-admin", "/verificar-conta", "/forgot-password", "/enter-code", "/verify-reset-code", "/update-password", "/perfil/selecionar-polo", "/acesso-profissional", "/bem-vindo").permitAll()
                 
-                // REGRAS DE ACESSO ATUALIZADAS COM AS NOVAS COMPETÊNCIAS
-                .requestMatchers("/admin/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
-                .requestMatchers("/financeiro/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
-                .requestMatchers("/helpdesk/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TECNICO", "ROLE_TECNICO", "TECNICO_TI", "ROLE_TECNICO_TI", "TECNICO_SOFTWARE", "ROLE_TECNICO_SOFTWARE", "TECNICO_AMBOS", "ROLE_TECNICO_AMBOS")
-                .requestMatchers("/profissional/**").hasAnyAuthority("MEDICO", "ROLE_MEDICO", "ENFERMEIRO", "ROLE_ENFERMEIRO", "MOTORISTA", "ROLE_MOTORISTA", "ADMIN", "ROLE_ADMIN", "TECNICO", "ROLE_TECNICO", "TECNICO_TI", "ROLE_TECNICO_TI", "TECNICO_SOFTWARE", "ROLE_TECNICO_SOFTWARE", "TECNICO_AMBOS", "ROLE_TECNICO_AMBOS", "AUXILIAR", "ROLE_AUXILIAR", "RECEPCAO", "ROLE_RECEPCAO", "SERVICOS_GERAIS", "ROLE_SERVICOS_GERAIS")
+                // ROTAS ATUALIZADAS (INCLUINDO ADMIN_MASTER E USUARIO COMUM)
+                .requestMatchers("/admin/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN", "ADMIN_MASTER", "ROLE_ADMIN_MASTER")
+                .requestMatchers("/financeiro/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN", "ADMIN_MASTER", "ROLE_ADMIN_MASTER")
+                .requestMatchers("/helpdesk/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN", "ADMIN_MASTER", "ROLE_ADMIN_MASTER", "TECNICO", "ROLE_TECNICO", "TECNICO_TI", "ROLE_TECNICO_TI", "TECNICO_SOFTWARE", "ROLE_TECNICO_SOFTWARE", "TECNICO_AMBOS", "ROLE_TECNICO_AMBOS", "USUARIO", "ROLE_USUARIO")
+                .requestMatchers("/profissional/**").hasAnyAuthority("MEDICO", "ROLE_MEDICO", "ENFERMEIRO", "ROLE_ENFERMEIRO", "MOTORISTA", "ROLE_MOTORISTA", "ADMIN", "ROLE_ADMIN", "ADMIN_MASTER", "TECNICO", "ROLE_TECNICO", "TECNICO_TI", "ROLE_TECNICO_TI", "TECNICO_SOFTWARE", "ROLE_TECNICO_SOFTWARE", "TECNICO_AMBOS", "ROLE_TECNICO_AMBOS", "AUXILIAR", "ROLE_AUXILIAR", "RECEPCAO", "ROLE_RECEPCAO", "SERVICOS_GERAIS", "ROLE_SERVICOS_GERAIS")
                 .requestMatchers("/pacientes/**", "/agendamentos/**", "/documentos/**", "/telemedicina/**").authenticated()
                 
                 .anyRequest().authenticated()

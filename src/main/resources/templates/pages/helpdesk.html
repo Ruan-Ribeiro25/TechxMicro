@@ -21,14 +21,22 @@
     <main>
         <div class="page-sheet-helpdesk">
             
+            <div th:if="${param.erroAuditoria}" style="background-color: #fdecea; color: #f07d35; padding: 15px; margin-bottom: 20px; border-radius: 8px; border-left: 5px solid #f07d35; font-weight: bold; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <i class="fas fa-shield-alt"></i> Acesso Negado: Apenas Administradores possuem permissão para acessar a Auditoria.
+            </div>
+
             <div class="network-header-flex">
                 <div class="header-title-group">
                     <a th:href="@{/home}" class="btn-circle-back" title="Voltar ao Painel"><i class="fas fa-arrow-left"></i></a>
                     <div><h2>Painel Helpdesk</h2><p>Monitorização em Tempo Real</p></div>
                 </div>
                 <div class="action-buttons">
-                    <a th:href="@{/helpdesk/auditoria}" class="btn-tech" style="background-color: #000000; color: #b6d441; border: 2px solid #b6d441; margin-right: 10px;">
+                    
+                    <a th:if="${isAdmin}" th:href="@{/helpdesk/auditoria}" class="btn-tech" style="background-color: #000000; color: #b6d441; border: 2px solid #b6d441; margin-right: 10px;">
                         <i class="fas fa-history"></i> Auditoria
+                    </a>
+                    <a th:unless="${isAdmin}" href="#" onclick="alert('Acesso Restrito: Apenas Administradores Master têm permissão para acessar e visualizar o painel de Auditoria de chamados da PIXEL TI.'); return false;" class="btn-tech" style="background-color: #000000; color: #b6d441; border: 2px solid #b6d441; margin-right: 10px; cursor: not-allowed; opacity: 0.7;">
+                        <i class="fas fa-lock"></i> Auditoria
                     </a>
                     
                     <a th:href="@{/helpdesk/cadastrar-tecnico}" class="btn-tech" style="margin-right: 10px;">
@@ -160,9 +168,10 @@
         const labelsMes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
         const labelsAno = Array.from({length: 10}, (_, i) => (anoAtual - 9) + i);
 
-        const softRes = /*[[${softResolvidos}]]*/ 0;
-        const softPen = /*[[${softPendentes}]]*/ 0;
-        const softCan = /*[[${softCancelados}]]*/ 0;
+        // Arrays de tempo do Software: [0]=Hora, [1]=Dia, [2]=Mes, [3]=Ano
+        const sResTime = /*[[${softResolvidosTime}]]*/ [0,0,0,0];
+        const sPenTime = /*[[${softPendentesTime}]]*/ [0,0,0,0];
+        const sCanTime = /*[[${softCanceladosTime}]]*/ [0,0,0,0];
 
         // 2. INICIALIZAR GRÁFICO TI (Infra)
         const ctxTI = document.getElementById('chartSuporteTI').getContext('2d');
@@ -175,24 +184,45 @@
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'top' } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
         });
 
-        document.getElementById('filtroTempoTI').addEventListener('change', function() {
-            let val = this.value;
-            if (val === 'dia') { chartTI.data.labels = labelsHora; chartTI.data.datasets[0].data = dadosHora; } 
-            else if (val === 'semana') { chartTI.data.labels = labelsDia; chartTI.data.datasets[0].data = dadosDia; } 
-            else if (val === 'ano') { chartTI.data.labels = labelsMes; chartTI.data.datasets[0].data = dadosMes; } 
-            else if (val === 'dez_anos') { chartTI.data.labels = labelsAno; chartTI.data.datasets[0].data = dadosAno; }
-            chartTI.update();
-        });
-
         // 3. INICIALIZAR GRÁFICO SOFTWARE (Donut)
+        // Começa exibindo os dados da Semana (Índice 1) para espelhar o gráfico TI
         const ctxSoft = document.getElementById('chartSoftware').getContext('2d');
-        new Chart(ctxSoft, {
+        let chartSoftware = new Chart(ctxSoft, {
             type: 'doughnut',
             data: {
                 labels: ['Resolvidos', 'Pendentes', 'Cancelados'],
-                datasets: [{ data: [softRes, softPen, softCan], backgroundColor: ['#b6d441', '#000000', '#f07d35'], borderWidth: 0 }] 
+                datasets: [{ 
+                    data: [sResTime[1], sPenTime[1], sCanTime[1]], 
+                    backgroundColor: ['#b6d441', '#000000', '#f07d35'], 
+                    borderWidth: 0 
+                }] 
             },
             options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { display: true, position: 'top' } } }
+        });
+
+        // Evento que atualiza ambos os gráficos ao mesmo tempo
+        document.getElementById('filtroTempoTI').addEventListener('change', function() {
+            let val = this.value;
+            
+            if (val === 'dia') { 
+                chartTI.data.labels = labelsHora; chartTI.data.datasets[0].data = dadosHora; 
+                chartSoftware.data.datasets[0].data = [sResTime[0], sPenTime[0], sCanTime[0]];
+            } 
+            else if (val === 'semana') { 
+                chartTI.data.labels = labelsDia; chartTI.data.datasets[0].data = dadosDia; 
+                chartSoftware.data.datasets[0].data = [sResTime[1], sPenTime[1], sCanTime[1]];
+            } 
+            else if (val === 'ano') { 
+                chartTI.data.labels = labelsMes; chartTI.data.datasets[0].data = dadosMes; 
+                chartSoftware.data.datasets[0].data = [sResTime[2], sPenTime[2], sCanTime[2]];
+            } 
+            else if (val === 'dez_anos') { 
+                chartTI.data.labels = labelsAno; chartTI.data.datasets[0].data = dadosAno; 
+                chartSoftware.data.datasets[0].data = [sResTime[3], sPenTime[3], sCanTime[3]];
+            }
+            
+            chartTI.update();
+            chartSoftware.update();
         });
 
         // =========================================================================
@@ -200,28 +230,24 @@
         // =========================================================================
         async function atualizarDashboardAoVivo() {
             try {
-                // Fetch silencioso da página atual
                 const response = await fetch(window.location.href);
                 if (response.ok) {
                     const html = await response.text();
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(html, 'text/html');
                     
-                    // A. Atualizar Tabela de Chamados
                     const novaTabela = doc.querySelector('#tabelaChamados tbody');
                     const tabelaAtual = document.querySelector('#tabelaChamados tbody');
                     if (novaTabela && tabelaAtual && novaTabela.innerHTML !== tabelaAtual.innerHTML) {
                         tabelaAtual.innerHTML = novaTabela.innerHTML;
                     }
 
-                    // B. Atualizar Paginação (caso entre um chamado que crie nova página)
                     const novaPaginacao = doc.getElementById('paginacaoChamados');
                     const paginacaoAtual = document.getElementById('paginacaoChamados');
                     if (novaPaginacao && paginacaoAtual && novaPaginacao.innerHTML !== paginacaoAtual.innerHTML) {
                         paginacaoAtual.innerHTML = novaPaginacao.innerHTML;
                     }
 
-                    // C. Atualizar os Contadores (KPIs) no Topo
                     const novosKpis = doc.getElementById('kpiContainer');
                     const kpisAtuais = document.getElementById('kpiContainer');
                     if (novosKpis && kpisAtuais && novosKpis.innerHTML !== kpisAtuais.innerHTML) {
@@ -229,11 +255,10 @@
                     }
                 }
             } catch (e) {
-                // Falha de rede: ignora silenciosamente para não atrapalhar o utilizador
+                // Falha de rede silenciosa
             }
         }
 
-        // Configurado para verificar a base de dados a cada 3 segundos (3000ms)
         setInterval(atualizarDashboardAoVivo, 3000);
         /*]]>*/
     </script>

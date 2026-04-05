@@ -21,6 +21,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     Usuario findByUsername(String username);
     Usuario findByCpf(String cpf);
+    
+    // A PEÇA QUE FALTAVA PARA O AUTH CONTROLLER:
+    Usuario findByEmail(String email);
+    
     Usuario findByCodigoVerificacao(String codigo);
     Usuario findByTokenReset(String tokenReset);
 
@@ -33,30 +37,19 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
                    "WHERE up.polo_id = :poloId AND u.perfil = 'PACIENTE'", 
            nativeQuery = true)
     List<Usuario> findPacientesByPolo(@Param("poloId") Long poloId);
-
+    
     @Query(value = "SELECT u.* FROM usuarios u " +
                    "INNER JOIN usuario_polo up ON u.id = up.usuario_id " +
-                   "WHERE up.polo_id = :poloId AND u.perfil = 'PROFISSIONAL'", 
+                   "WHERE up.polo_id = :poloId AND u.perfil LIKE '%MEDICO%'", 
            nativeQuery = true)
-    List<Usuario> findProfissionaisByPolo(@Param("poloId") Long poloId);
+    List<Usuario> findMedicosByPolo(@Param("poloId") Long poloId);
 
     // =================================================================================
-    // 3. AGENDAMENTO INTELIGENTE (Mantidos)
+    // 3. RECUPERAÇÃO DE CONTA
     // =================================================================================
-
-    @Query(value = "SELECT polo_id FROM usuario_polo WHERE usuario_id = :usuarioId LIMIT 1", nativeQuery = true)
-    Long findPoloIdByUsuarioId(@Param("usuarioId") Long usuarioId);
-
-    @Query(value = """
-        SELECT u.id, u.nome 
-        FROM usuarios u
-        JOIN usuario_polo up ON u.id = up.usuario_id
-        JOIN profissionais p ON u.id = p.usuario_id
-        WHERE up.polo_id = :poloId 
-        AND p.especialidade = :especialidade
-        AND u.ativo = 1
-    """, nativeQuery = true)
-    List<Object[]> findIdAndNomeByPoloAndEspecialidade(@Param("poloId") Long poloId, @Param("especialidade") String especialidade);
+    
+    @Query("SELECT u FROM Usuario u WHERE u.cpf = :cpf AND u.dataNascimento = :dataNascimento")
+    Usuario findByCpfAndDataNascimento(@Param("cpf") String cpf, @Param("dataNascimento") String dataNascimento);
 
     // =================================================================================
     // 4. CONSULTAS GLOBAIS (Mantidas)

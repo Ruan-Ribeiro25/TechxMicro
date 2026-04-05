@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.ZoneId; 
 import java.util.List;
 
 @Controller
@@ -43,6 +45,7 @@ public class HomeController {
     @Autowired private UsuarioRepository usuarioRepository;
     @Autowired private ChamadoRepository chamadoRepository;
     @Autowired private InteracaoChamadoRepository interacaoRepository;
+    
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -65,11 +68,15 @@ public class HomeController {
         if (principal == null) return "redirect:/login";
         Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
         
-        // CORREÇÃO: Liberando acesso ao botão 'Assumir' para TODAS as variáveis de Técnico
         boolean isTechOrAdmin = usuario.getPerfil() != null && (
                 usuario.getPerfil().toUpperCase().contains("ADMIN") ||
                 usuario.getPerfil().toUpperCase().contains("MASTER") ||
-                usuario.getPerfil().toUpperCase().contains("TECNICO") // Pega TECNICO_TI, TECNICO_SOFTWARE, etc.
+                usuario.getPerfil().toUpperCase().contains("TECNICO")
+        );
+
+        boolean isAdmin = usuario.getPerfil() != null && (
+                usuario.getPerfil().toUpperCase().contains("ADMIN") ||
+                usuario.getPerfil().toUpperCase().contains("MASTER")
         );
 
         List<Chamado> todosChamados = chamadoRepository.findAll();
@@ -79,50 +86,64 @@ public class HomeController {
         long resolvidos = todosChamados.stream().filter(c -> c.getStatus() == StatusChamado.RESOLVIDO).count();
         long cancelados = todosChamados.stream().filter(c -> c.getStatus() == StatusChamado.CANCELADO).count();
 
-        // PREPARAÇÃO DOS DADOS PARA A LINHA DO TEMPO DO GRÁFICO
+        // Arrays para Suporte TI
         int[] infraPorHora = new int[24];
         int[] infraPorDia = new int[7];
         int[] infraPorMes = new int[12];
         int[] infraPorAno = new int[10];
         
-        int anoAtual = LocalDateTime.now().getYear();
+        // Arrays para Software Helpdesk (Os 3 status em cada período)
+        int[] softResolvidosTime = new int[4]; // [0]=Hora, [1]=Dia, [2]=Mes, [3]=Ano
+        int[] softPendentesTime = new int[4];
+        int[] softCanceladosTime = new int[4];
+        
+        int anoAtual = LocalDateTime.now(ZoneId.of("America/Sao_Paulo")).getYear();
 
         for (Chamado c : todosChamados) {
-            if (c.getCategoria() == CategoriaChamado.TI && c.getDataAbertura() != null) {
+            if (c.getDataAbertura() != null) {
                 LocalDateTime dt = c.getDataAbertura();
-                
-                // 1. DIA (Hoje - Por hora)
-                if (dt.toLocalDate().isEqual(LocalDateTime.now().toLocalDate())) {
-                    infraPorHora[dt.getHour()]++;
-                }
-                
-                // 2. SEMANA (Por dia da semana)
-                int diaDaSemana = dt.getDayOfWeek().getValue();
-                if (diaDaSemana >= 1 && diaDaSemana <= 7) { 
-                    infraPorDia[diaDaSemana - 1]++;
-                }
-                
-                // 3. 1 ANO (Por mês dentro do ano atual)
-                if (dt.getYear() == anoAtual) {
-                    infraPorMes[dt.getMonthValue() - 1]++;
-                }
-                
-                // 4. 10 ANOS (Por ano na última década)
+                boolean isHoje = dt.toLocalDate().isEqual(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")).toLocalDate());
+                boolean isSemanaAtual = dt.getDayOfWeek().getValue() >= 1 && dt.getDayOfWeek().getValue() <= 7 && dt.toLocalDate().isAfter(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")).toLocalDate().minusDays(7));
+                boolean isAnoAtual = dt.getYear() == anoAtual;
                 int diffAno = anoAtual - dt.getYear();
-                if (diffAno >= 0 && diffAno < 10) {
-                    infraPorAno[9 - diffAno]++;
+
+                if (c.getCategoria() == CategoriaChamado.TI) {
+                    if (isHoje) infraPorHora[dt.getHour()]++;
+                    if (isSemanaAtual) infraPorDia[dt.getDayOfWeek().getValue() - 1]++;
+                    if (isAnoAtual) infraPorMes[dt.getMonthValue() - 1]++;
+                    if (diffAno >= 0 && diffAno < 10) infraPorAno[9 - diffAno]++;
+                } 
+                else if (c.getCategoria() == CategoriaChamado.SOFTWARE) {
+                    if (isHoje) {
+                        if (c.getStatus() == StatusChamado.RESOLVIDO) softResolvidosTime[0]++;
+                        else if (c.getStatus() == StatusChamado.PENDENTE) softPendentesTime[0]++;
+                        else if (c.getStatus() == StatusChamado.CANCELADO) softCanceladosTime[0]++;
+                    }
+                    if (isSemanaAtual) {
+                        if (c.getStatus() == StatusChamado.RESOLVIDO) softResolvidosTime[1]++;
+                        else if (c.getStatus() == StatusChamado.PENDENTE) softPendentesTime[1]++;
+                        else if (c.getStatus() == StatusChamado.CANCELADO) softCanceladosTime[1]++;
+                    }
+                    if (isAnoAtual) {
+                        if (c.getStatus() == StatusChamado.RESOLVIDO) softResolvidosTime[2]++;
+                        else if (c.getStatus() == StatusChamado.PENDENTE) softPendentesTime[2]++;
+                        else if (c.getStatus() == StatusChamado.CANCELADO) softCanceladosTime[2]++;
+                    }
+                    if (diffAno >= 0 && diffAno < 10) {
+                        if (c.getStatus() == StatusChamado.RESOLVIDO) softResolvidosTime[3]++;
+                        else if (c.getStatus() == StatusChamado.PENDENTE) softPendentesTime[3]++;
+                        else if (c.getStatus() == StatusChamado.CANCELADO) softCanceladosTime[3]++;
+                    }
                 }
             }
         }
-        long softResolvidos = todosChamados.stream().filter(c -> c.getCategoria() == CategoriaChamado.SOFTWARE && c.getStatus() == StatusChamado.RESOLVIDO).count();
-        long softPendentes = todosChamados.stream().filter(c -> c.getCategoria() == CategoriaChamado.SOFTWARE && c.getStatus() == StatusChamado.PENDENTE).count();
-        long softCancelados = todosChamados.stream().filter(c -> c.getCategoria() == CategoriaChamado.SOFTWARE && c.getStatus() == StatusChamado.CANCELADO).count();
 
         Pageable pageable = PageRequest.of(page, 7, Sort.by(Sort.Direction.DESC, "dataAbertura"));
         Page<Chamado> chamadosPage = chamadoRepository.findAll(pageable);
 
         model.addAttribute("usuario", usuario);
         model.addAttribute("isTechOrAdmin", isTechOrAdmin);
+        model.addAttribute("isAdmin", isAdmin); 
         model.addAttribute("chamados", chamadosPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", chamadosPage.getTotalPages());
@@ -137,9 +158,11 @@ public class HomeController {
         model.addAttribute("infraPorMes", infraPorMes);
         model.addAttribute("infraPorAno", infraPorAno);
         model.addAttribute("anoAtual", anoAtual);
-        model.addAttribute("softResolvidos", softResolvidos);
-        model.addAttribute("softPendentes", softPendentes);
-        model.addAttribute("softCancelados", softCancelados);
+        
+        // Exportando os dados de tempo do Software para o JavaScript
+        model.addAttribute("softResolvidosTime", softResolvidosTime);
+        model.addAttribute("softPendentesTime", softPendentesTime);
+        model.addAttribute("softCanceladosTime", softCanceladosTime);
 
         return "pages/helpdesk"; 
     }
@@ -154,29 +177,52 @@ public class HomeController {
         return "pages/cadastrar-tecnico"; 
     }
 
+    @Transactional
     @PostMapping("/helpdesk/cadastrar-tecnico")
     public String salvarNovoTecnico(
             @RequestParam("nome") String nome,
-            @RequestParam("cpf") String cpf,
             @RequestParam("email") String email,
-            @RequestParam("senha") String senha,
+            @RequestParam("qualificacao") String qualificacao,
             @RequestParam("perfilTecnico") String perfilTecnico,
             Principal principal) {
             
         if (principal == null) return "redirect:/login";
 
-        Usuario novoTecnico = new Usuario();
-        novoTecnico.setNome(nome);
-        novoTecnico.setCpf(cpf);
-        novoTecnico.setUsername(cpf); 
-        novoTecnico.setEmail(email);
-        novoTecnico.setPerfil(perfilTecnico); 
+        Usuario tecnico = null;
+        try {
+            // Busca o usuário no banco pelo E-mail Corporativo
+            tecnico = (Usuario) entityManager.createQuery("SELECT u FROM Usuario u WHERE u.email = :email")
+                                             .setParameter("email", email)
+                                             .getSingleResult();
+        } catch (Exception e) {
+            // Usuário ainda não existe no sistema
+        }
 
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        novoTecnico.setSenha(encoder.encode(senha)); 
-        novoTecnico.setAtivo(false); 
+        if (tecnico != null) {
+            // Caso 1: O usuário já tem login. Apenas atualiza o perfil e inativa para quarentena.
+            tecnico.setNome(nome);
+            tecnico.setPerfil(perfilTecnico);
+            // A senha não é alterada (permanece a mesma de login)
+            tecnico.setAtivo(false); 
+            usuarioRepository.save(tecnico);
+        } else {
+            // Caso 2: É um colaborador novo que ainda não estava no sistema
+            Usuario novoTecnico = new Usuario();
+            novoTecnico.setNome(nome);
+            novoTecnico.setEmail(email);
+            novoTecnico.setUsername(email); // E-mail como chave principal de acesso
+            novoTecnico.setPerfil(perfilTecnico); 
+            
+            // Atribui uma senha provisória (já que o form não pede mais), que ele pode redefinir depois
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            novoTecnico.setSenha(encoder.encode("Mudar@123")); 
+            novoTecnico.setAtivo(false); 
 
-        usuarioRepository.save(novoTecnico);
+            usuarioRepository.save(novoTecnico);
+        }
+
+        // A variável 'qualificacao' recebida pode ser persistida posteriormente na 
+        // tabela Profissionais, caso decida mapear o currículo técnico no banco de dados.
 
         return "redirect:/helpdesk/cadastrar-tecnico?sucesso=true";
     }
@@ -206,7 +252,8 @@ public class HomeController {
         chamado.setDescricao(descricao);
         chamado.setSolicitante(solicitante);
         chamado.setStatus(StatusChamado.PENDENTE);
-        chamado.setDataAbertura(LocalDateTime.now());
+        
+        chamado.setDataAbertura(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
 
         chamadoRepository.save(chamado);
         return "redirect:/helpdesk"; 
@@ -218,7 +265,6 @@ public class HomeController {
         if (principal == null) return "redirect:/login";
         Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
 
-        // CORREÇÃO REPLICADA PARA A PÁGINA DE DETALHES
         boolean isTechOrAdmin = usuario.getPerfil() != null && (
                 usuario.getPerfil().toUpperCase().contains("ADMIN") ||
                 usuario.getPerfil().toUpperCase().contains("MASTER") ||
@@ -229,15 +275,29 @@ public class HomeController {
         Chamado chamado = chamadoRepository.findById(id).orElse(null);
         if (chamado == null) return "redirect:/helpdesk";
 
+        // =========================================================================
+        // REGRA DE NEGÓCIO: Validação de quem pode responder no ticket
+        // =========================================================================
+        boolean podeResponder = false;
+        
+        if (chamado.getSolicitante() != null && chamado.getSolicitante().getId().equals(usuario.getId())) {
+            podeResponder = true; // O próprio solicitante
+        } else if (chamado.getResponsavel() != null && chamado.getResponsavel().getId().equals(usuario.getId())) {
+            podeResponder = true; // O técnico que assumiu
+        } else if (usuario.getPerfil() != null && (usuario.getPerfil().toUpperCase().contains("ADMIN") || usuario.getPerfil().toUpperCase().contains("MASTER"))) {
+            podeResponder = true; // Administrador Master tem passe livre
+        }
+
         model.addAttribute("usuario", usuario);
         model.addAttribute("chamado", chamado);
         model.addAttribute("isTechOrAdmin", isTechOrAdmin);
+        model.addAttribute("podeResponder", podeResponder); // Exporta a flag para o HTML
 
         return "pages/visualizar-chamado"; 
     }
 
     @GetMapping("/helpdesk/assumir")
-    public String assumirChamado(@RequestParam("id") Long id, Principal principal, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+    public String assumirChamado(@RequestParam("id") Long id, Principal principal, RedirectAttributes redirectAttributes) {
         if (principal == null) return "redirect:/login";
         Usuario tecnico = usuarioRepository.findByUsernameOrCpf(principal.getName());
         Chamado chamado = chamadoRepository.findById(id).orElse(null);
@@ -268,14 +328,38 @@ public class HomeController {
     }
 
     @PostMapping("/helpdesk/atualizar-status")
-    public String atualizarStatus(@RequestParam("id") Long id, @RequestParam("status") StatusChamado status, Principal principal) {
+    public String atualizarStatus(@RequestParam("id") Long id, 
+                                  @RequestParam("status") StatusChamado status, 
+                                  Principal principal, 
+                                  RedirectAttributes redirectAttributes) {
         if (principal == null) return "redirect:/login";
+        
+        Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
         Chamado chamado = chamadoRepository.findById(id).orElse(null);
 
         if (chamado != null) {
+            // =========================================================================
+            // TRAVA DE SEGURANÇA: Apenas Solicitante, Responsável ou Admin alteram status
+            // =========================================================================
+            boolean podeInteragir = false;
+            
+            if (chamado.getSolicitante() != null && chamado.getSolicitante().getId().equals(usuario.getId())) {
+                podeInteragir = true;
+            } else if (chamado.getResponsavel() != null && chamado.getResponsavel().getId().equals(usuario.getId())) {
+                podeInteragir = true;
+            } else if (usuario.getPerfil() != null && (usuario.getPerfil().toUpperCase().contains("ADMIN") || usuario.getPerfil().toUpperCase().contains("MASTER"))) {
+                podeInteragir = true;
+            }
+
+            if (!podeInteragir) {
+                redirectAttributes.addFlashAttribute("erroMensagem", "Acesso Negado: Apenas o solicitante, o técnico responsável ou a administração podem alterar o status deste ticket.");
+                return "redirect:/helpdesk/visualizar-chamado?id=" + id;
+            }
+
+            // Se passou pela trava, atualiza o status
             chamado.setStatus(status);
             if (status == StatusChamado.RESOLVIDO || status == StatusChamado.CANCELADO) {
-                chamado.setDataFechamento(LocalDateTime.now());
+                chamado.setDataFechamento(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
             }
             chamadoRepository.save(chamado);
         }
@@ -286,19 +370,40 @@ public class HomeController {
     @PostMapping("/helpdesk/responder")
     public String responderChamado(@RequestParam("chamadoId") Long chamadoId,
                                    @RequestParam("mensagem") String texto,
-                                   Principal principal) {
+                                   Principal principal,
+                                   RedirectAttributes redirectAttributes) {
         if (principal == null) return "redirect:/login";
 
         try {
             Usuario autor = usuarioRepository.findByUsernameOrCpf(principal.getName());
             Chamado chamado = chamadoRepository.findById(chamadoId).orElseThrow(() -> new RuntimeException("Chamado não encontrado"));
 
+            // =========================================================================
+            // TRAVA DE SEGURANÇA BACK-END: Bloqueia injeção forçada de mensagens
+            // =========================================================================
+            boolean podeResponder = false;
+            
+            if (chamado.getSolicitante() != null && chamado.getSolicitante().getId().equals(autor.getId())) {
+                podeResponder = true;
+            } else if (chamado.getResponsavel() != null && chamado.getResponsavel().getId().equals(autor.getId())) {
+                podeResponder = true;
+            } else if (autor.getPerfil() != null && (autor.getPerfil().toUpperCase().contains("ADMIN") || autor.getPerfil().toUpperCase().contains("MASTER"))) {
+                podeResponder = true;
+            }
+
+            if (!podeResponder) {
+                redirectAttributes.addFlashAttribute("erroMensagem", "Modo Espectador: Apenas o solicitante e o técnico responsável podem enviar mensagens neste ticket.");
+                return "redirect:/helpdesk/visualizar-chamado?id=" + chamadoId;
+            }
+
             if (texto != null && !texto.trim().isEmpty()) {
                 InteracaoChamado interacao = new InteracaoChamado();
                 interacao.setChamado(chamado);
                 interacao.setAutor(autor);
                 interacao.setTexto(texto);
-                interacao.setDataEnvio(LocalDateTime.now());
+                
+                LocalDateTime dataAtual = LocalDateTime.now(ZoneId.of("America/Sao_Paulo"));
+                interacao.setDataEnvio(dataAtual);
                 
                 interacaoRepository.saveAndFlush(interacao);
             }
@@ -314,13 +419,13 @@ public class HomeController {
         if (principal == null) return "redirect:/login";
         Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
         
-        // CORREÇÃO REPLICADA PARA A ROTA DA AUDITORIA
-        boolean isTechOrAdmin = usuario.getPerfil() != null && (
+        boolean isAdmin = usuario.getPerfil() != null && (
                 usuario.getPerfil().toUpperCase().contains("ADMIN") ||
-                usuario.getPerfil().toUpperCase().contains("MASTER") ||
-                usuario.getPerfil().toUpperCase().contains("TECNICO")
+                usuario.getPerfil().toUpperCase().contains("MASTER")
         );
-        if (!isTechOrAdmin) return "redirect:/helpdesk";
+        if (!isAdmin) {
+            return "redirect:/helpdesk?erroAuditoria=true";
+        }
 
         model.addAttribute("usuario", usuario);
         model.addAttribute("listaLogs", gerarLinhaDoTempoHelpdesk());
@@ -371,7 +476,7 @@ public class HomeController {
             } else { 
                 StringBuilder sb = new StringBuilder();
                 sb.append("=== AUDITORIA DE CHAMADOS PIXEL TI ===\n");
-                sb.append("Gerado em: ").append(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))).append("\n");
+                sb.append("Gerado em: ").append(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))).append("\n");
                 sb.append("Total de Eventos: ").append(dados.size()).append("\n");
                 sb.append("=========================================\n\n");
                 for (Object[] row : dados) {
@@ -402,7 +507,7 @@ public class HomeController {
 
         for (Chamado c : chamados) {
             logsHelpdesk.add(new Object[]{
-                c.getDataAbertura() != null ? c.getDataAbertura() : LocalDateTime.now(),
+                c.getDataAbertura() != null ? c.getDataAbertura() : LocalDateTime.now(ZoneId.of("America/Sao_Paulo")),
                 "ABERTURA DE TICKET",
                 "Ticket #" + c.getId() + " - Categoria: " + c.getCategoria() + " | Assunto: " + c.getAssunto(),
                 c.getSolicitante() != null ? c.getSolicitante().getNome() : "Usuário Desconhecido"
@@ -421,7 +526,7 @@ public class HomeController {
             if (c.getInteracoes() != null) {
                 for (InteracaoChamado i : c.getInteracoes()) {
                     logsHelpdesk.add(new Object[]{
-                        i.getDataEnvio() != null ? i.getDataEnvio() : LocalDateTime.now(),
+                        i.getDataEnvio() != null ? i.getDataEnvio() : LocalDateTime.now(ZoneId.of("America/Sao_Paulo")),
                         "NOVA INTERAÇÃO",
                         "Ticket #" + c.getId() + " - Resposta adicionada.",
                         i.getAutor() != null ? i.getAutor().getNome() : "Usuário Desconhecido"

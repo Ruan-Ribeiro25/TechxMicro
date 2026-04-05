@@ -43,7 +43,6 @@ public class AuthController {
 
     @GetMapping("/verificar-conta")
     public String verificarConta(@RequestParam(required = false) String email, Model model) {
-        // Passamos o e-mail para a view saber quem estamos esperando
         if (email != null) {
             model.addAttribute("email", email);
         }
@@ -55,21 +54,20 @@ public class AuthController {
         Usuario usuario = usuarioRepository.findByCodigoVerificacao(codigo);
         
         if (usuario != null) {
-            // Ativa o usuário
-            usuario.setAtivo(true);
+            // REGRA DE NEGÓCIO: O usuário continua INATIVO (false) até o admin aprovar
+            usuario.setAtivo(false);
+            
             // Limpa o código para evitar reuso
             usuario.setCodigoVerificacao(null);
             usuarioRepository.save(usuario);
             
-            // ATUALIZAÇÃO: Redireciona para a tela de Boas-Vindas
+            // Redireciona para a nova tela de Boas-Vindas que avisa da aprovação do Admin
             return "redirect:/bem-vindo";
         }
         
-        // Se errou o código, volta para a tela com erro
         return "redirect:/verificar-conta?error=true";
     }
 
-    // NOVO: Endpoint para renderizar a tela de boas-vindas
     @GetMapping("/bem-vindo")
     public String welcome() {
         return "welcome";
@@ -82,7 +80,9 @@ public class AuthController {
     @GetMapping("/register-professional")
     public String registerProfessionalForm(Model model, Principal principal) {
         if (principal == null) return "redirect:/login"; 
-        Usuario usuarioLogado = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        
+        // Aqui o spring security já passará o E-mail como Username
+        Usuario usuarioLogado = usuarioRepository.findByEmail(principal.getName());
         if (usuarioLogado == null) return "redirect:/login?error=user_not_found";
         model.addAttribute("usuario", usuarioLogado);
         return "register-professional"; 
@@ -96,7 +96,7 @@ public class AuthController {
                                              @RequestParam LocalDate dataMatricula,
                                              @RequestParam String especialidade) {
         if (principal == null) return "redirect:/login";
-        Usuario usuarioExistente = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario usuarioExistente = usuarioRepository.findByEmail(principal.getName());
 
         usuarioExistente.setPerfil(tipoProfissional);
         usuarioRepository.save(usuarioExistente);
@@ -120,21 +120,21 @@ public class AuthController {
     }
 
     // =================================================================================
-    // 4. ESQUECI MINHA SENHA
+    // 4. ESQUECI MINHA SENHA (ATUALIZADO PARA E-MAIL)
     // =================================================================================
 
     @GetMapping("/forgot-password")
     public String forgotPassword() { return "forgot-password"; }
 
     @PostMapping("/forgot-password")
-    public String processForgotPassword(@RequestParam String cpf, Model model) {
-        Usuario usuario = usuarioRepository.findByCpf(cpf);
+    public String processForgotPassword(@RequestParam String email, Model model) {
+        // Agora fazemos a pesquisa pelo E-mail, que é a chave principal!
+        Usuario usuario = usuarioRepository.findByEmail(email);
         if (usuario != null) {
             String token = String.format("%06d", new Random().nextInt(999999));
             usuario.setTokenReset(token);
             usuarioRepository.save(usuario);
             
-            // Injeção de visual HTML
             String htmlTexto = "<h2 style='color: #f07d35;'>Recuperação de Acesso</h2>" +
                                "<p>Recebemos uma solicitação para redefinir sua senha na plataforma PIXEL TI.</p>" +
                                "<p>Seu código de segurança é: <b style='font-size: 1.5rem; letter-spacing: 3px; color: #b6d441;'>" + token + "</b></p>" +
@@ -143,9 +143,9 @@ public class AuthController {
             emailService.enviarEmail(usuario.getEmail(), "PIXEL TI - Recuperação de Senha", htmlTexto);
             
             return "redirect:/enter-code";
-        } // <--- A CHAVE QUE FALTAVA ESTÁ AQUI!
+        } 
         
-        model.addAttribute("error", "CPF não encontrado.");
+        model.addAttribute("error", "E-mail não encontrado no sistema.");
         return "forgot-password";
     }
     

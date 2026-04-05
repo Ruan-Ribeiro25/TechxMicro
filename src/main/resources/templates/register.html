@@ -33,17 +33,6 @@
 
                 <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <div>
-                        <label>CPF</label>
-                        <input type="text" th:field="*{cpf}" id="cpf" class="form-control" placeholder="000.000.000-00" maxlength="14" required>
-                    </div>
-                    <div>
-                        <label>RG</label>
-                        <input type="text" th:field="*{rg}" class="form-control" placeholder="00.000.000-0" required>
-                    </div>
-                </div>
-
-                <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div>
                         <label>Data de Nascimento</label>
                         <input type="date" th:field="*{dataNascimento}" class="form-control" required>
                     </div>
@@ -55,14 +44,18 @@
 
                 <h4 style="color: #000000; margin: 25px 0 10px 0; border-bottom: 2px solid #b6d441; padding-bottom: 5px;">Endereço</h4>
                 
-                <div class="form-group" style="display: grid; grid-template-columns: 1fr 2fr; gap: 10px;">
+                <div class="form-group" style="display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 10px;">
                     <div>
                         <label>CEP</label>
                         <input type="text" th:field="*{cep}" id="cep" class="form-control" placeholder="00000-000" maxlength="9" required>
                     </div>
                     <div>
                         <label>Cidade</label>
-                        <input type="text" th:field="*{cidade}" id="cidade" class="form-control" placeholder="Preenchimento automático..." readonly required>
+                        <input type="text" th:field="*{cidade}" id="cidade" class="form-control" placeholder="Automático..." readonly required>
+                    </div>
+                    <div>
+                        <label>UF</label>
+                        <input type="text" th:field="*{uf}" id="uf" class="form-control" placeholder="UF" readonly required>
                     </div>
                 </div>
 
@@ -82,10 +75,10 @@
                     <input type="text" th:field="*{bairro}" id="bairro" class="form-control" placeholder="Preenchimento automático..." required>
                 </div>
 
-                <h4 style="color: #000000; margin: 25px 0 10px 0; border-bottom: 2px solid #b6d441; padding-bottom: 5px;">Acesso</h4>
+                <h4 style="color: #000000; margin: 25px 0 10px 0; border-bottom: 2px solid #b6d441; padding-bottom: 5px;">Acesso de Login</h4>
 
                 <div class="form-group">
-                    <label>E-mail Corporativo ou Pessoal</label>
+                    <label>E-mail (Será sua chave de acesso)</label>
                     <input type="email" th:field="*{email}" class="form-control" placeholder="seu@email.com" required>
                 </div>
 
@@ -121,17 +114,8 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-  <script>
+    <script>
         $(document).ready(function() {
-            // MÁSCARA CPF
-            $('#cpf').on('input', function() {
-                var v = $(this).val().replace(/\D/g,'');
-                v = v.replace(/(\d{3})(\d)/,"$1.$2");
-                v = v.replace(/(\d{3})(\d)/,"$1.$2");
-                v = v.replace(/(\d{3})(\d{1,2})$/,"$1-$2");
-                $(this).val(v);
-            });
-
             // MÁSCARA CELULAR
             $('#telefone').on('input', function() {
                 var v = $(this).val().replace(/\D/g,'');
@@ -147,36 +131,35 @@
                 $(this).val(v);
             });
 
-            // INTEGRAÇÃO BRASIL API (MOTOR DE BUSCA AVANÇADO)
+            // INTEGRAÇÃO BRASIL API COM O CAMPO UF INCLUÍDO
             $('#cep').blur(function() {
                 var cep = $(this).val().replace(/\D/g, '');
                 
                 if (cep.length === 8) {
-                    // Feedback visual de carregamento
                     $('#logradouro').val('Buscando...');
                     $('#bairro').val('Buscando...');
-                    $('#cidade').val('Buscando...').prop('readonly', true); 
+                    $('#cidade').val('Buscando...');
+                    $('#uf').val('...'); 
                     
-                    // Requisição para o BrasilAPI
                     $.getJSON(`https://brasilapi.com.br/api/cep/v1/${cep}`)
                     .done(function(dados) {
                         $('#logradouro').val(dados.street || '');
                         $('#bairro').val(dados.neighborhood || '');
                         $('#cidade').val(dados.city || '');
+                        $('#uf').val(dados.state || ''); // Preenche o UF automático
                         $('input[name="numero"]').focus();
                     })
                     .fail(function() {
-                        alert("CEP não encontrado automaticamente. Por favor, preencha o seu endereço manualmente.");
-                        $('#logradouro').val('');
-                        $('#bairro').val('');
-                        $('#cidade').val('').prop('readonly', false);
+                        alert("CEP não encontrado. Preencha manualmente.");
+                        $('#logradouro, #bairro, #cidade, #uf').val('');
+                        $('#cidade, #uf').prop('readonly', false);
                         $('#logradouro').focus();
                     });
                 }
             });
-        }); // <--- ESTA ERA A LINHA QUE FALTAVA!
+        });
 
-        // Validação de Senha 
+        // Validações de Senha mantidas conforme seu código original
         function validarSenha() {
             const senha = document.getElementById('senha').value;
             document.getElementById('password-requirements').style.display = 'block';

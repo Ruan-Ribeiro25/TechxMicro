@@ -26,101 +26,76 @@
             font-size: 5rem;
             color: #b6d441; /* Verde PIXEL TI */
             margin-bottom: 25px;
-            animation: pulse 2s infinite;
-        }
-
-        h1 {
-            color: #000000; /* Preto PIXEL TI */
-            font-size: 2.2rem;
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
-
-        .subtitle {
-            font-size: 1.1rem;
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 40px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
         }
 
         .feature-grid {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 40px;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+            text-align: left;
         }
 
         .feature-item {
-            flex: 1;
-            min-width: 200px;
-            padding: 20px;
             background: #f8f9fa;
+            padding: 20px;
             border-radius: 10px;
-            border: 1px solid #eee;
-            transition: transform 0.3s ease, border-color 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
         }
 
         .feature-item:hover {
             transform: translateY(-5px);
-            border-color: #f07d35; /* Laranja PIXEL TI no Hover */
         }
 
         .feature-item i {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
+            font-size: 2rem;
+            margin-bottom: 15px;
         }
 
         .btn-start {
-            background-color: #b6d441; /* Verde PIXEL TI */
-            color: #000000; /* Preto absoluto para contraste */
-            padding: 15px 40px;
-            font-size: 1.2rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(182, 212, 65, 0.4);
-            transition: all 0.3s ease;
             display: inline-block;
+            margin-top: 40px;
+            padding: 15px 40px;
+            background-color: #b6d441; /* Verde PIXEL TI */
+            color: #000000;
+            font-weight: 800;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(182, 212, 65, 0.4);
         }
 
         .btn-start:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(182, 212, 65, 0.6);
-            background-color: #9cbd35; /* Um tom ligeiramente mais escuro no hover */
-            color: #000000;
+            background-color: #f07d35; /* Laranja Hover */
+            color: #ffffff;
+            box-shadow: 0 6px 20px rgba(240, 125, 53, 0.5);
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
         }
     </style>
 </head>
-<body>
+<body style="background-color: #f4f7f6;">
 
     <div th:replace="~{fragments/header :: navbar}"></div>
 
     <main>
         <div class="welcome-container">
-            <div class="icon-success">
-                <i class="fas fa-check-circle"></i>
-            </div>
-
-            <h1>Cadastro Validado com Sucesso!</h1>
-            <p class="subtitle">
-                Seja bem-vindo à <strong>PIXEL TI</strong>. Seu perfil já está ativo e conectado à nossa plataforma. 
-                Agora você tem o controle total sobre seus chamados, solicitações de suporte e infraestrutura na palma da mão.
+            <i class="fas fa-check-circle icon-success"></i>
+            
+            <h2 style="color: #000; font-weight: 800;">E-mail Verificado com Sucesso!</h2>
+            
+            <p style="font-size: 1.1rem; color: #444; line-height: 1.6; margin-bottom: 20px; margin-top: 15px;">
+                O seu cadastro foi registrado com sucesso. No entanto, por razões de segurança, a sua conta de Técnico/Colaborador encontra-se <strong>em análise</strong>.
             </p>
+
+            <div style="background-color: #fff5f5; padding: 15px; border-left: 4px solid #f07d35; margin-top: 20px; margin-bottom: 30px; font-size: 0.95rem; text-align: left;">
+                <i class="fas fa-info-circle" style="color: #f07d35;"></i> Você só poderá acessar as ferramentas abaixo após a liberação e aprovação final de um <strong>Administrador Master</strong>. Aguarde a nossa comunicação.
+            </div>
 
             <div class="feature-grid">
                 <div class="feature-item">
@@ -137,9 +112,7 @@
                 </div>
             </div>
 
-            <a th:href="@{/home}" class="btn-start">
-                Acessar Painel de Controle <i class="fas fa-arrow-right" style="margin-left: 10px;"></i>
-            </a>
+            <a th:href="@{/login}" class="btn-start">Voltar para o Login <i class="fas fa-arrow-right"></i></a>
         </div>
     </main>
 

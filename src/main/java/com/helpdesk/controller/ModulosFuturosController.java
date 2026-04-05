@@ -51,4 +51,26 @@ public class ModulosFuturosController {
         model.addAttribute("moduloDesc", "Plataforma integrada para reuniões online e alinhamento empresarial.");
         return "pages/em-construcao"; // Caminho exato e blindado
     }
+
+    // ==========================================
+    // NOVOS MÓDULOS (MARKETING E P&D)
+    // ==========================================
+
+    @GetMapping("/marketing")
+    public String marketing(Model model, Principal principal) {
+        injetarUsuarioNoHeader(model, principal);
+        model.addAttribute("moduloNome", "Marketing");
+        model.addAttribute("moduloIcone", "fa-bullhorn");
+        model.addAttribute("moduloDesc", "Módulo focado em estratégias, campanhas e inteligência de mercado da PIXEL TI.");
+        return "pages/em-construcao"; 
+    }
+
+    @GetMapping("/pd")
+    public String pesquisaEDesenvolvimento(Model model, Principal principal) {
+        injetarUsuarioNoHeader(model, principal);
+        model.addAttribute("moduloNome", "Pesquisa e Desenvolvimento (P&D)");
+        model.addAttribute("moduloIcone", "fa-flask");
+        model.addAttribute("moduloDesc", "Núcleo de inovação, prototipagem e desenvolvimento de novas tecnologias da PIXEL TI.");
+        return "pages/em-construcao"; 
+    }
 }
