@@ -57,7 +57,7 @@ public class HomeController {
     @GetMapping("/home")
     public String home(Model model, Principal principal) {
         if (principal == null) return "redirect:/login";
-        Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario usuario = usuarioRepository.findByUsernameOrEmail(principal.getName());
         if (usuario == null) return "redirect:/login?error=user_sync";
         model.addAttribute("usuario", usuario);
         return "pages/home"; 
@@ -66,7 +66,7 @@ public class HomeController {
     @GetMapping("/helpdesk")
     public String helpdesk(@RequestParam(defaultValue = "0") int page, Model model, Principal principal) {
         if (principal == null) return "redirect:/login";
-        Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario usuario = usuarioRepository.findByUsernameOrEmail(principal.getName());
         
         boolean isTechOrAdmin = usuario.getPerfil() != null && (
                 usuario.getPerfil().toUpperCase().contains("ADMIN") ||
@@ -86,14 +86,12 @@ public class HomeController {
         long resolvidos = todosChamados.stream().filter(c -> c.getStatus() == StatusChamado.RESOLVIDO).count();
         long cancelados = todosChamados.stream().filter(c -> c.getStatus() == StatusChamado.CANCELADO).count();
 
-        // Arrays para Suporte TI
         int[] infraPorHora = new int[24];
         int[] infraPorDia = new int[7];
         int[] infraPorMes = new int[12];
         int[] infraPorAno = new int[10];
         
-        // Arrays para Software Helpdesk (Os 3 status em cada período)
-        int[] softResolvidosTime = new int[4]; // [0]=Hora, [1]=Dia, [2]=Mes, [3]=Ano
+        int[] softResolvidosTime = new int[4]; 
         int[] softPendentesTime = new int[4];
         int[] softCanceladosTime = new int[4];
         
@@ -159,7 +157,6 @@ public class HomeController {
         model.addAttribute("infraPorAno", infraPorAno);
         model.addAttribute("anoAtual", anoAtual);
         
-        // Exportando os dados de tempo do Software para o JavaScript
         model.addAttribute("softResolvidosTime", softResolvidosTime);
         model.addAttribute("softPendentesTime", softPendentesTime);
         model.addAttribute("softCanceladosTime", softCanceladosTime);
@@ -171,7 +168,7 @@ public class HomeController {
     public String abrirTelaCadastroTecnico(Model model, Principal principal) {
         if (principal == null) return "redirect:/login";
         
-        Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario usuario = usuarioRepository.findByUsernameOrEmail(principal.getName());
         model.addAttribute("usuario", usuario);
         
         return "pages/cadastrar-tecnico"; 
@@ -190,30 +187,23 @@ public class HomeController {
 
         Usuario tecnico = null;
         try {
-            // Busca o usuário no banco pelo E-mail Corporativo
             tecnico = (Usuario) entityManager.createQuery("SELECT u FROM Usuario u WHERE u.email = :email")
                                              .setParameter("email", email)
                                              .getSingleResult();
-        } catch (Exception e) {
-            // Usuário ainda não existe no sistema
-        }
+        } catch (Exception e) {}
 
         if (tecnico != null) {
-            // Caso 1: O usuário já tem login. Apenas atualiza o perfil e inativa para quarentena.
             tecnico.setNome(nome);
             tecnico.setPerfil(perfilTecnico);
-            // A senha não é alterada (permanece a mesma de login)
             tecnico.setAtivo(false); 
             usuarioRepository.save(tecnico);
         } else {
-            // Caso 2: É um colaborador novo que ainda não estava no sistema
             Usuario novoTecnico = new Usuario();
             novoTecnico.setNome(nome);
             novoTecnico.setEmail(email);
-            novoTecnico.setUsername(email); // E-mail como chave principal de acesso
+            novoTecnico.setUsername(email); 
             novoTecnico.setPerfil(perfilTecnico); 
             
-            // Atribui uma senha provisória (já que o form não pede mais), que ele pode redefinir depois
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             novoTecnico.setSenha(encoder.encode("Mudar@123")); 
             novoTecnico.setAtivo(false); 
@@ -221,16 +211,13 @@ public class HomeController {
             usuarioRepository.save(novoTecnico);
         }
 
-        // A variável 'qualificacao' recebida pode ser persistida posteriormente na 
-        // tabela Profissionais, caso decida mapear o currículo técnico no banco de dados.
-
         return "redirect:/helpdesk/cadastrar-tecnico?sucesso=true";
     }
 
     @GetMapping("/helpdesk/novo-chamado")
     public String novoChamado(Model model, Principal principal) {
         if (principal == null) return "redirect:/login";
-        Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario usuario = usuarioRepository.findByUsernameOrEmail(principal.getName());
         model.addAttribute("usuario", usuario);
         return "pages/novo-chamado"; 
     }
@@ -243,7 +230,7 @@ public class HomeController {
             @RequestParam("descricao") String descricao,
             Principal principal) {
         if (principal == null) return "redirect:/login";
-        Usuario solicitante = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario solicitante = usuarioRepository.findByUsernameOrEmail(principal.getName());
 
         Chamado chamado = new Chamado();
         chamado.setCategoria(categoria);
@@ -263,7 +250,7 @@ public class HomeController {
     @Transactional(readOnly = true)
     public String visualizarChamado(@RequestParam(value = "id", required = false) Long id, Model model, Principal principal) {
         if (principal == null) return "redirect:/login";
-        Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario usuario = usuarioRepository.findByUsernameOrEmail(principal.getName());
 
         boolean isTechOrAdmin = usuario.getPerfil() != null && (
                 usuario.getPerfil().toUpperCase().contains("ADMIN") ||
@@ -275,23 +262,19 @@ public class HomeController {
         Chamado chamado = chamadoRepository.findById(id).orElse(null);
         if (chamado == null) return "redirect:/helpdesk";
 
-        // =========================================================================
-        // REGRA DE NEGÓCIO: Validação de quem pode responder no ticket
-        // =========================================================================
         boolean podeResponder = false;
-        
         if (chamado.getSolicitante() != null && chamado.getSolicitante().getId().equals(usuario.getId())) {
-            podeResponder = true; // O próprio solicitante
+            podeResponder = true;
         } else if (chamado.getResponsavel() != null && chamado.getResponsavel().getId().equals(usuario.getId())) {
-            podeResponder = true; // O técnico que assumiu
+            podeResponder = true;
         } else if (usuario.getPerfil() != null && (usuario.getPerfil().toUpperCase().contains("ADMIN") || usuario.getPerfil().toUpperCase().contains("MASTER"))) {
-            podeResponder = true; // Administrador Master tem passe livre
+            podeResponder = true;
         }
 
         model.addAttribute("usuario", usuario);
         model.addAttribute("chamado", chamado);
         model.addAttribute("isTechOrAdmin", isTechOrAdmin);
-        model.addAttribute("podeResponder", podeResponder); // Exporta a flag para o HTML
+        model.addAttribute("podeResponder", podeResponder); 
 
         return "pages/visualizar-chamado"; 
     }
@@ -299,7 +282,7 @@ public class HomeController {
     @GetMapping("/helpdesk/assumir")
     public String assumirChamado(@RequestParam("id") Long id, Principal principal, RedirectAttributes redirectAttributes) {
         if (principal == null) return "redirect:/login";
-        Usuario tecnico = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario tecnico = usuarioRepository.findByUsernameOrEmail(principal.getName());
         Chamado chamado = chamadoRepository.findById(id).orElse(null);
 
         if (chamado != null && chamado.getResponsavel() == null) {
@@ -334,13 +317,10 @@ public class HomeController {
                                   RedirectAttributes redirectAttributes) {
         if (principal == null) return "redirect:/login";
         
-        Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario usuario = usuarioRepository.findByUsernameOrEmail(principal.getName());
         Chamado chamado = chamadoRepository.findById(id).orElse(null);
 
         if (chamado != null) {
-            // =========================================================================
-            // TRAVA DE SEGURANÇA: Apenas Solicitante, Responsável ou Admin alteram status
-            // =========================================================================
             boolean podeInteragir = false;
             
             if (chamado.getSolicitante() != null && chamado.getSolicitante().getId().equals(usuario.getId())) {
@@ -356,7 +336,6 @@ public class HomeController {
                 return "redirect:/helpdesk/visualizar-chamado?id=" + id;
             }
 
-            // Se passou pela trava, atualiza o status
             chamado.setStatus(status);
             if (status == StatusChamado.RESOLVIDO || status == StatusChamado.CANCELADO) {
                 chamado.setDataFechamento(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
@@ -375,12 +354,9 @@ public class HomeController {
         if (principal == null) return "redirect:/login";
 
         try {
-            Usuario autor = usuarioRepository.findByUsernameOrCpf(principal.getName());
+            Usuario autor = usuarioRepository.findByUsernameOrEmail(principal.getName());
             Chamado chamado = chamadoRepository.findById(chamadoId).orElseThrow(() -> new RuntimeException("Chamado não encontrado"));
 
-            // =========================================================================
-            // TRAVA DE SEGURANÇA BACK-END: Bloqueia injeção forçada de mensagens
-            // =========================================================================
             boolean podeResponder = false;
             
             if (chamado.getSolicitante() != null && chamado.getSolicitante().getId().equals(autor.getId())) {
@@ -417,7 +393,7 @@ public class HomeController {
     @GetMapping("/helpdesk/auditoria")
     public String auditoriaHelpdesk(Model model, Principal principal) {
         if (principal == null) return "redirect:/login";
-        Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario usuario = usuarioRepository.findByUsernameOrEmail(principal.getName());
         
         boolean isAdmin = usuario.getPerfil() != null && (
                 usuario.getPerfil().toUpperCase().contains("ADMIN") ||

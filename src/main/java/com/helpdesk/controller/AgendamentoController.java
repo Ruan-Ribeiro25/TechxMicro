@@ -45,7 +45,7 @@ public class AgendamentoController {
         if(principal == null) return "redirect:/login";
 
         String loginUsuario = principal.getName();
-        Usuario usuario = usuarioRepository.findByUsernameOrCpf(loginUsuario);
+        Usuario usuario = usuarioRepository.findByUsername(loginUsuario);
         
         model.addAttribute("usuario", usuario);
         List<Agendamento> lista = agendamentoRepository.findByUsuario(usuario);
@@ -86,7 +86,7 @@ public class AgendamentoController {
                                     RedirectAttributes redirectAttributes) { 
         
         String loginUsuario = principal.getName();
-        Usuario usuario = usuarioRepository.findByUsernameOrCpf(loginUsuario);
+        Usuario usuario = usuarioRepository.findByUsername(loginUsuario);
         
         agendamento.setUsuario(usuario);
         // Correção: Define status como CONFIRMADO (Agendado via sistema)

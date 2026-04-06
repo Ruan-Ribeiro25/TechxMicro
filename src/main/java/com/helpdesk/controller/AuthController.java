@@ -22,7 +22,6 @@ public class AuthController {
     @Autowired private UsuarioRepository usuarioRepository;
     @Autowired private ProfissionalRepository profissionalRepository;
     @Autowired private PasswordEncoder passwordEncoder;
-    
     @Autowired private EmailService emailService; 
 
     // =================================================================================
@@ -38,50 +37,37 @@ public class AuthController {
     }
 
     // =================================================================================
-    // 2. RECUPERAÇÃO DE SENHA E VERIFICAÇÃO (CRÍTICO PARA O CADASTRO)
+    // 2. RECUPERAÇÃO E VERIFICAÇÃO DE CONTA
     // =================================================================================
 
     @GetMapping("/verificar-conta")
     public String verificarConta(@RequestParam(required = false) String email, Model model) {
-        if (email != null) {
-            model.addAttribute("email", email);
-        }
+        if (email != null) model.addAttribute("email", email);
         return "verificar-conta"; 
     }
 
     @PostMapping("/verificar-conta")
     public String processarVerificacao(@RequestParam("codigo") String codigo, Model model) {
         Usuario usuario = usuarioRepository.findByCodigoVerificacao(codigo);
-        
         if (usuario != null) {
-            // REGRA DE NEGÓCIO: O usuário continua INATIVO (false) até o admin aprovar
             usuario.setAtivo(false);
-            
-            // Limpa o código para evitar reuso
             usuario.setCodigoVerificacao(null);
             usuarioRepository.save(usuario);
-            
-            // Redireciona para a nova tela de Boas-Vindas que avisa da aprovação do Admin
             return "redirect:/bem-vindo";
         }
-        
         return "redirect:/verificar-conta?error=true";
     }
 
     @GetMapping("/bem-vindo")
-    public String welcome() {
-        return "welcome";
-    }
+    public String welcome() { return "welcome"; }
     
     // =================================================================================
-    // 3. REGISTRO DE PROFISSIONAL (UPGRADE DE CONTA)
+    // 3. REGISTRO DE PROFISSIONAL (UPGRADE)
     // =================================================================================
     
     @GetMapping("/register-professional")
     public String registerProfessionalForm(Model model, Principal principal) {
         if (principal == null) return "redirect:/login"; 
-        
-        // Aqui o spring security já passará o E-mail como Username
         Usuario usuarioLogado = usuarioRepository.findByEmail(principal.getName());
         if (usuarioLogado == null) return "redirect:/login?error=user_not_found";
         model.addAttribute("usuario", usuarioLogado);
@@ -120,7 +106,7 @@ public class AuthController {
     }
 
     // =================================================================================
-    // 4. ESQUECI MINHA SENHA (ATUALIZADO PARA E-MAIL)
+    // 4. ESQUECI MINHA SENHA
     // =================================================================================
 
     @GetMapping("/forgot-password")
@@ -128,7 +114,6 @@ public class AuthController {
 
     @PostMapping("/forgot-password")
     public String processForgotPassword(@RequestParam String email, Model model) {
-        // Agora fazemos a pesquisa pelo E-mail, que é a chave principal!
         Usuario usuario = usuarioRepository.findByEmail(email);
         if (usuario != null) {
             String token = String.format("%06d", new Random().nextInt(999999));
@@ -141,10 +126,8 @@ public class AuthController {
                                "<p>Se você não solicitou esta alteração, por favor ignore este aviso.</p>";
                                
             emailService.enviarEmail(usuario.getEmail(), "PIXEL TI - Recuperação de Senha", htmlTexto);
-            
             return "redirect:/enter-code";
         } 
-        
         model.addAttribute("error", "E-mail não encontrado no sistema.");
         return "forgot-password";
     }

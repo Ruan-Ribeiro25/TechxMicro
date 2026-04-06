@@ -37,7 +37,7 @@ public class PacienteController {
     public String areaPaciente(Model model, Principal principal) {
         if(principal == null) return "redirect:/login";
         
-        Usuario paciente = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario paciente = usuarioRepository.findByUsername(principal.getName());
         model.addAttribute("paciente", paciente);
         
         // 1. Histórico de Agendamentos
@@ -63,7 +63,7 @@ public class PacienteController {
     public String editarDados(Model model, Principal principal) {
         if(principal == null) return "redirect:/login";
 
-        Usuario paciente = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario paciente = usuarioRepository.findByUsername(principal.getName());
         model.addAttribute("usuario", paciente);
 
         return "paciente/paciente-editar"; 
@@ -74,7 +74,7 @@ public class PacienteController {
     public String salvarDados(@ModelAttribute Usuario formUsuario, Principal principal) {
         if(principal == null) return "redirect:/login";
 
-        Usuario usuarioBanco = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario usuarioBanco = usuarioRepository.findByUsername(principal.getName());
 
         if (usuarioBanco != null) {
             usuarioBanco.setTelefone(formUsuario.getTelefone());

@@ -41,7 +41,7 @@ public class ProfissionalController {
         
         if (principal == null) return "redirect:/login"; 
 
-        Usuario usuarioLogado = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario usuarioLogado = usuarioRepository.findByUsername(principal.getName());
         if (usuarioLogado == null) return "redirect:/login";
 
         Profissional profissionalEntity = profissionalRepository.findAll().stream()
@@ -280,8 +280,7 @@ public class ProfissionalController {
         if (busca != null && !busca.isEmpty()) {
             String termo = busca.toLowerCase();
             pacientes = pacientes.stream()
-                .filter(p -> (p.getNome() != null && p.getNome().toLowerCase().contains(termo)) || 
-                             (p.getCpf() != null && p.getCpf().contains(termo)))
+                .filter(p -> p.getNome() != null && p.getNome().toLowerCase().contains(termo))
                 .collect(Collectors.toList());
         }
         model.addAttribute("resultados", pacientes);
@@ -315,7 +314,7 @@ public class ProfissionalController {
                                    @RequestParam String diagnostico, 
                                    @RequestParam(required = false) String prescricao) {
         
-        Usuario medico = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario medico = usuarioRepository.findByUsername(principal.getName());
         Usuario paciente = usuarioRepository.findById(idPaciente).orElse(null);
         
         if (paciente != null && medico != null) {
@@ -366,7 +365,7 @@ public class ProfissionalController {
 
     @PostMapping("/salvar-triagem")
     public String salvarTriagem(Principal principal, @RequestParam Long idPaciente, @RequestParam Integer sistolica, @RequestParam Integer diastolica, @RequestParam Integer glicemia, @RequestParam Double temperatura, @RequestParam String queixa) {
-        Usuario enfermeiro = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario enfermeiro = usuarioRepository.findByUsername(principal.getName());
         Usuario paciente = usuarioRepository.findById(idPaciente).orElse(null);
         if (paciente != null) {
             SinaisVitais sv = new SinaisVitais(); 
@@ -395,7 +394,7 @@ public class ProfissionalController {
 
     @PostMapping("/agendar-balcao")
     public String agendarPeloBalcao(@RequestParam("cpfPaciente") String cpfPaciente, @RequestParam(value = "medicoId", required = false) Long medicoId, @RequestParam("data") LocalDate data, @RequestParam("hora") LocalTime hora, @RequestParam(value = "prioridade", defaultValue = "false") boolean prioridade, RedirectAttributes redirectAttributes) {
-        Usuario paciente = usuarioRepository.findByUsernameOrCpf(cpfPaciente);
+        Usuario paciente = usuarioRepository.findByUsername(cpfPaciente);
         if (paciente == null) {
             redirectAttributes.addFlashAttribute("erro", "Paciente não encontrado.");
             return "redirect:/profissional/painel";

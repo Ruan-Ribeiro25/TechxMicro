@@ -69,17 +69,17 @@
                 <input type="hidden" name="longitude" id="longitude">
 
                 <div class="form-group">
-                    <label>Seu E-mail:</label>
+                    <label>Seu E-mail</label>
                     <div class="input-icon-wrapper">
-                        <input type="email" name="username" class="form-control" placeholder="Ex: joao@pixelti.com.br" required autofocus>
+                        <input type="email" name="username" class="form-control" placeholder="E-mail Corporativo" required autofocus>
                         <i class="fas fa-envelope input-icon-left"></i>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Sua Senha:</label>
+                    <label>Sua Senha</label>
                     <div class="input-icon-wrapper">
-                        <input type="password" name="password" class="form-control" placeholder="Digite sua senha" required>
+                        <input type="password" name="password" class="form-control" placeholder="Sua senha" required>
                         <i class="fas fa-lock input-icon-left"></i>
                     </div>
                 </div>
@@ -116,7 +116,6 @@
 
             function mostrarErroGeo(msg) {
                 geoErrorBox.style.display = 'flex'; // Exibe o alerta
-                // Opcional: Desabilitar botão visualmente
                 btnLogin.style.opacity = '0.6';
                 btnLogin.style.cursor = 'not-allowed';
             }
@@ -127,18 +126,14 @@
                 btnLogin.style.cursor = 'pointer';
             }
 
-            // 1. Tenta pegar a localização ao carregar
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(
                     function(position) {
-                        // Sucesso: Preenche e libera
                         latInput.value = position.coords.latitude;
                         lonInput.value = position.coords.longitude;
                         ocultarErroGeo();
-                        console.log("📍 Localização capturada:", latInput.value, lonInput.value);
                     },
                     function(error) {
-                        // Erro/Negação: Mostra alerta
                         console.warn("Permissão de localização negada.");
                         mostrarErroGeo();
                     },
@@ -148,19 +143,16 @@
                 alert("Seu navegador não suporta geolocalização. O login não será possível.");
             }
 
-            // 2. Intercepta o envio do formulário (Trava de Segurança)
             form.addEventListener('submit', function(event) {
                 if (!latInput.value || !lonInput.value) {
-                    event.preventDefault(); // IMPEDE O LOGIN
+                    event.preventDefault(); 
                     mostrarErroGeo();
                     
-                    // Tenta pedir permissão novamente com força
                     navigator.geolocation.getCurrentPosition(
                         function(position) {
                             latInput.value = position.coords.latitude;
                             lonInput.value = position.coords.longitude;
                             ocultarErroGeo();
-                            // Se conseguir agora, submete o formulário
                             form.submit();
                         },
                         function(error) {

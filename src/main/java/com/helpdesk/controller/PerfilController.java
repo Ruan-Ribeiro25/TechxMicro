@@ -42,7 +42,7 @@ public class PerfilController {
         if (principal != null && !file.isEmpty()) {
             try {
                 // Busca o usuário logado
-                Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
+                Usuario usuario = usuarioRepository.findByUsername(principal.getName());
                 
                 // Converte a imagem enviada para Base64 (Texto)
                 byte[] bytes = file.getBytes();

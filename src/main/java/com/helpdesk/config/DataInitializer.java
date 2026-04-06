@@ -22,11 +22,10 @@ public class DataInitializer implements CommandLineRunner {
 
         // 1. Criar ADMIN de teste (Login: admin / Senha: 123)
         // Mantido para garantir que o sistema sempre tenha um acesso administrativo
-        if (usuarioRepository.findByUsernameOrCpf("admin") == null) {
+        if (usuarioRepository.findByUsername("admin") == null) {
             Usuario adm = new Usuario();
             adm.setNome("Administrador");
             adm.setUsername("admin");
-            adm.setCpf("00000000000");
             adm.setEmail("admin@email.com");
             adm.setSenha(passwordEncoder.encode("123"));
             adm.setPerfil("ADMIN");

@@ -29,7 +29,7 @@ public class LaboratorioController {
     public String dashboard(Model model, Principal principal) {
         if (principal == null) return "redirect:/login";
 
-        Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario usuario = usuarioRepository.findByUsername(principal.getName());
         model.addAttribute("usuario", usuario);
         
         model.addAttribute("totalPendentes", laboratorioService.contarPedidosPendentesPagamento(usuario));
@@ -47,7 +47,7 @@ public class LaboratorioController {
     @ResponseBody
     public ResponseEntity<?> criarPedido(@RequestBody Map<String, Object> payload, Principal principal) {
         try {
-            Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
+            Usuario usuario = usuarioRepository.findByUsername(principal.getName());
             
             // Extrai dados do JSON
             List<String> exames = (List<String>) payload.get("exames");
@@ -71,7 +71,7 @@ public class LaboratorioController {
     @GetMapping("/download/{id}")
     public String downloadLaudo(@PathVariable Long id, Principal principal) {
         try {
-            Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
+            Usuario usuario = usuarioRepository.findByUsername(principal.getName());
             String linkArquivo = laboratorioService.gerarLinkDownload(id, usuario);
             return "redirect:" + linkArquivo;
         } catch (Exception e) {

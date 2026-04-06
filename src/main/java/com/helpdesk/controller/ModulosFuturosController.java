@@ -18,7 +18,7 @@ public class ModulosFuturosController {
     // Método blindado: Carrega o utilizador para o header não crachar (Erro 500)
     private void injetarUsuarioNoHeader(Model model, Principal principal) {
         if (principal != null) {
-            Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
+            Usuario usuario = usuarioRepository.findByUsernameOrEmail(principal.getName());
             if (usuario != null) {
                 model.addAttribute("usuario", usuario);
             }
@@ -31,7 +31,7 @@ public class ModulosFuturosController {
         model.addAttribute("moduloNome", "Agenda Corporativa");
         model.addAttribute("moduloIcone", "fa-calendar-alt");
         model.addAttribute("moduloDesc", "Gerenciamento de compromissos e agendamentos oficiais da PIXEL TI.");
-        return "pages/em-construcao"; // Caminho exato e blindado
+        return "pages/em-construcao"; 
     }
 
     @GetMapping("/qualidade")
@@ -40,7 +40,7 @@ public class ModulosFuturosController {
         model.addAttribute("moduloNome", "Gestão de Qualidade");
         model.addAttribute("moduloIcone", "fa-clipboard-check");
         model.addAttribute("moduloDesc", "Módulo dedicado à auditoria, gestão de processos e certificações.");
-        return "pages/em-construcao"; // Caminho exato e blindado
+        return "pages/em-construcao"; 
     }
 
     @GetMapping("/conferencias")
@@ -49,7 +49,7 @@ public class ModulosFuturosController {
         model.addAttribute("moduloNome", "Conferências");
         model.addAttribute("moduloIcone", "fa-broadcast-tower");
         model.addAttribute("moduloDesc", "Plataforma integrada para reuniões online e alinhamento empresarial.");
-        return "pages/em-construcao"; // Caminho exato e blindado
+        return "pages/em-construcao"; 
     }
 
     // ==========================================

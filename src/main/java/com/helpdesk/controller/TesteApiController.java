@@ -24,7 +24,6 @@ public class TesteApiController {
         dto.put("id", u.getId());
         dto.put("nome", u.getNome());
         dto.put("email", u.getEmail());
-        dto.put("cpf", u.getCpf());
         dto.put("perfil", u.getPerfil());
         dto.put("ativo", u.isAtivo());
         return dto;

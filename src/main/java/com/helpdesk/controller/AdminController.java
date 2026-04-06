@@ -46,7 +46,7 @@ public class AdminController {
         if (principal == null) {
             return "redirect:/login";
         }
-        Usuario admin = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario admin = usuarioRepository.findByUsernameOrEmail(principal.getName());
         model.addAttribute("usuario", admin);
         
         if (error != null) {
@@ -61,7 +61,7 @@ public class AdminController {
 
     @PostMapping("/login-verificar")
     public String verificarSegundoLogin(@RequestParam String password, Principal principal) {
-        Usuario admin = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario admin = usuarioRepository.findByUsernameOrEmail(principal.getName());
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         
         if (encoder.matches(password, admin.getPassword())) {
@@ -77,18 +77,15 @@ public class AdminController {
             return "redirect:/login";
         }
         
-        Usuario admin = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario admin = usuarioRepository.findByUsernameOrEmail(principal.getName());
         
-        // CORREÇÃO DA TRAVA: Aceita ADMIN ou ADMIN_MASTER sem gerar erros de sintaxe
         if (admin == null || admin.getPerfil() == null || !admin.getPerfil().toUpperCase().contains("ADMIN")) {
             return "redirect:/home?error=access_denied";
         }
 
         model.addAttribute("usuario", admin); 
 
-        // =========================================================================
-        // OTIMIZAÇÃO OOM: Contagens diretas no banco (Evita travar o servidor)
-        // =========================================================================
+        // OTIMIZAÇÃO OOM: Contagens diretas
         long totalUsuariosComuns = ((Number) entityManager.createQuery("SELECT COUNT(u) FROM Usuario u WHERE u.perfil = 'USUARIO'").getSingleResult()).longValue();
         long totalMedicos = ((Number) entityManager.createQuery("SELECT COUNT(u) FROM Usuario u WHERE UPPER(u.perfil) LIKE '%MEDICO%'").getSingleResult()).longValue();
         long totalEnfermeiros = ((Number) entityManager.createQuery("SELECT COUNT(u) FROM Usuario u WHERE UPPER(u.perfil) LIKE '%ENFERMEIRO%'").getSingleResult()).longValue();
@@ -110,33 +107,23 @@ public class AdminController {
         try {
             Number count = (Number) entityManager.createNativeQuery("SELECT COUNT(*) FROM historico_logs WHERE acao = 'EXCLUSAO_USUARIO'").getSingleResult();
             totalExcluidos = count.longValue();
-        } catch (Exception e) { 
-            totalExcluidos = 0; 
-        }
+        } catch (Exception e) {}
 
         long totalLogs = 0;
         try {
             Number countLogs = (Number) entityManager.createNativeQuery("SELECT COUNT(*) FROM historico_logs").getSingleResult();
             totalLogs = countLogs.longValue();
-        } catch (Exception e) { 
-            totalLogs = 0; 
-        }
+        } catch (Exception e) {}
 
         long volumeHoje = 0;
         try {
             Number countToday = (Number) entityManager.createNativeQuery("SELECT COUNT(*) FROM historico_logs WHERE DATE(data_hora) = CURDATE()").getSingleResult();
             volumeHoje = countToday.longValue();
-        } catch (Exception e) { 
-            volumeHoje = 0; 
-        }
+        } catch (Exception e) {}
 
         long totalProdutos = produtoRepository.count();
         long alertaEstoque = 0;
-        try { 
-            alertaEstoque = produtoRepository.countProdutosBaixoEstoque(); 
-        } catch (Exception e) { 
-            alertaEstoque = 0; 
-        }
+        try { alertaEstoque = produtoRepository.countProdutosBaixoEstoque(); } catch (Exception e) {}
         
         model.addAttribute("totalProdutos", totalProdutos);
         model.addAttribute("alertaEstoque", alertaEstoque);
@@ -170,10 +157,10 @@ public class AdminController {
         model.addAttribute("totalLogs", totalLogs);
         model.addAttribute("volumeHoje", volumeHoje);
 
-        // BUSCA PAGINADA: Impede o erro OutOfMemory ao limitar a busca a 50 usuários
+        // BUSCA PAGINADA SEGURA (Alterada para E-mail)
         List<Usuario> listaExibicao;
         if (busca != null && !busca.isEmpty()) {
-            listaExibicao = entityManager.createQuery("SELECT u FROM Usuario u WHERE LOWER(u.nome) LIKE LOWER(:b) OR u.cpf LIKE :b", Usuario.class)
+            listaExibicao = entityManager.createQuery("SELECT u FROM Usuario u WHERE LOWER(u.nome) LIKE LOWER(:b) OR LOWER(u.email) LIKE LOWER(:b)", Usuario.class)
                                          .setParameter("b", "%" + busca + "%")
                                          .setMaxResults(50)
                                          .getResultList();
@@ -202,9 +189,7 @@ public class AdminController {
                 profFake.setStatusAprovacao("APROVADO");
                 mapaProfissionais.putIfAbsent(userId, profFake);
             }
-        } catch (Exception e) {
-            // Silencia erro se tabela não existir
-        }
+        } catch (Exception e) {}
         
         model.addAttribute("mapaProfissionais", mapaProfissionais);
 
@@ -228,7 +213,7 @@ public class AdminController {
     @GetMapping("/ambulancias")
     public String listarPolosAmbulancia(Model model, Principal principal) {
         if (principal != null) {
-            model.addAttribute("usuario", usuarioRepository.findByUsernameOrCpf(principal.getName()));
+            model.addAttribute("usuario", usuarioRepository.findByUsernameOrEmail(principal.getName()));
         }
         List<Polo> cidades = poloRepository.findByPoloPaiIsNull();
         model.addAttribute("polos", cidades);
@@ -238,9 +223,8 @@ public class AdminController {
     @GetMapping("/ambulancias/painel/{id}")
     public String painelFrotaPorPolo(@PathVariable Long id, Model model, Principal principal) {
         if (principal != null) {
-            model.addAttribute("usuario", usuarioRepository.findByUsernameOrCpf(principal.getName()));
+            model.addAttribute("usuario", usuarioRepository.findByUsernameOrEmail(principal.getName()));
         }
-        
         Polo polo = poloRepository.findById(id).orElse(null);
         String nomePolo = (polo != null) ? polo.getNome() : "Polo Desconhecido";
         
@@ -299,16 +283,10 @@ public class AdminController {
                 query.setParameter("pid", poloId); 
                 query.setParameter("aid", salva.getId());
                 query.executeUpdate();
-            } catch (Exception e) {
-                // Silencia
-            }
+            } catch (Exception e) {}
         }
-        
-        if (poloId != null) {
-            return "redirect:/admin/ambulancias/painel/" + poloId;
-        } else {
-            return "redirect:/admin/ambulancias";
-        }
+        if (poloId != null) return "redirect:/admin/ambulancias/painel/" + poloId;
+        return "redirect:/admin/ambulancias";
     }
 
     @PostMapping("/ambulancias/status")
@@ -325,91 +303,50 @@ public class AdminController {
             } catch (Exception e) {}
 
             switch (acao) {
-                case "solicitar": 
-                    amb.setStatus("SOLICITADO"); 
-                    break;
-                case "aceitar": 
-                    amb.setStatus("EM_CHAMADO"); 
-                    if ("-".equals(amb.getMotorista())) amb.setMotorista("Mot. Vinculado"); 
-                    amb.setPrevisaoLiberacao("Em rota..."); 
-                    break;
-                case "despachar": 
-                    amb.setStatus("EM_CHAMADO"); 
-                    if ("-".equals(amb.getMotorista())) amb.setMotorista("Plantão"); 
-                    amb.setPrevisaoLiberacao("Em andamento"); 
-                    break;
-                case "finalizar": 
-                    amb.setStatus("DISPONIVEL"); 
-                    amb.setMotorista("-"); 
-                    amb.setPrevisaoLiberacao("-"); 
-                    break;
-                case "manutencao": 
-                    amb.setStatus("MANUTENCAO"); 
-                    amb.setMotorista("Oficina"); 
-                    amb.setPrevisaoLiberacao("Indefinido"); 
-                    break;
-                case "ativar": 
-                    amb.setStatus("DISPONIVEL"); 
-                    amb.setMotorista("-"); 
-                    amb.setPrevisaoLiberacao("-"); 
-                    break;
+                case "solicitar": amb.setStatus("SOLICITADO"); break;
+                case "aceitar": amb.setStatus("EM_CHAMADO"); if ("-".equals(amb.getMotorista())) amb.setMotorista("Mot. Vinculado"); amb.setPrevisaoLiberacao("Em rota..."); break;
+                case "despachar": amb.setStatus("EM_CHAMADO"); if ("-".equals(amb.getMotorista())) amb.setMotorista("Plantão"); amb.setPrevisaoLiberacao("Em andamento"); break;
+                case "finalizar": amb.setStatus("DISPONIVEL"); amb.setMotorista("-"); amb.setPrevisaoLiberacao("-"); break;
+                case "manutencao": amb.setStatus("MANUTENCAO"); amb.setMotorista("Oficina"); amb.setPrevisaoLiberacao("Indefinido"); break;
+                case "ativar": amb.setStatus("DISPONIVEL"); amb.setMotorista("-"); amb.setPrevisaoLiberacao("-"); break;
             }
             ambulanciaRepository.save(amb);
         }
-        
-        if (poloId != null) {
-            return "redirect:/admin/ambulancias/painel/" + poloId;
-        } else {
-            return "redirect:/admin/ambulancias";
-        }
+        if (poloId != null) return "redirect:/admin/ambulancias/painel/" + poloId;
+        return "redirect:/admin/ambulancias";
     }
 
     @GetMapping("/detalhes/{tipo}")
     public String detalhesPorTipo(@PathVariable String tipo, Model model, Principal principal) {
-        if (principal == null) {
-            return "redirect:/login";
-        }
-        Usuario admin = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        if (principal == null) return "redirect:/login";
+        Usuario admin = usuarioRepository.findByUsernameOrEmail(principal.getName());
         model.addAttribute("usuario", admin);
         model.addAttribute("tipoRelatorio", tipo.toUpperCase());
 
-        if ("POLOS".equalsIgnoreCase(tipo)) {
-            return "redirect:/admin/polos"; 
-        }
+        if ("POLOS".equalsIgnoreCase(tipo)) return "redirect:/admin/polos"; 
         
-        if ("EXCLUIDOS".equalsIgnoreCase(tipo)) {
-            List<Object[]> logs = entityManager.createNativeQuery("SELECT data_hora, acao, detalhes, username_registrado FROM historico_logs WHERE acao = 'EXCLUSAO_USUARIO' ORDER BY data_hora DESC").getResultList();
-            model.addAttribute("listaLogs", logs); 
-            return "admin/lista-detalhes";
-        }
-        if ("LOGS".equalsIgnoreCase(tipo)) {
-            List<Object[]> logs = entityManager.createNativeQuery("SELECT data_hora, acao, detalhes, username_registrado FROM historico_logs ORDER BY data_hora DESC").getResultList();
+        if ("EXCLUIDOS".equalsIgnoreCase(tipo) || "LOGS".equalsIgnoreCase(tipo)) {
+            String q = "EXCLUIDOS".equalsIgnoreCase(tipo) ? "SELECT data_hora, acao, detalhes, username_registrado FROM historico_logs WHERE acao = 'EXCLUSAO_USUARIO' ORDER BY data_hora DESC" : "SELECT data_hora, acao, detalhes, username_registrado FROM historico_logs ORDER BY data_hora DESC";
+            List<Object[]> logs = entityManager.createNativeQuery(q).getResultList();
             model.addAttribute("listaLogs", logs); 
             return "admin/lista-detalhes";
         }
         if ("VOLUME".equalsIgnoreCase(tipo)) {
             List<Object[]> porHora = entityManager.createNativeQuery("SELECT HOUR(data_hora), COUNT(*) FROM historico_logs WHERE DATE(data_hora) = CURDATE() GROUP BY HOUR(data_hora)").getResultList();
             Integer[] dadosHora = new Integer[24]; Arrays.fill(dadosHora, 0);
-            for(Object[] obj : porHora) {
-                dadosHora[((Number) obj[0]).intValue()] = ((Number) obj[1]).intValue();
-            }
+            for(Object[] obj : porHora) dadosHora[((Number) obj[0]).intValue()] = ((Number) obj[1]).intValue();
             
             List<Object[]> porDia = entityManager.createNativeQuery("SELECT DAY(data_hora), COUNT(*) FROM historico_logs WHERE MONTH(data_hora) = MONTH(CURDATE()) AND YEAR(data_hora) = YEAR(CURDATE()) GROUP BY DAY(data_hora)").getResultList();
             Integer[] dadosDia = new Integer[31]; Arrays.fill(dadosDia, 0);
-            for(Object[] obj : porDia) {
-                dadosDia[((Number) obj[0]).intValue() - 1] = ((Number) obj[1]).intValue();
-            }
+            for(Object[] obj : porDia) dadosDia[((Number) obj[0]).intValue() - 1] = ((Number) obj[1]).intValue();
 
             List<Object[]> porMes = entityManager.createNativeQuery("SELECT MONTH(data_hora), COUNT(*) FROM historico_logs WHERE YEAR(data_hora) = YEAR(CURDATE()) GROUP BY MONTH(data_hora)").getResultList();
             Integer[] dadosMes = new Integer[12]; Arrays.fill(dadosMes, 0);
-            for(Object[] obj : porMes) {
-                dadosMes[((Number) obj[0]).intValue() - 1] = ((Number) obj[1]).intValue();
-            }
+            for(Object[] obj : porMes) dadosMes[((Number) obj[0]).intValue() - 1] = ((Number) obj[1]).intValue();
 
             model.addAttribute("dadosHora", Arrays.asList(dadosHora)); 
             model.addAttribute("dadosDia", Arrays.asList(dadosDia)); 
             model.addAttribute("dadosMes", Arrays.asList(dadosMes));
-            
             model.addAttribute("sumHoje", Arrays.stream(dadosHora).mapToInt(Integer::intValue).sum());
             model.addAttribute("sumMes", Arrays.stream(dadosDia).mapToInt(Integer::intValue).sum());
             model.addAttribute("sumAno", Arrays.stream(dadosMes).mapToInt(Integer::intValue).sum());
@@ -419,16 +356,10 @@ public class AdminController {
 
         List<Usuario> todos = usuarioRepository.findAll();
         List<Usuario> filtrados = new ArrayList<>();
-        
-        if ("MEDICOS".equalsIgnoreCase(tipo)) {
-            filtrados = todos.stream().filter(u -> u.getPerfil() != null && u.getPerfil().contains("MEDICO")).collect(Collectors.toList());
-        } else if ("ENFERMEIROS".equalsIgnoreCase(tipo)) {
-            filtrados = todos.stream().filter(u -> u.getPerfil() != null && u.getPerfil().contains("ENFERMEIRO")).collect(Collectors.toList());
-        } else if ("USUARIOS".equalsIgnoreCase(tipo)) {
-            filtrados = todos.stream().filter(u -> u.getPerfil() != null && u.getPerfil().equals("USUARIO")).collect(Collectors.toList());
-        } else if ("ADMINS".equalsIgnoreCase(tipo)) {
-            filtrados = todos.stream().filter(u -> u.getPerfil() != null && u.getPerfil().contains("ADMIN")).collect(Collectors.toList());
-        }
+        if ("MEDICOS".equalsIgnoreCase(tipo)) filtrados = todos.stream().filter(u -> u.getPerfil() != null && u.getPerfil().contains("MEDICO")).collect(Collectors.toList());
+        else if ("ENFERMEIROS".equalsIgnoreCase(tipo)) filtrados = todos.stream().filter(u -> u.getPerfil() != null && u.getPerfil().contains("ENFERMEIRO")).collect(Collectors.toList());
+        else if ("USUARIOS".equalsIgnoreCase(tipo)) filtrados = todos.stream().filter(u -> u.getPerfil() != null && u.getPerfil().equals("USUARIO")).collect(Collectors.toList());
+        else if ("ADMINS".equalsIgnoreCase(tipo)) filtrados = todos.stream().filter(u -> u.getPerfil() != null && u.getPerfil().contains("ADMIN")).collect(Collectors.toList());
 
         model.addAttribute("listaUsuarios", filtrados);
         
@@ -440,14 +371,10 @@ public class AdminController {
             for(Object[] row : adminsData) {
                 Long userId = ((Number) row[0]).longValue();
                 Profissional profFake = new Profissional();
-                profFake.setMatricula((String) row[1]); 
-                profFake.setEspecialidade((String) row[2]); 
-                profFake.setCrm("CORP"); 
-                profFake.setStatusAprovacao("APROVADO");
+                profFake.setMatricula((String) row[1]); profFake.setEspecialidade((String) row[2]); profFake.setCrm("CORP"); profFake.setStatusAprovacao("APROVADO");
                 mapaProfissionais.putIfAbsent(userId, profFake);
             }
         } catch (Exception e) {}
-        
         model.addAttribute("mapaProfissionais", mapaProfissionais);
         return "admin/lista-detalhes";
     }
@@ -455,15 +382,13 @@ public class AdminController {
     @GetMapping("/laboratorio")
     public String painelLaboratorio(Model model, Principal principal) {
         if (principal == null) return "redirect:/login";
-        Usuario admin = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario admin = usuarioRepository.findByUsernameOrEmail(principal.getName());
         model.addAttribute("usuario", admin);
 
         List<PedidoExame> todosPedidos = new ArrayList<>();
         try {
             todosPedidos = entityManager.createQuery("SELECT p FROM PedidoExame p ORDER BY p.dataCriacao DESC", PedidoExame.class).setMaxResults(100).getResultList();
-        } catch (Exception e) { 
-            System.err.println("Aviso: " + e.getMessage()); 
-        }
+        } catch (Exception e) {}
         
         model.addAttribute("listaTodosPedidos", todosPedidos);
 
@@ -484,25 +409,17 @@ public class AdminController {
         return "admin/gestao-laboratorio";
     }
 
-    // =========================================================================
-    // AÇÕES DO PAINEL (USANDO UPDATE DIRETO PARA EVITAR LOOP DE MEMÓRIA)
-    // =========================================================================
-    
     @Transactional
     @PostMapping("/aprovar-profissional")
     public String aprovarProfissional(@RequestParam Long idUsuario) {
-        entityManager.createQuery("UPDATE Usuario u SET u.ativo = true WHERE u.id = :id")
-                     .setParameter("id", idUsuario)
-                     .executeUpdate();
+        entityManager.createQuery("UPDATE Usuario u SET u.ativo = true WHERE u.id = :id").setParameter("id", idUsuario).executeUpdate();
         return "redirect:/admin/painel?msg=aprovado";
     }
     
     @Transactional
     @PostMapping("/bloquear-usuario")
     public String bloquearUsuario(@RequestParam Long idUsuario) {
-        entityManager.createQuery("UPDATE Usuario u SET u.ativo = false WHERE u.id = :id")
-                     .setParameter("id", idUsuario)
-                     .executeUpdate();
+        entityManager.createQuery("UPDATE Usuario u SET u.ativo = false WHERE u.id = :id").setParameter("id", idUsuario).executeUpdate();
         return "redirect:/admin/painel?msg=bloqueado";
     }
     
@@ -512,14 +429,10 @@ public class AdminController {
         Usuario u = usuarioRepository.findById(idUsuario).orElse(null);
         if (u != null) {
             String adminResponsavel = principal != null ? principal.getName() : "SISTEMA";
-            String detalhes = "Cadastro REJEITADO e removido: " + u.getNome() + " (CPF: " + u.getCpf() + ")";
+            String detalhes = "Cadastro REJEITADO e removido: " + u.getNome() + " (E-mail: " + u.getEmail() + ")";
             
             entityManager.createNativeQuery("INSERT INTO historico_logs (acao, data_hora, detalhes, username_registrado) VALUES (?, ?, ?, ?)")
-                .setParameter(1, "CADASTRO_REJEITADO")
-                .setParameter(2, LocalDateTime.now(java.time.ZoneId.of("America/Sao_Paulo")))
-                .setParameter(3, detalhes)
-                .setParameter(4, adminResponsavel)
-                .executeUpdate();
+                .setParameter(1, "CADASTRO_REJEITADO").setParameter(2, LocalDateTime.now(java.time.ZoneId.of("America/Sao_Paulo"))).setParameter(3, detalhes).setParameter(4, adminResponsavel).executeUpdate();
                 
             usuarioRepository.deleteById(idUsuario);
         }
@@ -529,10 +442,7 @@ public class AdminController {
     @Transactional
     @PostMapping("/alterar-especialidade")
     public String alterarEspecialidadeTecnico(@RequestParam Long idUsuario, @RequestParam String novaEspecialidade) {
-        entityManager.createQuery("UPDATE Usuario u SET u.perfil = :perfil WHERE u.id = :id")
-                     .setParameter("perfil", novaEspecialidade)
-                     .setParameter("id", idUsuario)
-                     .executeUpdate();
+        entityManager.createQuery("UPDATE Usuario u SET u.perfil = :perfil WHERE u.id = :id").setParameter("perfil", novaEspecialidade).setParameter("id", idUsuario).executeUpdate();
         return "redirect:/admin/painel?msg=perfil_atualizado";
     }
 
@@ -541,71 +451,50 @@ public class AdminController {
     public String excluirUsuario(@RequestParam("idUsuario") Long idUsuario, @RequestParam("motivo") String motivo, Principal principal) {
         try {
             Usuario u = usuarioRepository.findById(idUsuario).orElse(null);
-            
-            if (u == null) {
-                return "redirect:/admin/painel?error=erro_desconhecido";
-            }
+            if (u == null) return "redirect:/admin/painel?error=erro_desconhecido";
             
             if (u.getPerfil() != null && u.getPerfil().contains("ADMIN")) {
                 long adminsCount = usuarioRepository.findAll().stream().filter(user -> user.getPerfil() != null && user.getPerfil().contains("ADMIN")).count();
-                if (adminsCount <= 1) {
-                    return "redirect:/admin/painel?error=ultimo_admin";
-                }
+                if (adminsCount <= 1) return "redirect:/admin/painel?error=ultimo_admin";
             }
             
             try {
                 Long chamados = (Long) entityManager.createQuery("SELECT COUNT(c) FROM Chamado c WHERE c.solicitante.id = :uid OR c.responsavel.id = :uid").setParameter("uid", idUsuario).getSingleResult();
                 Long mensagens = (Long) entityManager.createQuery("SELECT COUNT(i) FROM InteracaoChamado i WHERE i.autor.id = :uid").setParameter("uid", idUsuario).getSingleResult();
-                if (chamados > 0 || mensagens > 0) {
-                    return "redirect:/admin/painel?error=dependencia_helpdesk";
-                }
+                if (chamados > 0 || mensagens > 0) return "redirect:/admin/painel?error=dependencia_helpdesk";
             } catch (Exception e) {}
 
             String adminResponsavel = principal != null ? principal.getName() : "SISTEMA";
             entityManager.createNativeQuery("INSERT INTO historico_logs (acao, data_hora, detalhes, username_registrado) VALUES (?, ?, ?, ?)")
-                .setParameter(1, "EXCLUSAO_USUARIO")
-                .setParameter(2, LocalDateTime.now(java.time.ZoneId.of("America/Sao_Paulo")))
-                .setParameter(3, "MOTIVO: " + motivo.toUpperCase() + "\nUsuário: " + u.getNome() + " (CPF: " + u.getCpf() + ")\n")
-                .setParameter(4, adminResponsavel)
-                .executeUpdate();
+                .setParameter(1, "EXCLUSAO_USUARIO").setParameter(2, LocalDateTime.now(java.time.ZoneId.of("America/Sao_Paulo")))
+                .setParameter(3, "MOTIVO: " + motivo.toUpperCase() + "\nUsuário: " + u.getNome() + " (E-mail: " + u.getEmail() + ")\n")
+                .setParameter(4, adminResponsavel).executeUpdate();
 
             try { entityManager.createNativeQuery("DELETE FROM usuarios_polos WHERE usuario_id = :uid").setParameter("uid", idUsuario).executeUpdate(); } catch (Exception e) {}
             try { entityManager.createNativeQuery("DELETE FROM administrador WHERE usuario_id = :uid").setParameter("uid", idUsuario).executeUpdate(); } catch (Exception e) {}
             try { entityManager.createNativeQuery("DELETE FROM profissionais WHERE usuario_id = :uid").setParameter("uid", idUsuario).executeUpdate(); } catch (Exception e) {}
             
-            if (u.getPolos() != null) { 
-                u.getPolos().clear(); 
-            }
-            
+            if (u.getPolos() != null) u.getPolos().clear(); 
             entityManager.flush();
             entityManager.createNativeQuery("DELETE FROM usuarios WHERE id = :uid").setParameter("uid", idUsuario).executeUpdate();
             
             return "redirect:/admin/painel?msg=excluido";
-            
-        } catch (Exception e) { 
-            return "redirect:/admin/painel?error=erro_desconhecido"; 
-        }
+        } catch (Exception e) { return "redirect:/admin/painel?error=erro_desconhecido"; }
     }
 
     @GetMapping("/polos")
     public String listarCidades(Model model, Principal principal) {
-        if (principal != null) {
-            model.addAttribute("usuario", usuarioRepository.findByUsernameOrCpf(principal.getName()));
-        }
-        
+        if (principal != null) model.addAttribute("usuario", usuarioRepository.findByUsernameOrEmail(principal.getName()));
         List<Polo> cidades = poloRepository.findByPoloPaiIsNull();
         model.addAttribute("polos", cidades);
         
         Map<Long, Map<String, Long>> statsEstrutura = new HashMap<>();
-        
         for(Polo p : cidades) {
             Map<String, Long> counts = new HashMap<>();
             counts.put("HOSPITAIS", 1L); 
-            
             List<Polo> filiais = poloRepository.findByPoloPai_Id(p.getId());
             counts.put("CLINICAS", filiais.stream().filter(f -> f.getTipo() == null || !"LABORATORIO".equalsIgnoreCase(f.getTipo())).count());
             counts.put("LABORATORIOS", filiais.stream().filter(f -> "LABORATORIO".equalsIgnoreCase(f.getTipo())).count());
-            
             statsEstrutura.put(p.getId(), counts);
         }
         
@@ -613,16 +502,12 @@ public class AdminController {
         model.addAttribute("titulo", "Gestão de Polos (Cidades)"); 
         model.addAttribute("modoClinica", false); 
         model.addAttribute("modoUsuarios", false); 
-        
         return "admin/relatorio-polos"; 
     }
 
     @GetMapping("/polos/{id}/clinicas")
     public String listarClinicas(@PathVariable Long id, Model model, Principal principal) {
-        if (principal != null) {
-            model.addAttribute("usuario", usuarioRepository.findByUsernameOrCpf(principal.getName()));
-        }
-        
+        if (principal != null) model.addAttribute("usuario", usuarioRepository.findByUsernameOrEmail(principal.getName()));
         Polo hospital = poloRepository.findById(id).orElse(null);
         List<Polo> clinicas = poloRepository.findByPoloPai_Id(id);
         model.addAttribute("polos", clinicas);
@@ -632,15 +517,9 @@ public class AdminController {
             List<Long> ids = clinicas.stream().map(Polo::getId).collect(Collectors.toList());
             if(!ids.isEmpty()){
                 for (Long cid : ids) { 
-                    Map<String, Long> s = new HashMap<>(); 
-                    s.put("USUARIOS", 0L); 
-                    s.put("PROFISSIONAIS", 0L); 
-                    s.put("ADMINS", 0L); 
-                    statsGeral.put(cid, s); 
+                    Map<String, Long> s = new HashMap<>(); s.put("USUARIOS", 0L); s.put("PROFISSIONAIS", 0L); s.put("ADMINS", 0L); statsGeral.put(cid, s); 
                 }
-                
                 List<Object[]> res = entityManager.createQuery("SELECT p.id, u.perfil, COUNT(u) FROM Usuario u JOIN u.polos p WHERE p.id IN :ids GROUP BY p.id, u.perfil").setParameter("ids", ids).getResultList();
-                
                 for (Object[] row : res) {
                     Map<String, Long> s = statsGeral.get((Long) row[0]);
                     String pf = ((String) row[1]).toUpperCase();
@@ -651,7 +530,7 @@ public class AdminController {
                     }
                 }
             }
-        } catch (Exception e) { }
+        } catch (Exception e) {}
         
         model.addAttribute("estatisticas", statsGeral);
         model.addAttribute("titulo", "Filiais: " + (hospital != null ? hospital.getCidade() : "")); 
@@ -659,31 +538,21 @@ public class AdminController {
         model.addAttribute("modoClinica", true); 
         model.addAttribute("modoUsuarios", false); 
         model.addAttribute("hospitalId", id);
-        
         return "admin/relatorio-polos";
     }
 
     @GetMapping("/polos/clinica/{id}/usuarios")
     public String listarUsuariosClinica(@PathVariable Long id, @RequestParam(required = false) String busca, Model model, Principal principal) {
-        if (principal != null) {
-            model.addAttribute("usuario", usuarioRepository.findByUsernameOrCpf(principal.getName()));
-        }
-        
+        if (principal != null) model.addAttribute("usuario", usuarioRepository.findByUsernameOrEmail(principal.getName()));
         Polo clinica = poloRepository.findById(id).orElse(null);
-        if (clinica == null) {
-            return "redirect:/admin/polos";
-        }
+        if (clinica == null) return "redirect:/admin/polos";
         
         List<Usuario> usuarios;
         if ("LABORATORIO".equalsIgnoreCase(clinica.getTipo()) && clinica.getPoloPai() != null) {
             String hql = "SELECT DISTINCT u FROM Usuario u JOIN u.polos p WHERE (p.id = :hId OR p.poloPai.id = :hId)";
-            if (busca != null && !busca.isEmpty()) {
-                hql += " AND (LOWER(u.nome) LIKE LOWER(:busca) OR u.cpf LIKE :busca)";
-            }
+            if (busca != null && !busca.isEmpty()) hql += " AND (LOWER(u.nome) LIKE LOWER(:busca) OR LOWER(u.email) LIKE LOWER(:busca))";
             var q = entityManager.createQuery(hql, Usuario.class).setParameter("hId", clinica.getPoloPai().getId());
-            if (busca != null && !busca.isEmpty()) {
-                q.setParameter("busca", "%" + busca + "%");
-            }
+            if (busca != null && !busca.isEmpty()) q.setParameter("busca", "%" + busca + "%");
             usuarios = q.getResultList();
             model.addAttribute("avisoLaboratorio", "Modo Laboratório: Visualizando todos os usuários da rede.");
         } else {
@@ -692,16 +561,12 @@ public class AdminController {
         
         model.addAttribute("listaUsuarios", usuarios); 
         model.addAttribute("clinica", clinica);
-        
         Map<Long, Profissional> mapaProf = profissionalRepository.findAll().stream().collect(Collectors.toMap(p -> p.getUsuario().getId(), p -> p));
         
         try {
             List<Object[]> adminsData = entityManager.createNativeQuery("SELECT usuario_id, matricula, cargo FROM administrador").getResultList();
             for(Object[] row : adminsData) {
-                Profissional pf = new Profissional(); 
-                pf.setMatricula((String) row[1]); 
-                pf.setEspecialidade((String) row[2]); 
-                pf.setTipoProfissional("ADMINISTRADOR");
+                Profissional pf = new Profissional(); pf.setMatricula((String) row[1]); pf.setEspecialidade((String) row[2]); pf.setTipoProfissional("ADMINISTRADOR");
                 mapaProf.put(((Number) row[0]).longValue(), pf);
             }
         } catch (Exception e) {}
@@ -713,16 +578,13 @@ public class AdminController {
         model.addAttribute("hospitalId", clinica.getPoloPai() != null ? clinica.getPoloPai().getId() : null); 
         model.addAttribute("clinicaId", id); 
         model.addAttribute("buscaAtual", busca);
-        
         return "admin/relatorio-polos";
     }
 
     @GetMapping("/leitos")
     public String dashboardLeitos(Model model, Principal principal) {
-        if (principal == null) {
-            return "redirect:/login";
-        }
-        model.addAttribute("usuario", usuarioRepository.findByUsernameOrCpf(principal.getName()));
+        if (principal == null) return "redirect:/login";
+        model.addAttribute("usuario", usuarioRepository.findByUsernameOrEmail(principal.getName()));
         
         List<Map<String, Object>> listaLeitos = new ArrayList<>();
         String[] alas = {"UTI Adulto", "Internação Clínica", "Pediatria", "Cirúrgica"};
@@ -732,7 +594,6 @@ public class AdminController {
         for (int i = 1; i <= totalLeitos; i++) {
             Map<String, Object> leito = new HashMap<>(); 
             leito.put("numero", "L-" + String.format("%03d", i));
-            
             String ala = (i <= 10) ? alas[0] : (i <= 30) ? alas[1] : (i <= 40) ? alas[2] : alas[3]; 
             leito.put("ala", ala);
             
@@ -748,7 +609,6 @@ public class AdminController {
                 leito.put("medico", "Dr. Plantonista");
             }
             listaLeitos.add(leito);
-            
             switch(status) { 
                 case "OCUPADO": ocupados++; break; 
                 case "DISPONIVEL": disponiveis++; break; 
@@ -765,17 +625,14 @@ public class AdminController {
         model.addAttribute("higienizacao", higienizacao); 
         model.addAttribute("manutencao", manutencao); 
         model.addAttribute("altaPrevista", altaPrevista);
-        
         model.addAttribute("percOcupacao", Math.round(((double)(ocupados + altaPrevista) / totalLeitos) * 100));
         model.addAttribute("dadosStatus", Arrays.asList(ocupados, disponiveis, higienizacao, manutencao, altaPrevista));
-        
         model.addAttribute("dadosAlas", Arrays.asList(
             listaLeitos.stream().filter(l -> l.get("ala").equals("UTI Adulto") && l.get("status").equals("OCUPADO")).count(), 
             listaLeitos.stream().filter(l -> l.get("ala").equals("Internação Clínica") && l.get("status").equals("OCUPADO")).count(), 
             listaLeitos.stream().filter(l -> l.get("ala").equals("Pediatria") && l.get("status").equals("OCUPADO")).count(), 
             listaLeitos.stream().filter(l -> l.get("ala").equals("Cirúrgica") && l.get("status").equals("OCUPADO")).count()
         ));
-        
         return "admin/leitos";
     }
 
@@ -805,9 +662,7 @@ public class AdminController {
                         dadosJson.add(map); 
                     }
                     conteudo = mapper.writeValueAsString(dadosJson);
-                } else { 
-                    conteudo = mapper.writeValueAsString(dados); 
-                }
+                } else { conteudo = mapper.writeValueAsString(dados); }
                 filename += ".json"; 
                 mediaType = MediaType.APPLICATION_JSON;
                 
@@ -823,14 +678,13 @@ public class AdminController {
                           .append(row[3] != null ? row[3].toString() : "").append("\n"); 
                     }
                 } else if (!dados.isEmpty() && dados.get(0) instanceof Usuario) {
-                    sb.append("ID;NOME;CPF;PERFIL;EMAIL;STATUS;POLOS_VINCULADOS\n");
+                    sb.append("ID;NOME;EMAIL;PERFIL;STATUS;POLOS_VINCULADOS\n");
                     for (Object obj : dados) { 
                         Usuario u = (Usuario) obj; 
                         sb.append(u.getId()).append(";")
                           .append(u.getNome()).append(";")
-                          .append(u.getCpf()).append(";")
-                          .append(u.getPerfil()).append(";")
                           .append(u.getEmail()).append(";")
+                          .append(u.getPerfil()).append(";")
                           .append(u.isAtivo() ? "ATIVO" : "INATIVO").append(";")
                           .append(u.getPolos() != null ? u.getPolos().stream().map(Polo::getNome).collect(Collectors.joining("|")) : "").append("\n"); 
                     }
@@ -853,16 +707,14 @@ public class AdminController {
                     for (Object obj : dados) { 
                         Usuario u = (Usuario) obj; 
                         sb.append("--------------------------------------------------\nUSUÁRIO: ").append(u.getNome()).append(" (ID: ").append(u.getId())
-                          .append(")\nCPF: ").append(u.getCpf()).append(" | PERFIL: ").append(u.getPerfil())
+                          .append(")\nE-MAIL: ").append(u.getEmail()).append(" | PERFIL: ").append(u.getPerfil())
                           .append("\nVÍNCULOS: ").append(u.getPolos() != null ? u.getPolos().stream().map(Polo::getNome).collect(Collectors.joining(", ")) : "Nenhum").append("\n"); 
                     }
                 }
                 conteudo = sb.toString(); 
                 filename += ".txt";
             }
-        } catch (Exception e) { 
-            conteudo = "Erro: " + e.getMessage(); 
-        }
+        } catch (Exception e) { conteudo = "Erro: " + e.getMessage(); }
         
         ByteArrayResource resource = new ByteArrayResource(conteudo.getBytes());
         return ResponseEntity.ok()

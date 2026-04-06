@@ -2,7 +2,7 @@ package com.helpdesk.service.impl;
 
 import com.helpdesk.entity.Usuario;
 import com.helpdesk.repository.UsuarioRepository;
-import com.helpdesk.service.EmailService; // Importação corrigida
+import com.helpdesk.service.EmailService; 
 import com.helpdesk.service.UsuarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Agora chamamos o carteiro oficial do sistema!
     @Autowired
     private EmailService emailService;
 
@@ -32,7 +31,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public Usuario buscarPorLogin(String login) {
-        return usuarioRepository.findByUsernameOrCpf(login);
+        // Alterado para buscar apenas por Username
+        return usuarioRepository.findByUsername(login);
     }
 
     @Override

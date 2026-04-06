@@ -2,7 +2,8 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Cadastro - PIXEL TI Helpdesk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Conta - PIXEL TI</title>
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link rel="stylesheet" th:href="@{/css/register.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -11,101 +12,102 @@
     
     <div th:replace="~{fragments/header :: navbar}"></div>
 
-    <main>
-        <div class="login-container" style="width: 100%; max-width: 600px; padding: 30px;">
-            <div class="login-header" style="text-align: center;">
-                <h2 style="color: #b6d441;">Criar Conta</h2>
-                <p>Preencha os seus dados para aceder ao Helpdesk</p>
+    <main style="padding: 40px 20px; display: flex; justify-content: center;">
+        <div class="login-container" style="width: 100%; max-width: 600px; padding: 30px; background: #ffffff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <div class="login-header" style="text-align: center; margin-bottom: 25px;">
+                <h2 style="color: #b6d441; font-weight: 800; font-size: 2rem;">Criar Conta</h2>
+                <p style="color: #666;">Preencha os seus dados para aceder ao Helpdesk</p>
             </div>
 
-            <div th:if="${error}" class="alert-erro" style="background:#fdecea; color:#f07d35; padding:10px; text-align:center; margin-bottom:15px; border-radius:5px; border: 1px solid #f07d35;">
+            <div th:if="${error}" class="alert-erro" style="background:#fdecea; color:#f07d35; padding:15px; text-align:center; margin-bottom:20px; border-radius:5px; border: 1px solid #f07d35; font-weight: 600;">
                 <span th:text="${error}"></span>
             </div>
 
             <form th:action="@{/register}" th:object="${usuario}" method="post">
                 
-                <h4 style="color: #000000; margin: 15px 0 10px 0; border-bottom: 2px solid #b6d441; padding-bottom: 5px;">Dados Pessoais</h4>
+                <h4 style="color: #000000; margin: 15px 0 15px 0; border-bottom: 2px solid #b6d441; padding-bottom: 5px;">Dados Pessoais</h4>
 
-                <div class="form-group">
-                    <label>Nome Completo</label>
-                    <input type="text" th:field="*{nome}" class="form-control" placeholder="Seu nome completo" required autofocus>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; color: #555;">Nome Completo</label>
+                    <input type="text" th:field="*{nome}" class="form-control" placeholder="Ex: João da Silva" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; outline: none;" required autofocus>
                 </div>
 
-                <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
                     <div>
-                        <label>Data de Nascimento</label>
-                        <input type="date" th:field="*{dataNascimento}" class="form-control" required>
+                        <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; color: #555;">Data de Nascimento</label>
+                        <input type="date" th:field="*{dataNascimento}" class="form-control" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; outline: none;" required>
                     </div>
                     <div>
-                        <label>Celular / WhatsApp</label>
-                        <input type="text" th:field="*{telefone}" id="telefone" class="form-control" placeholder="(00) 90000-0000" maxlength="15" required>
+                        <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; color: #555;">Celular / WhatsApp</label>
+                        <input type="text" th:field="*{telefone}" id="telefone" class="form-control" placeholder="(00) 90000-0000" maxlength="15" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; outline: none;" required>
                     </div>
                 </div>
 
-                <h4 style="color: #000000; margin: 25px 0 10px 0; border-bottom: 2px solid #b6d441; padding-bottom: 5px;">Endereço</h4>
+                <h4 style="color: #000000; margin: 30px 0 15px 0; border-bottom: 2px solid #b6d441; padding-bottom: 5px;">Endereço</h4>
                 
-                <div class="form-group" style="display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 10px;">
+                <div class="form-group" style="display: grid; grid-template-columns: 1.2fr 2fr 0.8fr; gap: 15px; margin-bottom: 15px;">
                     <div>
-                        <label>CEP</label>
-                        <input type="text" th:field="*{cep}" id="cep" class="form-control" placeholder="00000-000" maxlength="9" required>
+                        <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; color: #555;">CEP</label>
+                        <input type="text" th:field="*{cep}" id="cep" class="form-control" placeholder="00000-000" maxlength="9" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; outline: none;" required>
                     </div>
                     <div>
-                        <label>Cidade</label>
-                        <input type="text" th:field="*{cidade}" id="cidade" class="form-control" placeholder="Automático..." readonly required>
+                        <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; color: #555;">Cidade</label>
+                        <input type="text" th:field="*{cidade}" id="cidade" class="form-control" placeholder="Automático..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; background: #f9f9f9; outline: none;" readonly required>
                     </div>
                     <div>
-                        <label>UF</label>
-                        <input type="text" th:field="*{uf}" id="uf" class="form-control" placeholder="UF" readonly required>
+                        <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; color: #555;">UF</label>
+                        <input type="text" th:field="*{uf}" id="uf" class="form-control" placeholder="UF" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; background: #f9f9f9; outline: none;" readonly required>
                     </div>
                 </div>
 
-                <div class="form-group" style="display: grid; grid-template-columns: 3fr 1fr; gap: 10px;">
+                <div class="form-group" style="display: grid; grid-template-columns: 3fr 1fr; gap: 15px; margin-bottom: 15px;">
                     <div>
-                        <label>Logradouro</label>
-                        <input type="text" th:field="*{logradouro}" id="logradouro" class="form-control" placeholder="Preenchimento automático..." required>
+                        <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; color: #555;">Logradouro</label>
+                        <input type="text" th:field="*{logradouro}" id="logradouro" class="form-control" placeholder="Preenchimento automático..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; outline: none;" required>
                     </div>
                     <div>
-                        <label>Número</label>
-                        <input type="text" th:field="*{numero}" class="form-control" placeholder="123" required>
+                        <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; color: #555;">Número</label>
+                        <input type="text" th:field="*{numero}" class="form-control" placeholder="123" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; outline: none;" required>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Bairro</label>
-                    <input type="text" th:field="*{bairro}" id="bairro" class="form-control" placeholder="Preenchimento automático..." required>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; color: #555;">Bairro</label>
+                    <input type="text" th:field="*{bairro}" id="bairro" class="form-control" placeholder="Preenchimento automático..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; outline: none;" required>
                 </div>
 
-                <h4 style="color: #000000; margin: 25px 0 10px 0; border-bottom: 2px solid #b6d441; padding-bottom: 5px;">Acesso de Login</h4>
+                <h4 style="color: #000000; margin: 30px 0 15px 0; border-bottom: 2px solid #b6d441; padding-bottom: 5px;">Acesso de Login</h4>
 
-                <div class="form-group">
-                    <label>E-mail (Será sua chave de acesso)</label>
-                    <input type="email" th:field="*{email}" class="form-control" placeholder="seu@email.com" required>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; color: #555;">E-mail Corporativo (Sua chave de acesso)</label>
+                    <input type="email" th:field="*{email}" class="form-control" placeholder="joao@pixelti.com.br" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; outline: none;" required>
                 </div>
 
-                <div class="form-group">
-                    <label>Senha</label>
-                    <input type="password" th:field="*{senha}" id="senha" class="form-control" onkeyup="validarSenha()" placeholder="Mínimo 8 caracteres" required>
-                    <div id="password-requirements" class="password-req">
-                        <div id="req-length" class="req-item"><i class="fas fa-times"></i> Mínimo 8 caracteres</div>
-                        <div id="req-upper" class="req-item"><i class="fas fa-times"></i> Letra Maiúscula</div>
-                        <div id="req-number" class="req-item"><i class="fas fa-times"></i> Número</div>
-                        <div id="req-special" class="req-item"><i class="fas fa-times"></i> Símbolo Especial</div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; color: #555;">Crie sua Senha</label>
+                    <input type="password" th:field="*{senha}" id="senha" class="form-control" onkeyup="validarSenha()" placeholder="Mínimo 8 caracteres" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; outline: none;" required>
+                    
+                    <div id="password-requirements" style="margin-top: 10px; background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #e9ecef; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        <div id="req-length" class="req-item" style="font-size: 0.8rem; color: #666;"><i class="fas fa-times" style="color: #f07d35;"></i> Mínimo 8 caracteres</div>
+                        <div id="req-upper" class="req-item" style="font-size: 0.8rem; color: #666;"><i class="fas fa-times" style="color: #f07d35;"></i> Letra Maiúscula</div>
+                        <div id="req-number" class="req-item" style="font-size: 0.8rem; color: #666;"><i class="fas fa-times" style="color: #f07d35;"></i> Número</div>
+                        <div id="req-special" class="req-item" style="font-size: 0.8rem; color: #666;"><i class="fas fa-times" style="color: #f07d35;"></i> Símbolo Especial</div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Confirmar Senha</label>
-                    <input type="password" name="confirmarSenha" id="confirmarSenha" class="form-control" onkeyup="validarConfirmacao()" placeholder="Repita a senha" required>
+                <div class="form-group" style="margin-bottom: 25px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; color: #555;">Confirmar Senha</label>
+                    <input type="password" name="confirmarSenha" id="confirmarSenha" class="form-control" onkeyup="validarConfirmacao()" placeholder="Repita a senha" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; outline: none;" required>
                     <small id="msgConfirmacao" style="display:none; font-weight:bold; margin-top:5px;"></small>
                 </div>
 
-                <button type="submit" id="btnRegistrar" class="btn-custom" disabled style="width:100%; padding:15px; background:#b6d441; color:#000000; font-weight: 800; border:none; border-radius:5px; margin-top:10px; opacity:0.6; cursor:not-allowed; transition: 0.3s;">
-                    Finalizar Cadastro
+                <button type="submit" id="btnRegistrar" class="btn-custom" disabled style="width:100%; padding:15px; background:#b6d441; color:#000000; font-size: 1.1rem; font-weight: 800; border:none; border-radius:5px; margin-top:10px; opacity:0.5; cursor:not-allowed; transition: 0.3s;">
+                    Finalizar Cadastro <i class="fas fa-arrow-right ms-2"></i>
                 </button>
             </form>
 
-            <div class="login-footer" style="text-align: center; margin-top: 15px;">
-                <a th:href="@{/login}" style="color: #f07d35; font-weight: bold;">Já tenho conta. Fazer Login.</a>
+            <div class="login-footer" style="text-align: center; margin-top: 25px;">
+                <a th:href="@{/login}" style="color: #f07d35; font-weight: bold; text-decoration: none;"><i class="fas fa-sign-in-alt"></i> Já tenho conta. Fazer Login.</a>
             </div>
         </div>
     </main>
@@ -159,45 +161,65 @@
             });
         });
 
-        // Validações de Senha mantidas conforme seu código original
+        // Validações de Senha e liberação do botão
         function validarSenha() {
             const senha = document.getElementById('senha').value;
-            document.getElementById('password-requirements').style.display = 'block';
             updateItem('req-length', senha.length >= 8);
             updateItem('req-upper', /[A-Z]/.test(senha));
             updateItem('req-number', /[0-9]/.test(senha));
             updateItem('req-special', /[@#$%^&+=!_.*-]/.test(senha));
             validarConfirmacao();
         }
+
+        // CORREÇÃO: Função atualiza apenas a classe do ícone e a cor, preservando o texto intacto!
         function updateItem(id, valid) {
             const el = document.getElementById(id);
+            const icon = el.querySelector('i');
+            
             if (valid) {
                 el.classList.add('valid');
-                el.innerHTML = '<i class="fas fa-check" style="color: #b6d441;"></i> ' + el.innerText.trim();
+                icon.className = 'fas fa-check';
+                icon.style.color = '#b6d441';
                 el.style.color = '#b6d441';
             } else {
                 el.classList.remove('valid');
-                el.innerHTML = '<i class="fas fa-times" style="color: #f07d35;"></i> ' + el.innerText.trim();
+                icon.className = 'fas fa-times';
+                icon.style.color = '#f07d35';
                 el.style.color = '#666';
             }
         }
+
         function validarConfirmacao() {
             const senha = document.getElementById('senha').value;
             const confirmacao = document.getElementById('confirmarSenha').value;
             const msg = document.getElementById('msgConfirmacao');
             const btn = document.getElementById('btnRegistrar');
+            
             const senhasIguais = (senha === confirmacao) && senha.length > 0;
             const regrasOk = document.querySelectorAll('.req-item.valid').length >= 4;
 
             if (confirmacao.length > 0) {
                 msg.style.display = 'block';
-                if (senhasIguais) { msg.style.color = '#b6d441'; msg.innerText = 'Senhas conferem'; }
-                else { msg.style.color = '#f07d35'; msg.innerText = 'Senhas não conferem'; }
-            }
-            if (senhasIguais && regrasOk) {
-                btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer';
+                if (senhasIguais) { 
+                    msg.style.color = '#b6d441'; 
+                    msg.innerText = 'Senhas conferem!'; 
+                } else { 
+                    msg.style.color = '#f07d35'; 
+                    msg.innerText = 'As senhas não conferem.'; 
+                }
             } else {
-                btn.disabled = true; btn.style.opacity = '0.6'; btn.style.cursor = 'not-allowed';
+                msg.style.display = 'none';
+            }
+
+            // O botão só acende se TODAS as regras passarem e as senhas forem idênticas
+            if (senhasIguais && regrasOk) {
+                btn.disabled = false; 
+                btn.style.opacity = '1'; 
+                btn.style.cursor = 'pointer';
+            } else {
+                btn.disabled = true; 
+                btn.style.opacity = '0.5'; 
+                btn.style.cursor = 'not-allowed';
             }
         }
     </script>

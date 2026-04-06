@@ -23,7 +23,7 @@ public class ErpController {
         }
         
         // Busca o usuário logado no banco de dados
-        Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario usuario = usuarioRepository.findByUsername(principal.getName());
         
         // Injeta o usuário no HTML para o Header carregar o nome e foto (substituindo o "Visitante")
         model.addAttribute("usuario", usuario);

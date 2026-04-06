@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -37,30 +39,39 @@ public class PoloAccessController {
         String cidadeAtual = local.get("cidade");
         String bairroAtual = local.get("bairro");
 
-        Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        // CORREÇÃO: Usando o método findByUsernameOrEmail (1 parâmetro)
+        Usuario usuario = usuarioRepository.findByUsernameOrEmail(principal.getName());
+
+        if (usuario == null) return ResponseEntity.status(404).body("Usuário não encontrado.");
 
         // 2. Verifica se o usuário JÁ TEM vínculo com este local
         boolean jaPossuiPolo = usuario.getPolos().stream().anyMatch(p -> 
-            p.getCidade().equalsIgnoreCase(cidadeAtual) && 
-            p.getBairro() != null && 
-            p.getBairro().equalsIgnoreCase(bairroAtual)
+            p.getCidade() != null && p.getCidade().equalsIgnoreCase(cidadeAtual) && 
+            p.getBairro() != null && p.getBairro().equalsIgnoreCase(bairroAtual)
         );
 
         if (jaPossuiPolo) {
             return ResponseEntity.ok("OK: Usuário já vinculado ao polo local.");
         } else {
             // 3. INTELIGÊNCIA: Cria/Vincula o Polo Automaticamente
-            Polo novoPolo = vincularPoloAutomatico(cidadeAtual, bairroAtual);
+            Polo novoPolo = vincularPoloAutomatico(cidadeAtual, bairroAtual, usuario.getCep());
             
             usuario.getPolos().add(novoPolo);
             usuarioRepository.save(usuario);
             
+            System.out.println(">>> [GEO] Novo vínculo criado: " + usuario.getNome() + " -> " + novoPolo.getNome());
             return ResponseEntity.ok("UPDATE: Novo vínculo criado com " + novoPolo.getNome());
         }
     }
 
-    // Reutilizando a lógica de criação hierárquica (Hospital > Clínica)
-    private Polo vincularPoloAutomatico(String cidade, String bairro) {
+    private Polo vincularPoloAutomatico(String cidade, String bairro, String cep) {
+        // Busca um responsável padrão para os novos polos (geralmente o admin)
+        Usuario responsavelPadrao = usuarioRepository.findByUsername("admin");
+        if (responsavelPadrao == null) {
+            List<Usuario> users = usuarioRepository.findAll();
+            if (!users.isEmpty()) responsavelPadrao = users.get(0);
+        }
+
         // A. Busca/Cria Hospital (Pai)
         Polo hospital = poloRepository.findByPoloPaiIsNull().stream()
                 .filter(p -> p.getCidade().equalsIgnoreCase(cidade) && "HOSPITAL".equalsIgnoreCase(p.getTipo()))
@@ -71,8 +82,11 @@ public class PoloAccessController {
             hospital.setNome("Hospital VidaPlus " + cidade);
             hospital.setCidade(cidade);
             hospital.setTipo("HOSPITAL");
+            hospital.setCep(cep);
             hospital.setHorarioFuncionamento("24 Horas");
             hospital.setAtivo(true);
+            hospital.setDataInauguracao(LocalDate.now());
+            hospital.setResponsavel(responsavelPadrao);
             hospital = poloRepository.save(hospital);
         }
 
@@ -89,8 +103,12 @@ public class PoloAccessController {
             clinica.setBairro(bairro);
             clinica.setTipo("CLINICA");
             clinica.setPoloPai(finalHospital);
+            clinica.setCep(cep);
             clinica.setHorarioFuncionamento("08:00 às 18:00");
             clinica.setAtivo(true);
+            clinica.setDataInauguracao(LocalDate.now());
+            clinica.setResponsavel(responsavelPadrao);
+            clinica.setLogradouro(bairro + ", " + cidade);
             clinica = poloRepository.save(clinica);
         }
         return clinica;

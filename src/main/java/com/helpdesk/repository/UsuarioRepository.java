@@ -13,16 +13,13 @@ import java.util.List;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     
     // =================================================================================
-    // 1. AUTENTICAÇÃO E SEGURANÇA (Mantidos)
+    // 1. AUTENTICAÇÃO E SEGURANÇA 
     // =================================================================================
     
-    @Query("SELECT u FROM Usuario u WHERE u.username = :login OR u.cpf = :login OR u.email = :login")
-    Usuario findByUsernameOrCpf(@Param("login") String login);
+    @Query("SELECT u FROM Usuario u WHERE u.username = :login OR u.email = :login")
+    Usuario findByUsernameOrEmail(@Param("login") String login);
 
     Usuario findByUsername(String username);
-    Usuario findByCpf(String cpf);
-    
-    // A PEÇA QUE FALTAVA PARA O AUTH CONTROLLER:
     Usuario findByEmail(String email);
     
     Usuario findByCodigoVerificacao(String codigo);
@@ -45,17 +42,17 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     List<Usuario> findMedicosByPolo(@Param("poloId") Long poloId);
 
     // =================================================================================
-    // 3. RECUPERAÇÃO DE CONTA
+    // 3. RECUPERAÇÃO DE CONTA (Trocado de CPF para E-mail)
     // =================================================================================
     
-    @Query("SELECT u FROM Usuario u WHERE u.cpf = :cpf AND u.dataNascimento = :dataNascimento")
-    Usuario findByCpfAndDataNascimento(@Param("cpf") String cpf, @Param("dataNascimento") String dataNascimento);
+    @Query("SELECT u FROM Usuario u WHERE u.email = :email AND u.dataNascimento = :dataNascimento")
+    Usuario findByEmailAndDataNascimento(@Param("email") String email, @Param("dataNascimento") String dataNascimento);
 
     // =================================================================================
-    // 4. CONSULTAS GLOBAIS (Mantidas)
+    // 4. CONSULTAS GLOBAIS (Busca por E-mail no lugar de CPF)
     // =================================================================================
 
-    @Query("SELECT u FROM Usuario u WHERE lower(u.nome) LIKE lower(concat('%', :busca, '%')) OR u.cpf LIKE %:busca%")
+    @Query("SELECT u FROM Usuario u WHERE lower(u.nome) LIKE lower(concat('%', :busca, '%')) OR lower(u.email) LIKE lower(concat('%', :busca, '%'))")
     List<Usuario> searchGlobal(@Param("busca") String busca);
 
     @Query("SELECT COUNT(u) FROM Usuario u JOIN u.polos p WHERE p.id = :poloId AND u.perfil = 'ADMIN'")
@@ -70,11 +67,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     // 5. NOVA GESTÃO CENTRALIZADA DE POLOS (ESSENCIAIS PARA O ADMIN CONTROLLER)
     // =================================================================================
     
-    // Busca TODOS os usuários (Pacientes, Médicos, Admins) de uma clínica específica
-    // Fundamental para a visualização centralizada ao clicar no card da clínica
     List<Usuario> findByPolos_Id(Long poloId);
-
-    // Busca usuários DENTRO de uma clínica específica filtrando por nome
-    // Usado pela Lupa de Pesquisa dentro do card da clínica
     List<Usuario> findByPolos_IdAndNomeContainingIgnoreCase(Long poloId, String nome);
 }

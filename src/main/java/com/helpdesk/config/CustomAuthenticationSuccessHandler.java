@@ -26,14 +26,15 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                                         HttpServletResponse response, 
                                         Authentication authentication) throws IOException, ServletException {
         
-        // Logs apenas para controle no console (não afeta o fluxo)
         System.out.println(">>> [LOGIN SUCESSO] Usuário: " + authentication.getName());
         
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
         System.out.println(">>> [LOGIN SUCESSO] Perfis: " + roles);
 
         try {
-            Usuario usuario = usuarioRepository.findByUsernameOrCpf(authentication.getName());
+            // Correção definitiva: Apenas 1 parâmetro utilizando o findByUsername
+            Usuario usuario = usuarioRepository.findByUsername(authentication.getName());
+            
             if(usuario != null) {
                 System.out.println(">>> [LOGIN DETALHES] ID: " + usuario.getId() + " - Nome: " + usuario.getNome());
             }
@@ -44,7 +45,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         // --- REGRA ÚNICA E ABSOLUTA ---
         // Independente de ser Admin, Médico, Técnico ou Paciente:
         // O primeiro passo após o login é SEMPRE a Home.
-        
         System.out.println(">>> Redirecionando para a Página Inicial (/home)");
         response.sendRedirect("/home");
     }

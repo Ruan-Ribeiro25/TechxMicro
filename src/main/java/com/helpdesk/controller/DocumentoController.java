@@ -32,7 +32,7 @@ public class DocumentoController {
         if (principal == null) return "redirect:/login";
 
         String loginUsuario = principal.getName();
-        Usuario usuario = usuarioRepository.findByUsernameOrCpf(loginUsuario);
+        Usuario usuario = usuarioRepository.findByUsername(loginUsuario);
         
         model.addAttribute("usuario", usuario);
 

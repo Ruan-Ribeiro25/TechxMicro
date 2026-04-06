@@ -13,7 +13,6 @@
         .search-container input { padding-right: 35px; border-radius: 20px; }
         .search-container i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #aaa; }
         
-        /* Estilos para a tabela detalhada (Escancarada) */
         .table-detailed th { white-space: nowrap; background-color: #f8f9fa; font-size: 0.8rem; text-transform: uppercase; color: #666; vertical-align: middle; }
         .table-detailed td { font-size: 0.85rem; vertical-align: middle; padding: 10px 15px; }
         .info-label { font-weight: 700; color: #555; font-size: 0.75rem; margin-right: 4px; }
@@ -44,7 +43,7 @@
                 <div class="d-flex align-items-center gap-2">
                     <div th:if="${modoUsuarios}" class="search-container me-2">
                         <form th:action="@{/admin/polos/clinica/{id}/usuarios(id=${clinicaId})}" method="get">
-                            <input type="text" name="busca" class="form-control form-control-sm" placeholder="Buscar por Nome ou CPF..." th:value="${buscaAtual}">
+                            <input type="text" name="busca" class="form-control form-control-sm" placeholder="Buscar por Nome ou E-mail..." th:value="${buscaAtual}">
                             <i class="fas fa-search small"></i>
                         </form>
                     </div>
@@ -75,9 +74,11 @@
                                 <tr>
                                     <th class="ps-4">ID</th>
                                     <th>Geolocalização</th>
-                                    <th class="text-center">Cidade</th>
-                                    <th class="text-center">Bairro</th>
-                                    
+                                    <th class="text-center">Hospitais</th>
+                                    <th class="text-center">Clínicas</th>
+                                    <th class="text-center">Laboratórios</th>
+                                    <th>Cidade</th>
+                                    <th>Horário</th>
                                     <th>Responsável</th>
                                 </tr>
                             </thead>
@@ -112,7 +113,7 @@
                                     <td>
                                         <div th:if="${p.responsavel != null}" style="line-height: 1.2;">
                                             <span th:text="${p.responsavel.nome}" class="d-block fw-bold small text-dark"></span>
-                                            <span class="d-block text-muted" style="font-size: 0.7rem;" th:text="'CPF: ' + ${p.responsavel.cpf}"></span>
+                                            <span class="d-block text-muted" style="font-size: 0.7rem;" th:text="${p.responsavel.email}"></span>
                                         </div>
                                     </td>
                                 </tr>
@@ -137,12 +138,15 @@
                                     <td>
                                         <a th:href="@{/admin/polos/clinica/{id}/usuarios(id=${p.id})}" 
                                            class="text-decoration-none fw-bold d-flex align-items-center">
-                                            
                                             <div th:if="${p.tipo == 'CLINICA' or p.tipo == null}" 
                                                  class="bg-success bg-opacity-10 text-success rounded-circle p-2 me-3">
                                                 <i class="fas fa-clinic-medical fa-lg"></i>
                                             </div>
-                                            
+                                            <div th:unless="${p.tipo == 'CLINICA' or p.tipo == null}" 
+                                                 class="bg-primary bg-opacity-10 text-primary rounded-circle p-2 me-3">
+                                                <i class="fas fa-hospital fa-lg"></i>
+                                            </div>
+                                            <span th:text="${p.nome}" class="text-dark">Polo</span>
                                         </a>
                                     </td>
                                     
@@ -161,8 +165,7 @@
                                 <tr>
                                     <th class="ps-3" style="width: 50px;">Status</th>
                                     <th>Identificação Pessoal</th>
-                                    <th>Documentação Civil</th>
-                                    <th>Contato</th>
+                                    <th>Contato Principal</th>
                                     <th>Endereço Residencial</th>
                                     <th>Dados Profissionais</th>
                                     <th class="text-end pe-3">Ações</th>
@@ -184,12 +187,6 @@
                                         <div class="fw-bold text-dark mb-1" style="font-size: 0.95rem;" th:text="${u.nome}">Nome Completo</div>
                                         <div class="sub-row"><span class="info-label">Data Nasc:</span> <span class="info-value" th:text="${u.dataNascimento != null ? u.dataNascimento : '-'}"></span></div>
                                         <div class="sub-row"><span class="info-label">ID Sistema:</span> <span class="info-value" th:text="${u.id}"></span></div>
-                                    </td>
-
-                                    <td>
-                                        <div class="sub-row"><span class="info-label">CPF:</span> <span class="info-value fw-bold" th:text="${u.cpf}"></span></div>
-                                        <div class="sub-row"><span class="info-label">RG:</span> <span class="info-value" th:text="${u.rg != null ? u.rg : '-'}"></span></div>
-                                        
                                     </td>
 
                                     <td>
@@ -218,7 +215,6 @@
                                             <div class="sub-row mt-1" th:if="${prof.matricula}">
                                                 <span class="info-label">Matrícula:</span> <span class="info-value fw-bold" th:text="${prof.matricula}"></span>
                                             </div>
-                                                                                        
                                           </div>
                                     </td>
 
@@ -234,7 +230,7 @@
                                     </td>
                                 </tr>
                                 <tr th:if="${#lists.isEmpty(listaUsuarios)}">
-                                    <td colspan="7" class="text-center py-5 text-muted">
+                                    <td colspan="6" class="text-center py-5 text-muted">
                                         <i class="fas fa-user-slash fa-3x mb-3 opacity-25"></i><br>
                                         Nenhum cadastro encontrado nesta Geolocalização.
                                     </td>

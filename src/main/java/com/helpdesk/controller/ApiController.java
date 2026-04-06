@@ -36,7 +36,7 @@ public class ApiController {
         // TENTATIVA 1: Filtro por Polo (Dentro de um Try-Catch para não travar)
         try {
             if (principal != null) {
-                Usuario paciente = usuarioRepository.findByUsernameOrCpf(principal.getName());
+                Usuario paciente = usuarioRepository.findByUsername(principal.getName());
                 
                 // Verifica se a lista de polos não é nula antes de tentar acessar
                 if (paciente != null && paciente.getPolos() != null && !paciente.getPolos().isEmpty()) {

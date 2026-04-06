@@ -25,7 +25,7 @@ public class AcessoProfissionalController {
         // 1. Segurança: Se não tiver logado na Home, manda pro login principal
         if (principal == null) return "redirect:/login";
 
-        Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario usuario = usuarioRepository.findByUsername(principal.getName());
         
         // --- ALTERAÇÃO IMPORTANTE ---
         // Antes, nós bloqueávamos PACIENTE aqui.
@@ -42,7 +42,7 @@ public class AcessoProfissionalController {
     public String validarSegundoLogin(@RequestParam String password, Principal principal, Model model) {
         if (principal == null) return "redirect:/login";
 
-        Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario usuario = usuarioRepository.findByUsername(principal.getName());
 
         // Verifica a senha
         if (passwordEncoder.matches(password, usuario.getPassword())) {

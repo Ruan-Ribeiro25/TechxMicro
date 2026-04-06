@@ -25,7 +25,7 @@ public class TelemedicinaController {
         }
 
         // 2. Carrega o Usuário Logado (RESOLVE O ERRO: Property 'perfil' not found on null)
-        Usuario usuario = usuarioRepository.findByUsernameOrCpf(principal.getName());
+        Usuario usuario = usuarioRepository.findByUsername(principal.getName());
         model.addAttribute("usuario", usuario);
 
         // 3. Inicializa variáveis para evitar erros na View (Thymeleaf) se não houver paciente
