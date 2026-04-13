@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.4">
-    <title>Cadastrar Técnico - PIXEL TI</title>
+    <title>Cadastrar Técnico - TechxMicro</title>
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link rel="stylesheet" th:href="@{/css/global.css?v=1.2}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,13 +18,13 @@
                 <div class="header-title-group">
                     <a th:href="@{/helpdesk}" class="btn-circle-back" title="Voltar ao Painel"><i class="fas fa-arrow-left"></i></a>
                     <div>
-                        <h2 style="color: #000000;">Cadastrar Novo Técnico</h2>
-                        <p style="color: #000000;">Área exclusiva para solicitação de acesso e promoção de equipe de suporte.</p>
+                        <h2 style="color: var(--tm-black);">Cadastrar Novo Técnico</h2>
+                        <p style="color: #64748b;">Área exclusiva para solicitação de acesso e promoção de equipe de suporte TechxMicro.</p>
                     </div>
                 </div>
             </div>
 
-            <div th:if="${param.sucesso}" style="background-color: #b6d441; color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; text-align: center;">
+            <div th:if="${param.sucesso}" style="background-color: var(--tm-dark-green); color: var(--tm-white); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; text-align: center; box-shadow: 0 4px 10px rgba(0, 132, 54, 0.2);">
                 <i class="fas fa-check-circle"></i> Cadastro solicitado com sucesso! O técnico ficará inativo até a liberação do Administrador.
             </div>
 
@@ -32,8 +32,8 @@
                 <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
                 <div class="form-section">
-                    <h4 class="chart-title" style="margin-bottom: 20px; color: #000000;">
-                        <i class="fas fa-user-shield" style="color: #b6d441;"></i> Dados Profissionais do Colaborador
+                    <h4 class="chart-title" style="margin-bottom: 20px; color: var(--tm-black);">
+                        <i class="fas fa-user-shield" style="color: var(--tm-dark-green);"></i> Dados Profissionais do Colaborador
                     </h4>
                     
                     <div class="form-row" style="display: flex; gap: 15px; margin-bottom: 15px;">
@@ -43,7 +43,7 @@
                         </div>
                         <div class="form-group" style="flex: 1;">
                             <label class="form-label">E-mail Corporativo (Login ID)</label>
-                            <input type="email" class="form-control" name="email" placeholder="joao@pixelti.com.br" required>
+                            <input type="email" class="form-control" name="email" placeholder="colaborador@techxmicro.com.br" required>
                         </div>
                     </div>
 
@@ -73,10 +73,10 @@
                         </div>
                     </div>
                     
-                    <div style="background-color: rgba(240, 125, 53, 0.1); border-left: 4px solid #f07d35; padding: 12px; border-radius: 4px; margin-top: 15px;">
-                        <p style="color: #000000; font-size: 0.85rem; margin: 0;">
-                            <i class="fas fa-exclamation-triangle" style="color: #f07d35;"></i> 
-                            <strong>Atenção Administrativa:</strong> A senha de acesso permanecerá a mesma do login corporativo atual. Por razões de segurança, a conta do técnico assumirá o status <strong style="color: #f07d35;">INATIVO</strong> e ele só poderá assumir chamados após a sua aprovação no Painel Master.
+                    <div style="background-color: rgba(62, 39, 35, 0.08); border-left: 4px solid var(--tm-brown); padding: 12px; border-radius: 4px; margin-top: 15px;">
+                        <p style="color: var(--tm-black); font-size: 0.85rem; margin: 0;">
+                            <i class="fas fa-exclamation-triangle" style="color: var(--tm-brown);"></i> 
+                            <strong>Atenção Administrativa:</strong> A senha de acesso permanecerá a mesma do login corporativo atual. Por razões de segurança, a conta do técnico assumirá o status <strong style="color: var(--tm-brown);">INATIVO</strong> e ele só poderá assumir chamados após a aprovação no Painel Master.
                         </p>
                     </div>
                 </div>

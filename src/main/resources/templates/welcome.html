@@ -3,28 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.4">
-    <title>Bem-vindo à PIXEL TI</title>
+    <title>Bem-vindo - TechxMicro</title>
     
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/global.css?v=1.2}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         .welcome-container {
             max-width: 800px;
             margin: 40px auto;
-            background: #ffffff;
+            background: var(--tm-white);
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
             padding: 50px;
             text-align: center;
             animation: fadeIn 0.8s ease-in-out;
-            border-top: 6px solid #b6d441; /* Borda superior verde PIXEL TI */
+            border-top: 6px solid var(--tm-dark-green); /* Borda superior Verde Escuro TechxMicro */
         }
 
         .icon-success {
             font-size: 5rem;
-            color: #b6d441; /* Verde PIXEL TI */
+            color: var(--tm-dark-green);
             margin-bottom: 25px;
         }
 
@@ -37,15 +37,17 @@
         }
 
         .feature-item {
-            background: #f8f9fa;
+            background: #f8fafc;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            transition: transform 0.3s;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
         .feature-item:hover {
             transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-color: var(--tm-light-green);
         }
 
         .feature-item i {
@@ -56,21 +58,23 @@
         .btn-start {
             display: inline-block;
             margin-top: 40px;
-            padding: 15px 40px;
-            background-color: #b6d441; /* Verde PIXEL TI */
-            color: #000000;
+            padding: 15px 45px;
+            background-color: var(--tm-dark-green);
+            color: var(--tm-white);
             font-weight: 800;
             text-decoration: none;
             border-radius: 8px;
             font-size: 1.1rem;
             transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(182, 212, 65, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 132, 54, 0.3);
+            border: none;
         }
 
         .btn-start:hover {
-            background-color: #f07d35; /* Laranja Hover */
-            color: #ffffff;
-            box-shadow: 0 6px 20px rgba(240, 125, 53, 0.5);
+            background-color: var(--tm-light-green);
+            color: var(--tm-black);
+            box-shadow: 0 6px 20px rgba(172, 254, 159, 0.4);
+            transform: translateY(-2px);
         }
 
         @keyframes fadeIn {
@@ -87,32 +91,36 @@
         <div class="welcome-container">
             <i class="fas fa-check-circle icon-success"></i>
             
-            <h2 style="color: #000; font-weight: 800;">E-mail Verificado com Sucesso!</h2>
+            <h2 style="color: var(--tm-dark-green); font-weight: 800; font-size: 1.8rem;">E-mail Verificado com Sucesso!</h2>
             
-            <p style="font-size: 1.1rem; color: #444; line-height: 1.6; margin-bottom: 20px; margin-top: 15px;">
-                O seu cadastro foi registrado com sucesso. No entanto, por razões de segurança, a sua conta de Técnico/Colaborador encontra-se <strong>em análise</strong>.
+            <p style="font-size: 1.1rem; color: #334155; line-height: 1.6; margin-bottom: 20px; margin-top: 15px;">
+                O seu cadastro na <strong>TechxMicro</strong> foi registrado. Por protocolos de segurança e conformidade, a sua conta de Técnico/Colaborador encontra-se <strong>em análise</strong>.
             </p>
 
-            <div style="background-color: #fff5f5; padding: 15px; border-left: 4px solid #f07d35; margin-top: 20px; margin-bottom: 30px; font-size: 0.95rem; text-align: left;">
-                <i class="fas fa-info-circle" style="color: #f07d35;"></i> Você só poderá acessar as ferramentas abaixo após a liberação e aprovação final de um <strong>Administrador Master</strong>. Aguarde a nossa comunicação.
+            <div style="background-color: rgba(62, 39, 35, 0.05); padding: 18px; border-left: 5px solid var(--tm-brown); margin-top: 20px; margin-bottom: 30px; font-size: 0.95rem; text-align: left; color: var(--tm-black); border-radius: 4px;">
+                <i class="fas fa-shield-alt" style="color: var(--tm-brown); margin-right: 8px;"></i> 
+                <strong>Status de Segurança:</strong> O acesso às ferramentas de campo e ao radar de chamados será liberado após a aprovação final do <strong>Administrador Master TechxMicro</strong>.
             </div>
 
             <div class="feature-grid">
                 <div class="feature-item">
-                    <i class="fas fa-map-marker-alt" style="color: #f07d35;"></i> <h4 style="color: #000000;">Geolocalização</h4>
-                    <p style="font-size: 0.9rem; color: #777;">Identificação automática da sua filial de atuação.</p>
+                    <i class="fas fa-network-wired" style="color: var(--tm-dark-green);"></i> 
+                    <h4 style="color: var(--tm-black); margin-bottom: 8px;">Infraestrutura</h4>
+                    <p style="font-size: 0.85rem; color: #64748b;">Monitoramento de ativos e topologia de rede em tempo real.</p>
                 </div>
                 <div class="feature-item">
-                    <i class="fas fa-ticket-alt" style="color: #b6d441;"></i> <h4 style="color: #000000;">Gestão de Chamados</h4>
-                    <p style="font-size: 0.9rem; color: #777;">Acompanhe e interaja com seus tickets em tempo real.</p>
+                    <i class="fas fa-ticket-alt" style="color: var(--tm-light-green);"></i> 
+                    <h4 style="color: var(--tm-black); margin-bottom: 8px;">Helpdesk Unificado</h4>
+                    <p style="font-size: 0.85rem; color: #64748b;">Gestão centralizada de tickets de Software e TI.</p>
                 </div>
                 <div class="feature-item">
-                    <i class="fas fa-laptop-code" style="color: #000000;"></i> <h4 style="color: #000000;">Suporte Especializado</h4>
-                    <p style="font-size: 0.9rem; color: #777;">Conexão direta com nossa equipe técnica de TI.</p>
+                    <i class="fas fa-user-check" style="color: var(--tm-black);"></i> 
+                    <h4 style="color: var(--tm-black); margin-bottom: 8px;">Perfil Técnico</h4>
+                    <p style="font-size: 0.85rem; color: #64748b;">Identificação e credenciamento oficial no ecossistema.</p>
                 </div>
             </div>
 
-            <a th:href="@{/login}" class="btn-start">Voltar para o Login <i class="fas fa-arrow-right"></i></a>
+            <a th:href="@{/login}" class="btn-start">Ir para a Autenticação <i class="fas fa-arrow-right" style="margin-left: 10px;"></i></a>
         </div>
     </main>
 

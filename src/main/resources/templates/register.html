@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.4">
-    <title>Criar Conta - PIXEL TI</title>
+    <title>Criar Conta - TechxMicro</title>
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link rel="stylesheet" th:href="@{/css/register.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -13,19 +13,19 @@
     <div th:replace="~{fragments/header :: navbar}"></div>
 
     <main style="padding: 40px 20px; display: flex; justify-content: center;">
-        <div class="login-container" style="width: 100%; max-width: 600px; padding: 30px; background: #ffffff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <div class="login-container" style="width: 100%; max-width: 600px; padding: 30px; background: #ffffff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
             <div class="login-header" style="text-align: center; margin-bottom: 25px;">
-                <h2 style="color: #b6d441; font-weight: 800; font-size: 2rem;">Criar Conta</h2>
-                <p style="color: #666;">Preencha os seus dados para aceder ao Helpdesk</p>
+                <h2 style="color: var(--tm-dark-green); font-weight: 800; font-size: 2rem;">Criar Conta</h2>
+                <p style="color: #666;">Preencha os seus dados para aceder ao Ecossistema TechxMicro</p>
             </div>
 
-            <div th:if="${error}" class="alert-erro" style="background:#fdecea; color:#f07d35; padding:15px; text-align:center; margin-bottom:20px; border-radius:5px; border: 1px solid #f07d35; font-weight: 600;">
-                <span th:text="${error}"></span>
+            <div th:if="${error}" class="alert-erro" style="background: rgba(62, 39, 35, 0.1); color: var(--tm-brown); padding: 15px; text-align: center; margin-bottom: 20px; border-radius: 5px; border: 1px solid var(--tm-brown); font-weight: 600;">
+                <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
             </div>
 
             <form th:action="@{/register}" th:object="${usuario}" method="post">
                 
-                <h4 style="color: #000000; margin: 15px 0 15px 0; border-bottom: 2px solid #b6d441; padding-bottom: 5px;">Dados Pessoais</h4>
+                <h4 style="color: var(--tm-black); margin: 15px 0 15px 0; border-bottom: 2px solid var(--tm-dark-green); padding-bottom: 5px;">Dados Pessoais</h4>
 
                 <div class="form-group" style="margin-bottom: 15px;">
                     <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; color: #555;">Nome Completo</label>
@@ -43,7 +43,7 @@
                     </div>
                 </div>
 
-                <h4 style="color: #000000; margin: 30px 0 15px 0; border-bottom: 2px solid #b6d441; padding-bottom: 5px;">Endereço</h4>
+                <h4 style="color: var(--tm-black); margin: 30px 0 15px 0; border-bottom: 2px solid var(--tm-dark-green); padding-bottom: 5px;">Endereço</h4>
                 
                 <div class="form-group" style="display: grid; grid-template-columns: 1.2fr 2fr 0.8fr; gap: 15px; margin-bottom: 15px;">
                     <div>
@@ -76,11 +76,11 @@
                     <input type="text" th:field="*{bairro}" id="bairro" class="form-control" placeholder="Preenchimento automático..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; outline: none;" required>
                 </div>
 
-                <h4 style="color: #000000; margin: 30px 0 15px 0; border-bottom: 2px solid #b6d441; padding-bottom: 5px;">Acesso de Login</h4>
+                <h4 style="color: var(--tm-black); margin: 30px 0 15px 0; border-bottom: 2px solid var(--tm-dark-green); padding-bottom: 5px;">Acesso de Login</h4>
 
                 <div class="form-group" style="margin-bottom: 15px;">
                     <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; color: #555;">E-mail Corporativo (Sua chave de acesso)</label>
-                    <input type="email" th:field="*{email}" class="form-control" placeholder="joao@pixelti.com.br" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; outline: none;" required>
+                    <input type="email" th:field="*{email}" class="form-control" placeholder="colaborador@techxmicro.com.br" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; outline: none;" required>
                 </div>
 
                 <div class="form-group" style="margin-bottom: 15px;">
@@ -88,10 +88,10 @@
                     <input type="password" th:field="*{senha}" id="senha" class="form-control" onkeyup="validarSenha()" placeholder="Mínimo 8 caracteres" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; outline: none;" required>
                     
                     <div id="password-requirements" style="margin-top: 10px; background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #e9ecef; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                        <div id="req-length" class="req-item" style="font-size: 0.8rem; color: #666;"><i class="fas fa-times" style="color: #f07d35;"></i> Mínimo 8 caracteres</div>
-                        <div id="req-upper" class="req-item" style="font-size: 0.8rem; color: #666;"><i class="fas fa-times" style="color: #f07d35;"></i> Letra Maiúscula</div>
-                        <div id="req-number" class="req-item" style="font-size: 0.8rem; color: #666;"><i class="fas fa-times" style="color: #f07d35;"></i> Número</div>
-                        <div id="req-special" class="req-item" style="font-size: 0.8rem; color: #666;"><i class="fas fa-times" style="color: #f07d35;"></i> Símbolo Especial</div>
+                        <div id="req-length" class="req-item" style="font-size: 0.8rem; color: #666;"><i class="fas fa-times" style="color: var(--tm-brown);"></i> Mínimo 8 caracteres</div>
+                        <div id="req-upper" class="req-item" style="font-size: 0.8rem; color: #666;"><i class="fas fa-times" style="color: var(--tm-brown);"></i> Letra Maiúscula</div>
+                        <div id="req-number" class="req-item" style="font-size: 0.8rem; color: #666;"><i class="fas fa-times" style="color: var(--tm-brown);"></i> Número</div>
+                        <div id="req-special" class="req-item" style="font-size: 0.8rem; color: #666;"><i class="fas fa-times" style="color: var(--tm-brown);"></i> Símbolo Especial</div>
                     </div>
                 </div>
 
@@ -101,13 +101,13 @@
                     <small id="msgConfirmacao" style="display:none; font-weight:bold; margin-top:5px;"></small>
                 </div>
 
-                <button type="submit" id="btnRegistrar" class="btn-custom" disabled style="width:100%; padding:15px; background:#b6d441; color:#000000; font-size: 1.1rem; font-weight: 800; border:none; border-radius:5px; margin-top:10px; opacity:0.5; cursor:not-allowed; transition: 0.3s;">
+                <button type="submit" id="btnRegistrar" class="btn-custom" disabled style="width:100%; padding:15px; background: var(--tm-dark-green); color: var(--tm-white); font-size: 1.1rem; font-weight: 800; border:none; border-radius:5px; margin-top:10px; opacity:0.5; cursor:not-allowed; transition: 0.3s;">
                     Finalizar Cadastro <i class="fas fa-arrow-right ms-2"></i>
                 </button>
             </form>
 
             <div class="login-footer" style="text-align: center; margin-top: 25px;">
-                <a th:href="@{/login}" style="color: #f07d35; font-weight: bold; text-decoration: none;"><i class="fas fa-sign-in-alt"></i> Já tenho conta. Fazer Login.</a>
+                <a th:href="@{/login}" style="color: var(--tm-dark-green); font-weight: bold; text-decoration: none;"><i class="fas fa-sign-in-alt"></i> Já tenho conta. Fazer Login.</a>
             </div>
         </div>
     </main>
@@ -133,7 +133,7 @@
                 $(this).val(v);
             });
 
-            // INTEGRAÇÃO BRASIL API COM O CAMPO UF INCLUÍDO
+            // INTEGRAÇÃO BRASIL API
             $('#cep').blur(function() {
                 var cep = $(this).val().replace(/\D/g, '');
                 
@@ -148,7 +148,7 @@
                         $('#logradouro').val(dados.street || '');
                         $('#bairro').val(dados.neighborhood || '');
                         $('#cidade').val(dados.city || '');
-                        $('#uf').val(dados.state || ''); // Preenche o UF automático
+                        $('#uf').val(dados.state || '');
                         $('input[name="numero"]').focus();
                     })
                     .fail(function() {
@@ -161,7 +161,6 @@
             });
         });
 
-        // Validações de Senha e liberação do botão
         function validarSenha() {
             const senha = document.getElementById('senha').value;
             updateItem('req-length', senha.length >= 8);
@@ -171,7 +170,6 @@
             validarConfirmacao();
         }
 
-        // CORREÇÃO: Função atualiza apenas a classe do ícone e a cor, preservando o texto intacto!
         function updateItem(id, valid) {
             const el = document.getElementById(id);
             const icon = el.querySelector('i');
@@ -179,12 +177,12 @@
             if (valid) {
                 el.classList.add('valid');
                 icon.className = 'fas fa-check';
-                icon.style.color = '#b6d441';
-                el.style.color = '#b6d441';
+                icon.style.color = '#008436'; // Verde Escuro para Válido
+                el.style.color = '#008436';
             } else {
                 el.classList.remove('valid');
                 icon.className = 'fas fa-times';
-                icon.style.color = '#f07d35';
+                icon.style.color = '#3E2723'; // Marrom para Inválido
                 el.style.color = '#666';
             }
         }
@@ -201,17 +199,16 @@
             if (confirmacao.length > 0) {
                 msg.style.display = 'block';
                 if (senhasIguais) { 
-                    msg.style.color = '#b6d441'; 
+                    msg.style.color = '#008436'; 
                     msg.innerText = 'Senhas conferem!'; 
                 } else { 
-                    msg.style.color = '#f07d35'; 
+                    msg.style.color = '#3E2723'; 
                     msg.innerText = 'As senhas não conferem.'; 
                 }
             } else {
                 msg.style.display = 'none';
             }
 
-            // O botão só acende se TODAS as regras passarem e as senhas forem idênticas
             if (senhasIguais && regrasOk) {
                 btn.disabled = false; 
                 btn.style.opacity = '1'; 

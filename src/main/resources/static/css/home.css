@@ -1,34 +1,40 @@
 /* ============================================================
    ARQUIVO: home.css
    DESCRIÇÃO: Dashboard principal (Painel de Controle)
+   EMPRESA: TECHXMICRO | HELP EASY
+   ÚLTIMA ATUALIZAÇÃO: FAXINA COMPLETA E REBRANDING (Cores Oficiais)
    ============================================================ */
 
 /* --- ESTILO DESKTOP (PADRÃO) --- */
 .welcome-section {
-    background: rgba(255, 255, 255, 0.95); 
+    /* Base baseada no var(--glass-bg) do global.css, mas levemente mais clara para contraste sobre o fundo preto */
+    background: rgba(28, 28, 28, 0.85); 
     padding: 30px; 
     border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.05); 
-    margin-bottom: 40px; /* Espaço padrão no desktop */
-    border-left: 5px solid #2c3e50; 
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3); 
+    margin-bottom: 40px; 
+    /* Borda de destaque TechxMicro: Verde Escuro */
+    border-left: 5px solid #008436; 
     display: flex; 
     align-items: center;
     justify-content: space-between; 
     width: 100%; 
     backdrop-filter: blur(5px);
-    
 }
 
 .welcome-text h2 { 
     margin: 0 0 10px 0; 
-    color: #2c3e50; /* Texto escuro no desktop (fundo branco) */
+    /* Texto em Branco TechxMicro sobre o fundo dark */
+    color: #ffffff; 
     text-align: left; 
     font-size: 1.8rem;
+    font-weight: 700;
 }
 
 .welcome-text p {
     margin: 0;
-    color: #666;
+    /* Texto secundário em Cinza Claro */
+    color: #aaaaaa;
 }
 
 /* Grid de Cards */
@@ -40,35 +46,36 @@
 }
 
 /* ============================================
-   IDENTIDADE VISUAL COPAMIR (Laranja e Escuro)
+   PADRONIZAÇÃO TECHXMICRO (Faxina Copamir)
    ============================================ */
 
-/* 1. Definição das Cores Globais */
-:root {
-    --copamir-orange: #E67E22; /* Laranja da engrenagem do logo */
-    --copamir-dark: #2C3E50;   /* Cor escura do logo */
-    --copamir-orange-light: rgba(230, 126, 34, 0.1); /* Laranja claro para fundos */
-    --card-border-color: #E67E22; /* Cor da borda inferior dos cards */
-}
+/* REMOVIDO: Bloco :root com variáveis COPAMIR.
+   Agora usamos as cores hardcoded da TechxMicro ou variáveis do global.css */
 
-/* 2. Estilização Geral dos CARDS (Aplica a todos os cards) */
+/* 1. Estilização Geral dos CARDS HELPDESK (Padronização) */
 .card-action {
-    /* Padroniza a borda inferior para laranja em TODOS os cards */
-    border-bottom: 4px solid var(--card-border-color) !important;
+    /* Padroniza a borda inferior para Verde Escuro TechxMicro em TODOS os cards desta grid */
+    border-bottom: 4px solid #008436 !important;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: #ffffff; /* Fundo padrão para cards web */
+    color: #333333; /* Texto padrão para cards web */
 }
 
-/* Efeito Hover (Passar o mouse) */
+/* Efeito Hover (Passar o mouse) - Padronizado TechxMicro */
 .card-action:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(230, 126, 34, 0.2); /* Sombra laranja suave */
+    /* Sombra Verde Suave */
+    box-shadow: 0 10px 20px rgba(0, 132, 54, 0.2); 
+    /* Destaque opcional na borda ao hover: Verde Claro */
+    border-bottom-color: #acfe9f !important;
 }
 
-/* 3. Estilização dos Círculos de Ícone (icon-box) em TODOS os cards */
-/* O seletor '.card-action .icon-box' garante que isso se aplique a qualquer card */
+/* 2. Estilização dos Círculos de Ícone (icon-box) em TODOS os cards HELPDESK */
 .card-action .icon-box {
-    background-color: var(--copamir-orange-light) !important; /* Fundo laranja claro */
-    color: var(--copamir-orange) !important; /* Ícone laranja forte */
+    /* Fundo Verde Claro suave TechxMicro */
+    background-color: rgba(172, 254, 159, 0.1) !important; 
+    /* Ícone Verde Escuro forte TechxMicro */
+    color: #008436 !important; 
     
     /* Mantém o formato redondo e centralizado */
     display: flex;
@@ -81,42 +88,31 @@
     font-size: 1.5rem;
 }
 
-/* 4. Estilização do Ícone Principal "Painel de Controle" */
-/* Supondo que a estrutura seja algo como: <div class="card-header-icon"><i class="..."></i></div> */
-/* Verifique a classe exata no seu HTML se este seletor não funcionar */
+/* 3. Estilização de Ícones de Cabeçalho na Home */
 .card-header-icon,
 .page-header .icon-box,
-.main-icon-container { /* Adicionei seletores comuns, ajuste conforme seu HTML */
-    color: var(--copamir-orange) !important;
+.main-icon-container { 
+    color: #008436 !important; /* Verde Escuro TechxMicro */
 }
 
-/* Se o ícone principal tiver um fundo, use isto também: */
-/*
-.card-header-icon {
-    background-color: var(--copamir-orange-light) !important;
-    color: var(--copamir-orange) !important;
-    padding: 10px;
-    border-radius: 10px;
-}
-*/
 
+/* FOOTER - Mantido conforme padrão global Preto Absoluto */
 footer { 
-    background: #000000 !important; /* Aqui está o Preto absoluto! */
-    color: #ffffff !important; /* Texto branco para contrastar */
+    background: #000000 !important; 
+    color: #ffffff !important; 
     text-align: center !important; 
-    padding: 10px 15px !important; /* Super fino na vertical (10px) */
+    padding: 10px 15px !important; 
     font-size: 0.9rem !important; 
     margin-top: auto !important; 
-    /* Removi o blur e a sombra do texto, pois no fundo preto puro fica melhor sem eles */
     text-shadow: none !important; 
+    border-top: 1px solid #333; /* Leve separação no fundo preto */
     
-    /* Força o alinhamento perfeito ao centro: */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
 }
 
-/* 🎯 MATADOR DE MARGENS: Remove a "gordura" invisível do Bootstrap e quebras de linha */
+/* MATADOR DE MARGENS FOOTER */
 footer p, footer span, footer div {
     margin: 0 !important;
     padding: 0 !important;
@@ -132,19 +128,21 @@ footer br {
    ============================================================ */
 @media (max-width: 768px) {
     
-    /* 1. Ajuste do Container de Boas-vindas */
+    /* 1. Ajuste do Container de Boas-vindas Mobile */
     .welcome-section { 
         flex-direction: column; 
         text-align: center; 
         gap: 15px;
         
-        /* Remove o fundo branco no celular para ficar transparente no degradê */
+        /* Mantém transparente no celular sobre o fundo verde degradê se houver,
+           ou sobre a imagem de fundo preta */
         background: transparent !important; 
         box-shadow: none !important;
         border: none !important;
         padding: 0 !important;
+        backdrop-filter: none;
         
-        /* CORREÇÃO DO ESPAÇAMENTO VERTICAL (DESCOLA DO CARD) */
+        /* CORREÇÃO DO ESPAÇAMENTO VERTICAL */
         margin-bottom: 40px !important; 
         margin-top: 10px !important;
     }
@@ -155,21 +153,21 @@ footer br {
         display: none; 
     }
 
-    /* 2. Ajuste do Texto (Cor e Tamanho) */
+    /* 2. Ajuste do Texto Mobile (Cor e Tamanho) */
     .welcome-text h2 { 
-        /* CORREÇÃO DA COR: Branco para ler no fundo verde */
+        /* Mantém Branco para leitura sobre fundos escuros */
         color: #ffffff !important; 
         font-size: 1.8rem;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.3); /* Sombra para leitura */
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* Sombra mais forte para leitura */
         margin-bottom: 5px;
     }
 
     .welcome-text p {
-        color: rgba(255, 255, 255, 0.9) !important; /* Texto de apoio branco */
+        color: rgba(255, 255, 255, 0.8) !important; /* Texto de apoio branco suave */
         font-size: 1rem;
     }
 
-    /* 3. Grid de 2 colunas no celular (para não ficar tudo linguiça) */
+    /* 3. Grid de 2 colunas no celular */
     .dashboard-grid { 
         grid-template-columns: repeat(2, 1fr); 
         gap: 15px; 
@@ -179,11 +177,10 @@ footer br {
 @media (max-width: 480px) {
     /* Ajuste fino para telas muito pequenas */
     .dashboard-grid { 
-        grid-template-columns: repeat(2, 1fr); /* Mantém 2 colunas */
+        grid-template-columns: repeat(2, 1fr); 
         gap: 12px; 
     }
     
-    /* Se o nome do usuário for muito longo, ajusta a fonte */
     .welcome-text h2 {
         font-size: 1.5rem;
     }

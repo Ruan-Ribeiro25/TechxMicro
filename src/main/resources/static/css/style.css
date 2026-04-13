@@ -49,7 +49,7 @@ body {
     background-color: #000000;
     
     /* Fundo Animado: Globo com Fluxo de Conexões IoT (Novo Link Giphy) */
-    background-image: url('https://images.unsplash.com/photo-1555496710-2660a86c4557?q=80&w=1991&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+    background-image: url('https://images.unsplash.com/photo-1716703371653-ca74beaa7a4a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
     
     /* Propriedades extras para o GIF se adaptar perfeitamente ao ecrã */
     background-size: cover;         
@@ -182,7 +182,7 @@ input:focus, .form-control:focus, select:focus {
 /* Botões Redondos e Gradientes */
 button, .btn-custom {
     width: 100%; padding: 14px; 
-    background: linear-gradient(135deg, #FF8968 0%, #FC761E 100%);
+    background: linear-gradient(135deg, #008436 0%, #008436 100%);
     color: white;
     border: none; border-radius: 50px; 
     font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.3s;

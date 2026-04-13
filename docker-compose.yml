@@ -4,81 +4,74 @@ services:
   # 1. BANCO DE DADOS
   db:
     image: mysql:8.0
+    container_name: techxmicro-db
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: admin
-      MYSQL_DATABASE: helpdesk_db
+      MYSQL_DATABASE: techxmicro_db
       MYSQL_USER: user_dev
       MYSQL_PASSWORD: user_dev
     ports:
-      - "3307:3306"
+      - "3309:3306" # Porta 3309 externa para não conflitar com outros MySQLs
     volumes:
-      - pixelti_db_data:/var/lib/mysql
+      - techxmicro_db_data:/var/lib/mysql
     deploy:
       resources:
         limits:
           memory: 2G
-    # O truque: cria um apelido para o banco também, por segurança
-    networks:
-      default:
-        aliases:
-          - pixelti-db
 
-  # 2. BACKEND (AQUI ESTÁ A CORREÇÃO DO SITE)
+  # 2. BACKEND (Spring Boot)
   app:
     build: .
+    container_name: techxmicro-app
     restart: always
     ports:
-      - "8081:8080"
+      - "8083:8080" # Porta 8083 externa conforme seu pedido
     depends_on:
       - db
     environment:
-      # O backend acessa o banco pelo nome do SERVIÇO 'db'
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/helpdesk_db?allowPublicKeyRetrieval=true&useSSL=false
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=admin
-    # O truque: dizemos ao Docker "Este container também atende por pixelti-app"
-    networks:
-      default:
-        aliases:
-          - pixelti-app
+      # CRÍTICO: DB_HOST deve ser exatamente o nome do serviço acima 'db'
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=techxmicro_db
+      - DB_USER=root
+      - DB_PASSWORD=admin
+    # Adicionado para garantir que o container app consiga resolver o nome 'db'
+    links:
+      - db
 
   # 3. TÚNEL CLOUDFLARE
   tunnel:
     image: cloudflare/cloudflared
+    container_name: techxmicro-tunnel
     restart: always
     command: tunnel run
     environment:
-      - TUNNEL_TOKEN=eyJhIjoiYjQ1MTU1MjdjNjI2MmZiNzUzZTRhMmYxODEwMTk0ZjciLCJ0IjoiODIwZWVkNjgtMTllYS00MmMwLWI0ZTktZDRhMzM5YTUyZjlmIiwicyI6Ik5tTm1Nakl6WmprdE5EazFPQzAwT0dFMUxXRmhObU10TTJRd09UWTBZbU0yTnpCaSJ9
-      
+      # Seu Token atualizado finalizando em ...T1RVeSJ9
+      - TUNNEL_TOKEN=eyJhIjoiYjQ1MTU1MjdjNjI2MmZiNzUzZTRhMmYxODEwMTk0ZjciLCJ0IjoiY2NmYjBiMTctNDFhZi00NGExLTk0NmQtZWRkYjNjY2ExOWI2IiwicyI6IlpUTXdaREU0TWpjdE5HVXlOUzAwWW1aaUxUbGlNbUl0WmpjNE16WmpNVFU0T1RVeSJ9
+
   # 4. MONITORAMENTO
   prometheus:
     image: prom/prometheus
+    container_name: techxmicro-prometheus
     restart: always
     ports:
-      - "9091:9090"
+      - "9093:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    networks:
-      default:
-        aliases:
-          - pixelti-prometheus
 
   # 5. DASHBOARD
   grafana:
     image: grafana/grafana
+    container_name: techxmicro-grafana
     restart: always
     ports:
-      - "3001:3000"
+      - "3003:3000"
     depends_on:
       - prometheus
     volumes:
-      - pixelti_grafana_data:/var/lib/grafana
-    networks:
-      default:
-        aliases:
-          - pixelti-grafana
+      - techxmicro_grafana_data:/var/lib/grafana
 
 volumes:
-  pixelti_db_data:
-  pixelti_grafana_data:
+  techxmicro_db_data:
+  techxmicro_grafana_data:

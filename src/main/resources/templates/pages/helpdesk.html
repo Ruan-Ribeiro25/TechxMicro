@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.4">
-    <title>Dashboard Helpdesk - PIXEL TI</title>
+    <title>Dashboard Helpdesk Unificado - TechxMicro</title>
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link rel="stylesheet" th:href="@{/css/global.css?v=1.2}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,21 +21,21 @@
     <main>
         <div class="page-sheet-helpdesk">
             
-            <div th:if="${param.erroAuditoria}" style="background-color: #fdecea; color: #f07d35; padding: 15px; margin-bottom: 20px; border-radius: 8px; border-left: 5px solid #f07d35; font-weight: bold; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <div th:if="${param.erroAuditoria}" style="background-color: var(--tm-black); color: var(--tm-white); padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 2px solid var(--tm-brown); font-weight: bold; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
                 <i class="fas fa-shield-alt"></i> Acesso Negado: Apenas Administradores possuem permissão para acessar a Auditoria.
             </div>
 
             <div class="network-header-flex">
                 <div class="header-title-group">
-                    <a th:href="@{/home}" class="btn-circle-back" title="Voltar ao Painel"><i class="fas fa-arrow-left"></i></a>
-                    <div><h2>Painel Helpdesk</h2><p>Monitorização em Tempo Real</p></div>
+                    <a th:href="@{/home}" class="btn-circle-back" title="Voltar ao Painel" style="color: #1c1c1c;"><i class="fas fa-arrow-left"></i></a>
+                    <div><h2>Painel Helpdesk Unificado</h2><p>Monitorização em Tempo Real vs. Radar</p></div>
                 </div>
                 <div class="action-buttons">
                     
-                    <a th:if="${isAdmin}" th:href="@{/helpdesk/auditoria}" class="btn-tech" style="background-color: #000000; color: #b6d441; border: 2px solid #b6d441; margin-right: 10px;">
+                    <a th:if="${isAdmin}" th:href="@{/helpdesk/auditoria}" class="btn-tech" style="margin-right: 10px;">
                         <i class="fas fa-history"></i> Auditoria
                     </a>
-                    <a th:unless="${isAdmin}" href="#" onclick="alert('Acesso Restrito: Apenas Administradores Master têm permissão para acessar e visualizar o painel de Auditoria de chamados da PIXEL TI.'); return false;" class="btn-tech" style="background-color: #000000; color: #b6d441; border: 2px solid #b6d441; margin-right: 10px; cursor: not-allowed; opacity: 0.7;">
+                    <a th:unless="${isAdmin}" href="#" onclick="alert('Acesso Restrito: Apenas Administradores Master têm permissão para acessar e visualizar o painel de Auditoria de chamados da TechxMicro.'); return false;" class="btn-tech" style="margin-right: 10px; cursor: not-allowed; opacity: 0.7;">
                         <i class="fas fa-lock"></i> Auditoria
                     </a>
                     
@@ -50,33 +50,45 @@
 
             <div class="kpi-grid" id="kpiContainer">
                 <div class="kpi-card border-pendente">
-                    <div class="kpi-info"><h3 style="color: #000000;">Pendentes (Infra)</h3><span class="kpi-number" th:text="${pendentesInfra}">0</span></div>
+                    <div class="kpi-info"><h3>Pendentes (Infra)</h3><span class="kpi-number text-pendente" id="kpi-pend-infra" th:text="${pendentesInfra}">1</span></div>
                     <i class="fas fa-server kpi-icon text-pendente"></i>
                 </div>
                 <div class="kpi-card border-pendente">
-                    <div class="kpi-info"><h3 style="color: #000000;">Pendentes (Software)</h3><span class="kpi-number" th:text="${pendentesSoftware}">0</span></div>
+                    <div class="kpi-info"><h3>Pendentes (Software)</h3><span class="kpi-number text-pendente" id="kpi-pend-soft" th:text="${pendentesSoftware}">0</span></div>
                     <i class="fas fa-code kpi-icon text-pendente"></i>
                 </div>
                 <div class="kpi-card border-resolvido">
-                    <div class="kpi-info"><h3 style="color: #b6d441;">Resolvidos</h3><span class="kpi-number" th:text="${resolvidos}">0</span></div>
+                    <div class="kpi-info"><h3>Resolvidos (Total)</h3><span class="kpi-number text-resolvido" id="kpi-resolvidos" th:text="${resolvidos}">1</span></div>
                     <i class="fas fa-check-circle kpi-icon text-resolvido"></i>
                 </div>
                 <div class="kpi-card border-cancelado">
-                    <div class="kpi-info"><h3 style="color: #f07d35;">Cancelados</h3><span class="kpi-number" th:text="${cancelados}">0</span></div>
+                    <div class="kpi-info"><h3>Cancelados (Total)</h3><span class="kpi-number text-cancelado" id="kpi-cancelados" th:text="${cancelados}">0</span></div>
                     <i class="fas fa-times-circle kpi-icon text-cancelado"></i>
                 </div>
             </div>
 
             <div class="charts-grid">
-                <div class="chart-container"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;"><h4 class="chart-title" style="margin: 0;"><i class="fas fa-laptop-medical" style="color: #f07d35;"></i> Suporte TI</h4><select id="filtroTempoTI" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.85rem; outline: none; background: #fff;"><option value="dia">Hoje (Horas)</option><option value="semana" selected>Semana Atual</option><option value="ano">1 Ano (Meses)</option><option value="dez_anos">Últimos 10 Anos</option></select></div><canvas id="chartSuporteTI"></canvas></div>
-                <div class="chart-container"><h4 class="chart-title"><i class="fas fa-bug" style="color: #b6d441;"></i> Problemas Software Helpdesk</h4><div style="position: relative; height: 85%; width: 100%; display: flex; justify-content: center;"><canvas id="chartSoftware"></canvas></div></div>
+                <div class="chart-container"><h4 class="chart-title"><i class="fas fa-bug"></i> Problemas Software Helpdesk</h4><div style="position: relative; height: 85%; width: 100%; display: flex; justify-content: center;"><canvas id="chartSoftware"></canvas></div></div>
+                
+                <div class="chart-container">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h4 class="chart-title" style="margin: 0;"><i class="fas fa-server"></i> Breakdown Infraestrutura</h4>
+                        <select id="filtroTempoTI" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.85rem; outline: none; background: #fff;">
+                            <option value="dia">Hoje (Horas)</option>
+                            <option value="semana" selected>Semana Atual</option>
+                            <option value="ano">1 Ano (Meses)</option>
+                            <option value="dez_anos">Últimos 10 Anos</option>
+                        </select>
+                    </div>
+                    <div style="position: relative; height: 85%; width: 100%; display: flex; justify-content: center;"><canvas id="chartInfraDonut"></canvas></div>
+                </div>
             </div>
 
             <div class="history-section">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h4 class="chart-title" style="margin: 0;"><i class="fas fa-list-alt" style="color: #000000;"></i> Histórico Recente de Chamados</h4>
-                    <div style="font-size: 0.8rem; color: #b6d441; font-weight: bold; background: #000000; padding: 4px 10px; border-radius: 50px;">
-                        <i class="fas fa-circle blink-anim"></i> Radar Ao Vivo
+                    <h4 class="chart-title" style="margin: 0;"><i class="fas fa-list-alt"></i> Histórico Recente de Chamados</h4>
+                    <div style="font-size: 0.8rem; color: var(--tm-white); font-weight: bold; background: var(--tm-dark-green); padding: 4px 10px; border-radius: 50px;">
+                        <i class="fas fa-circle blink-anim" style="color: var(--tm-light-green);"></i> Radar Ao Vivo
                     </div>
                 </div>
                 
@@ -97,7 +109,7 @@
                         <tbody>
                             <tr th:each="chamado : ${chamados}">
                                 <td th:text="'#' + ${chamado.id}">#1000</td>
-                                <td><strong th:text="${chamado.solicitante.nome}" style="color: #000000;">Nome</strong></td>
+                                <td><strong th:text="${chamado.solicitante.nome}">Nome</strong></td>
                                 
                                 <td>
                                     <span th:if="${chamado.categoria != null and chamado.categoria.name() == 'TI'}" 
@@ -115,7 +127,7 @@
                                 
                                 <td>
                                     <span th:if="${chamado.responsavel != null}">
-                                        <strong style="color: #000000;" th:text="${chamado.responsavel.nome}">Técnico</strong>
+                                        <strong th:text="${chamado.responsavel.nome}">Técnico</strong>
                                     </span>
                                     <a th:if="${chamado.responsavel == null and isTechOrAdmin}" th:href="@{/helpdesk/assumir(id=${chamado.id})}" class="btn-assumir" style="text-decoration: none; display: inline-block;">
                                         <i class="fas fa-hand-sparkles"></i> Assumir
@@ -134,7 +146,7 @@
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(chamados)}">
-                                <td colspan="8" style="text-align: center; padding: 20px; color: #000000;">Nenhum chamado registrado no radar.</td>
+                                <td colspan="8" style="text-align: center; padding: 20px;">Nenhum chamado registrado no radar.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -142,7 +154,7 @@
                     <div id="paginacaoChamados" th:if="${totalPages > 1}" style="display: flex; justify-content: center; gap: 8px; margin-top: 15px;">
                         <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
                             <a th:href="@{/helpdesk(page=${i})}" th:text="${i + 1}" 
-                               th:style="${currentPage == i ? 'background: #b6d441; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-weight: bold;' : 'background: #000000; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none;'}">
+                               th:style="${currentPage == i ? 'background: var(--tm-light-green); color: var(--tm-black); padding: 6px 12px; border-radius: 4px; text-decoration: none; font-weight: bold;' : 'background: var(--tm-black); color: var(--tm-white); padding: 6px 12px; border-radius: 4px; text-decoration: none;'}">
                             </a>
                         </span>
                     </div>
@@ -156,11 +168,9 @@
 
     <script th:inline="javascript">
         /*<![CDATA[*/
-        // 1. DADOS DOS GRÁFICOS (Gerados pelo Java)
-        const dadosHora = /*[[${infraPorHora}]]*/ [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-        const dadosDia = /*[[${infraPorDia}]]*/ [0,0,0,0,0,0,0];
-        const dadosMes = /*[[${infraPorMes}]]*/ [0,0,0,0,0,0,0,0,0,0,0,0];
-        const dadosAno = /*[[${infraPorAno}]]*/ [0,0,0,0,0,0,0,0,0,0];
+        // =========================================================================
+        // 1. DADOS DOS GRÁFICOS (Gerados exclusivamente pelo Java para Implantação)
+        // =========================================================================
         const anoAtual = /*[[${anoAtual}]]*/ 2026;
 
         const labelsHora = Array.from({length: 24}, (_, i) => i + 'h');
@@ -168,24 +178,54 @@
         const labelsMes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
         const labelsAno = Array.from({length: 10}, (_, i) => (anoAtual - 9) + i);
 
-        // Arrays de tempo do Software: [0]=Hora, [1]=Dia, [2]=Mes, [3]=Ano
+        // --- DADOS DE BREAKDOWN PARA ELIPSES (Donuts) ---
+        // Arrays de tempo: [0]=Hora, [1]=Dia, [2]=Mes, [3]=Ano
         const sResTime = /*[[${softResolvidosTime}]]*/ [0,0,0,0];
         const sPenTime = /*[[${softPendentesTime}]]*/ [0,0,0,0];
         const sCanTime = /*[[${softCanceladosTime}]]*/ [0,0,0,0];
 
-        // 2. INICIALIZAR GRÁFICO TI (Infra)
-        const ctxTI = document.getElementById('chartSuporteTI').getContext('2d');
-        let chartTI = new Chart(ctxTI, {
-            type: 'bar',
-            data: {
-                labels: labelsDia,
-                datasets: [{ label: 'Chamados Infra', data: dadosDia, backgroundColor: '#f07d35', borderRadius: 4 }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'top' } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
-        });
+        const iResTime = /*[[${infraResolvidosTime}]]*/ [0,0,0,0]; // Binding Real
+        const iPenTime = /*[[${infraPendentesTime}]]*/ [0,0,0,0];  // Binding Real
+        const iCanTime = /*[[${infraCanceladosTime}]]*/ [0,0,0,0];  // Binding Real
 
-        // 3. INICIALIZAR GRÁFICO SOFTWARE (Donut)
-        // Começa exibindo os dados da Semana (Índice 1) para espelhar o gráfico TI
+        // --- TOTAIS UNIFICADOS PARA GRID DE KPIs (Radar de Status) ---
+        // Você DEVE mapear essas variáveis no seu backend Java/Thymeleaf
+        // Ex: const tPendInfraH = /*[[${pendentesInfraHoje}]]*/ 0;
+        
+        // Pendentes (Infra): Hoje, Semana, Mes, Ano
+        const tPendInfraH = /*[[${pendentesInfraHoje}]]*/ 1;
+        const tPendInfraS = /*[[${pendentesInfraSemana}]]*/ 1;
+        const tPendInfraM = /*[[${pendentesInfraMes}]]*/ 1;
+        const tPendInfraA = /*[[${pendentesInfraAno}]]*/ 1;
+
+        // Pendentes (Software): Hoje, Semana, Mes, Ano
+        const tPendSoftH = /*[[${pendentesSoftwareHoje}]]*/ 0;
+        const tPendSoftS = /*[[${pendentesSoftwareSemana}]]*/ 0;
+        const tPendSoftM = /*[[${pendentesSoftwareMes}]]*/ 0;
+        const tPendSoftA = /*[[${pendentesSoftwareAno}]]*/ 0;
+
+        // Resolvidos (Total): Hoje, Semana, Mes, Ano
+        const tResolvH = /*[[${resolvidosHoje}]]*/ 1;
+        const tResolvS = /*[[${resolvidosSemana}]]*/ 1;
+        const tResolvM = /*[[${resolvidosMes}]]*/ 1;
+        const tResolvA = /*[[${resolvidosAno}]]*/ 1;
+
+        // Cancelados (Total): Hoje, Semana, Mes, Ano
+        const tCancelH = /*[[${canceladosHoje}]]*/ 0;
+        const tCancelS = /*[[${canceladosSemana}]]*/ 0;
+        const tCancelM = /*[[${canceladosMes}]]*/ 0;
+        const tCancelA = /*[[${canceladosAno}]]*/ 0;
+
+
+        // =========================================================================
+        // 2. INICIALIZAR GRÁFICOS DONUT (Breakdown de Status - Radar Ao Vivo)
+        // =========================================================================
+        
+        // Cores rigorosas TechxMicro: [Verde Claro, Preto, Verde Escuro] para [Resolvido, Pendente, Cancelado]
+        const coresStatusDonut = ['#acfe9f', '#000000', '#008436'];
+
+        // --- ELIPSE SOFTWARE (Status) ---
+        // Começa exibindo os dados da Semana (Índice 1) para espelhar a grid
         const ctxSoft = document.getElementById('chartSoftware').getContext('2d');
         let chartSoftware = new Chart(ctxSoft, {
             type: 'doughnut',
@@ -193,40 +233,84 @@
                 labels: ['Resolvidos', 'Pendentes', 'Cancelados'],
                 datasets: [{ 
                     data: [sResTime[1], sPenTime[1], sCanTime[1]], 
-                    backgroundColor: ['#b6d441', '#000000', '#f07d35'], 
+                    backgroundColor: coresStatusDonut, 
                     borderWidth: 0 
                 }] 
             },
             options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { display: true, position: 'top' } } }
         });
 
-        // Evento que atualiza ambos os gráficos ao mesmo tempo
+        // --- ELIPSE INFRA (Status) ---
+        // Adicionada para consistência unificada e simultânea
+        const ctxInfraDonut = document.getElementById('chartInfraDonut').getContext('2d');
+        let chartInfraDonut = new Chart(ctxInfraDonut, {
+            type: 'doughnut',
+            data: {
+                labels: ['Resolvidos', 'Pendentes', 'Cancelados'],
+                datasets: [{ 
+                    data: [iResTime[1], iPenTime[1], iCanTime[1]], // Começa na semana
+                    backgroundColor: coresStatusDonut, 
+                    borderWidth: 0 
+                }] 
+            },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { display: true, position: 'top' } } }
+        });
+
+
+        // =========================================================================
+        // 3. SELETOR UNIFICADO: Atualização SIMULTÂNEA de 2 Donuts e 4 KPIs
+        // =========================================================================
+        const kpiPendInfra = document.getElementById('kpi-pend-infra');
+        const kpiPendSoft = document.getElementById('kpi-pend-soft');
+        const kpiResolvidos = document.getElementById('kpi-resolvidos');
+        const kpiCancelados = document.getElementById('kpi-cancelados');
+
         document.getElementById('filtroTempoTI').addEventListener('change', function() {
             let val = this.value;
             
+            // Índice de tempo: [0]=Hoje, [1]=Semana, [2]=Ano, [3]=10 anos
             if (val === 'dia') { 
-                chartTI.data.labels = labelsHora; chartTI.data.datasets[0].data = dadosHora; 
+                // Atualiza Donuts (Breakdown)
                 chartSoftware.data.datasets[0].data = [sResTime[0], sPenTime[0], sCanTime[0]];
+                chartInfraDonut.data.datasets[0].data = [iResTime[0], iPenTime[0], iCanTime[0]];
+                // Atualiza Radar (Totais KPIs)
+                kpiPendInfra.innerText = tPendInfraH;
+                kpiPendSoft.innerText = tPendSoftH;
+                kpiResolvidos.innerText = tResolvH;
+                kpiCancelados.innerText = tCancelH;
             } 
             else if (val === 'semana') { 
-                chartTI.data.labels = labelsDia; chartTI.data.datasets[0].data = dadosDia; 
                 chartSoftware.data.datasets[0].data = [sResTime[1], sPenTime[1], sCanTime[1]];
+                chartInfraDonut.data.datasets[0].data = [iResTime[1], iPenTime[1], iCanTime[1]];
+                kpiPendInfra.innerText = tPendInfraS;
+                kpiPendSoft.innerText = tPendSoftS;
+                kpiResolvidos.innerText = tResolvS;
+                kpiCancelados.innerText = tCancelS;
             } 
             else if (val === 'ano') { 
-                chartTI.data.labels = labelsMes; chartTI.data.datasets[0].data = dadosMes; 
                 chartSoftware.data.datasets[0].data = [sResTime[2], sPenTime[2], sCanTime[2]];
+                chartInfraDonut.data.datasets[0].data = [iResTime[2], iPenTime[2], iCanTime[2]];
+                kpiPendInfra.innerText = tPendInfraM;
+                kpiPendSoft.innerText = tPendSoftM;
+                kpiResolvidos.innerText = tResolvM;
+                kpiCancelados.innerText = tCancelM;
             } 
             else if (val === 'dez_anos') { 
-                chartTI.data.labels = labelsAno; chartTI.data.datasets[0].data = dadosAno; 
                 chartSoftware.data.datasets[0].data = [sResTime[3], sPenTime[3], sCanTime[3]];
+                chartInfraDonut.data.datasets[0].data = [iResTime[3], iPenTime[3], iCanTime[3]];
+                kpiPendInfra.innerText = tPendInfraA;
+                kpiPendSoft.innerText = tPendSoftA;
+                kpiResolvidos.innerText = tResolvA;
+                kpiCancelados.innerText = tCancelA;
             }
             
-            chartTI.update();
+            // Executa a atualização instantânea e unificada
             chartSoftware.update();
+            chartInfraDonut.update();
         });
 
         // =========================================================================
-        // 4. ATUALIZAÇÃO EM TEMPO REAL (POLLING: TABELA E KPIs)
+        // 4. ATUALIZAÇÃO EM TEMPO REAL (POLLING: TABELA)
         // =========================================================================
         async function atualizarDashboardAoVivo() {
             try {
@@ -246,12 +330,6 @@
                     const paginacaoAtual = document.getElementById('paginacaoChamados');
                     if (novaPaginacao && paginacaoAtual && novaPaginacao.innerHTML !== paginacaoAtual.innerHTML) {
                         paginacaoAtual.innerHTML = novaPaginacao.innerHTML;
-                    }
-
-                    const novosKpis = doc.getElementById('kpiContainer');
-                    const kpisAtuais = document.getElementById('kpiContainer');
-                    if (novosKpis && kpisAtuais && novosKpis.innerHTML !== kpisAtuais.innerHTML) {
-                        kpisAtuais.innerHTML = novosKpis.innerHTML;
                     }
                 }
             } catch (e) {

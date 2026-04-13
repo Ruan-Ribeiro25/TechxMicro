@@ -1,25 +1,40 @@
 /* ============================================================
    ARQUIVO: global.css
    DESCRIÇÃO: Estilos universais (Header, Footer, Reset, Vars)
-   EMPRESA: PIXEL TI | HELP EASY
-   ÚLTIMA ATUALIZAÇÃO: PALETA DE CORES ESTRITA
+   EMPRESA: TECHXMICRO | HELP EASY
+   ÚLTIMA ATUALIZAÇÃO: REBRANDING E NOVA PALETA DE CORES
    ============================================================ */
 
-/* 1. VARIÁVEIS GERAIS - RESTRITAS À PALETA PIXEL TI */
+/* 1. VARIÁVEIS GERAIS - RESTRITAS À PALETA TECHXMICRO */
 :root {
-    --primary-color: #b6d441;       
-    --secondary-color: #000000;     
-    --bg-color: #f4f7f6;
+    /* Cores Oficiais TechxMicro */
+    --tm-black: #000000;
+    --tm-white: #ffffff;
+    --tm-light-green: #acfe9f; /* Verde Claro Oficinal para Resolvido e Radar Ao Vivo */
+    --tm-dark-gray: #1c1c1c;
+    --tm-dark-green: #008436; /* Verde Oficinal para Cancelado */
+    --tm-brown: #3E2723; /* Marrom Oficinal para Alerta Negativo/Erro */
+
+    /* Mapeamento Semântico UI */
+    --primary-color: var(--tm-dark-green); /* Ação Principal / Positivo / Cancelado (CORRIGIDO) */
+    --hover-color: var(--tm-light-green);   /* Contraste Hover / Resolvido */
+    --secondary-color: var(--tm-black);    /* Pendente / Fundo Secundário */
+    --danger-color: var(--tm-brown);       /* Alertas Negativos / Erro */
+    
+    --bg-color: #f4f7f6; /* Fundo das 'sheets' brancas */
     --text-color: #333;
-    --danger-color: #f07d35;
-    --warning-color: #f07d35;
-    --purple-color: #000000;
-    --dark-blue: #000000;
+    
     --border-color: #dee2e6;
-    --info-cyan: #b6d441;           
-    --log-orange: #f07d35;          
+    
+    /* Adaptando variáveis antigas para a nova paleta */
+    --warning-color: var(--tm-brown);      /* Tratando warning como negativo */
+    --purple-color: var(--tm-black);
+    --dark-blue: var(--tm-black);
+    --info-cyan: var(--tm-dark-green);
+    --log-orange: var(--tm-dark-green);     /* Mapeado Orange antigo para Verde (CORRIGIDO) */
     --light-gray: #f8f9fa;
-    --glass-bg: rgba(30, 41, 59, 0.7);
+    
+    --glass-bg: rgba(28, 28, 28, 0.7); /* Baseado no tm-dark-gray */
     --glass-border: rgba(255, 255, 255, 0.1);
 }
 
@@ -36,9 +51,10 @@ body {
     font-family: sans-serif;
     color: var(--text-color, #333);
 
-    background-color: #000000;
-    background-image: url('https://images.unsplash.com/photo-1555496710-2660a86c4557?q=80&w=1991&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
-    background-size: cover;         
+    background-color: var(--tm-black);
+    /* Mantendo a imagem de fundo, mas garantindo que o fallback seja preto */
+    background-image: url('https://images.unsplash.com/photo-1716703371653-ca74beaa7a4a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+    background-size: cover;          
     background-position: center;    
     background-repeat: no-repeat;   
     background-attachment: fixed;   
@@ -50,31 +66,33 @@ img { max-width: 100%; height: auto; }
 
 /* 3. BARRA DE NAVEGAÇÃO (NAVBAR) - DESKTOP */
 nav {
-    background: rgba(182, 212, 65, 0.95); /* Verde Pixel */
-    color: white;
+    background: rgba(0, 0, 0, 0.9); /* Fundo Preto TechxMicro */
+    color: var(--tm-white);
     padding: 15px 40px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: sticky; top: 0; z-index: 1000;
     backdrop-filter: blur(5px);
+    border-bottom: 2px solid var(--tm-dark-green); /* Destaque em Verde Escuro */
 }
 nav h1 { font-size: 1.6rem; font-weight: 700; margin: 0; letter-spacing: 0.5px; line-height: 1.2; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
 
 .user-info { font-size: 0.95rem; display: flex; align-items: center; gap: 15px; font-weight: 500; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
 
 .btn-sair {
-    background-color: #000000; color: white; padding: 8px 25px;
-    border-radius: 30px; border: 1px solid #000000;
+    background-color: var(--tm-dark-green); color: white; padding: 8px 25px;
+    border-radius: 30px; border: 1px solid var(--tm-dark-green);
     text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: all 0.3s;
 }
-.btn-sair:hover { background-color: white; color: #000000; border: 1px solid white; }
+/* Efeito Hover do botão sair usando o contraste Verde Claro */
+.btn-sair:hover { background-color: var(--tm-light-green); color: var(--tm-black); border: 1px solid var(--tm-light-green); }
 
 .profile-pic-header {
     width: 50px; height: 50px; border-radius: 50%; object-fit: cover;
-    border: 2px solid rgba(255,255,255,0.8);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border: 2px solid rgba(172, 254, 159, 0.8); /* Borda Verde Claro */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
 /* 4. ESTRUTURA PRINCIPAL (MAIN CONTAINER) */
@@ -86,8 +104,8 @@ main {
 /* 5. TÍTULOS DE PÁGINA PADRÃO */
 .page-title, .page-header {
     width: 100%; margin-bottom: 30px; font-size: 1.8rem; 
-    color: #fff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    border-bottom: 4px solid var(--primary-color);
+    color: var(--tm-white); font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    border-bottom: 4px solid var(--primary-color); /* Verde Escuro TechxMicro */
     padding-bottom: 15px; text-align: center;
     display: flex; align-items: center; justify-content: center; gap: 15px;
 }
@@ -96,48 +114,67 @@ main {
 .card-action {
     background: rgba(255, 255, 255, 0.95); border-radius: 16px; padding: 30px;
     text-align: center; text-decoration: none; color: #333;
-    transition: all 0.3s; box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    transition: all 0.3s; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     border: 2px solid transparent; display: flex; flex-direction: column;
     align-items: center; justify-content: center; height: 100%; min-height: 250px;
 }
-.card-action:hover { transform: translateY(-10px); }
+.card-action:hover { transform: translateY(-10px); border-color: var(--tm-light-green); }
+
 .card-action .icon-box {
     width: 80px; height: 80px; line-height: 80px; border-radius: 50%;
     margin-bottom: 20px; font-size: 2rem; display: flex; align-items: center; justify-content: center;
 }
-.card-agenda { border-bottom: 5px solid var(--warning-color); }
-.card-agenda .icon-box { background: rgba(240, 125, 53, 0.1); color: var(--warning-color); }
-.card-docs { border-bottom: 5px solid var(--danger-color); }
-.card-docs .icon-box { background: rgba(240, 125, 53, 0.1); color: var(--danger-color); }
-.card-paciente { border-bottom: 5px solid var(--primary-color); }
-.card-paciente .icon-box { background: rgba(182, 212, 65, 0.1); color: var(--primary-color); }
-.card-profissional { border-bottom: 5px solid var(--secondary-color); }
-.card-profissional .icon-box { background: rgba(0,0,0,0.1); color: var(--secondary-color); }
-.card-tele { border-bottom: 5px solid var(--secondary-color); }
-.card-tele .icon-box { background: rgba(0,0,0,0.1); color: var(--secondary-color); }
-.card-admin { border-bottom: 5px solid var(--secondary-color); }
-.card-admin .icon-box { background: rgba(0,0,0,0.1); color: var(--secondary-color); }
+
+/* Atualizando as cores das bordas dos cards para a nova paleta */
+.card-agenda { border-bottom: 5px solid var(--tm-brown); } /* Brown */
+.card-agenda .icon-box { background: rgba(62, 39, 35, 0.1); color: var(--tm-brown); }
+
+.card-docs { border-bottom: 5px solid var(--tm-brown); } /* Brown */
+.card-docs .icon-box { background: rgba(62, 39, 35, 0.1); color: var(--tm-brown); }
+
+.card-paciente { border-bottom: 5px solid var(--tm-dark-green); } /* Verde Escuro */
+.card-paciente .icon-box { background: rgba(0, 132, 54, 0.1); color: var(--tm-dark-green); }
+
+.card-profissional { border-bottom: 5px solid var(--tm-black); } /* Preto */
+.card-profissional .icon-box { background: rgba(0,0,0,0.1); color: var(--tm-black); }
+
+.card-tele { border-bottom: 5px solid var(--tm-black); } /* Preto */
+.card-tele .icon-box { background: rgba(0,0,0,0.1); color: var(--tm-black); }
+
+.card-admin { border-bottom: 5px solid var(--tm-black); } /* Preto */
+.card-admin .icon-box { background: rgba(0,0,0,0.1); color: var(--tm-black); }
 
 /* 7. DASHBOARD GRID - DESKTOP */
 .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; width: 100%; }
 
 /* 8. BOTÕES GERAIS E FOOTER */
-.btn-novo { background-color: #b6d441; color: white; padding: 10px 20px; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 0.9rem; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
-.btn-novo:hover { background-color: #a4c038; }
+/* Botão Novo padrão TechxMicro: Fundo Verde Escuro */
+.btn-novo { 
+    background-color: var(--tm-dark-green); color: white; 
+    padding: 10px 20px; border-radius: 50px; border: none;
+    text-decoration: none; font-weight: 700; font-size: 0.9rem; 
+    transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; 
+    cursor: pointer;
+}
+/* Efeito Hover Botão Novo: Contraste Verde Claro */
+.btn-novo:hover { background-color: var(--tm-light-green); color: var(--tm-black); }
 
 
 
 /* 9. PÁGINA ERP COMPELS */
 .page-sheet, .page-sheet-erp { width: 100%; margin: 0 auto; background-color: #ffffff !important; border-radius: 10px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column; flex-grow: 1; }
 .network-header { display: flex; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+
 .btn-circle-back { width: 40px; height: 40px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #000000; transition: 0.2s; border: 1px solid #e2e8f0; text-decoration: none; margin-right: 15px; }
-.btn-circle-back:hover { background: #f07d35; color: white; border-color: #f07d35; }
+/* Efeito Hover Voltar: Verde Escuro */
+.btn-circle-back:hover { background: var(--tm-dark-green); color: white; border-color: var(--tm-dark-green); }
+
 .erp-frame, .erp-frame-fluid { width: 100%; flex-grow: 1; border: 1px solid #e2e8f0; border-radius: 8px; display: block; background-color: #ffffff !important; min-height: 60vh; }
 
 
 /* ============================================================
-   10. ESTILOS ESPECÍFICOS: DASHBOARD HELPDESK
-   ============================================================ */
+    10. ESTILOS ESPECÍFICOS: DASHBOARD HELPDESK
+    ============================================================ */
 .page-sheet-helpdesk { width: 100%; margin: 0 auto; background-color: #ffffff !important; border-radius: 10px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column; flex-grow: 1; }
 
 /* Cabeçalho Helpdesk Flex */
@@ -148,32 +185,37 @@ main {
 
 /* Botões de Ação Topo Helpdesk */
 .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
-.btn-tech { background-color: #000000; color: white; padding: 10px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: 0.3s; display: inline-flex; align-items: center; gap: 6px; }
-.btn-tech:hover { background-color: #333333; }
-.btn-novo-chamado { background-color: #b6d441; color: white; padding: 10px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: 0.3s; display: inline-flex; align-items: center; gap: 6px; }
-.btn-novo-chamado:hover { background-color: #a4c038; }
+
+.btn-tech { background-color: var(--tm-black); color: white; padding: 10px 18px; border-radius: 8px; border: 1px solid var(--tm-black); font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: 0.3s; display: inline-flex; align-items: center; gap: 6px; }
+.btn-tech:hover { background-color: #333333; border-color: #333333; }
+
+/* Botão Novo Chamado padrão TechxMicro: Fundo Verde Escuro */
+.btn-novo-chamado { background-color: var(--tm-dark-green); color: white; padding: 10px 18px; border-radius: 8px; border: none; font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: 0.3s; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+/* Efeito Hover Novo Chamado: Contraste Verde Claro */
+.btn-novo-chamado:hover { background-color: var(--tm-light-green); color: var(--tm-black); }
 
 /* Botão Assumir Chamado */
-.btn-assumir { background: #e0f2fe; color: #f07d35; border: 1px solid #000000; padding: 5px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; }
-.btn-assumir:hover { background: #f07d35; color: white; box-shadow: 0 2px 5px rgba(2, 132, 199, 0.3); }
+.btn-assumir { background: rgba(172, 254, 159, 0.2); color: var(--tm-dark-green); border: 1px solid var(--tm-dark-green); padding: 5px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+.btn-assumir:hover { background: var(--tm-dark-green); color: white; box-shadow: 0 2px 5px rgba(0, 132, 54, 0.3); }
 
-/* Grid de KPIs */
+/* Grid de KPIs (CORRIGIDO) */
 .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
 .kpi-card { background: #f8fafc; padding: 20px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 5px solid transparent; }
 .kpi-info h3 { font-size: 0.85rem; color: #64748b; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
 .kpi-number { font-size: 1.8rem; font-weight: 800; color: #1e293b; }
 .kpi-icon { font-size: 2.2rem; opacity: 0.8; }
 
-/* Cores de Status (Bordas e Ícones) */
-.border-pendente { border-left-color: #000000 !important; } .text-pendente { color: #000000 !important; }
-.border-resolvido { border-left-color: #b6d441 !important; } .text-resolvido { color: #b6d441 !important; }
-.border-cancelado { border-left-color: #f07d35 !important; } .text-cancelado { color: #f07d35 !important; }
+/* Cores de Status (Bordas e Ícones) - Mapeamento TechxMicro (CORRIGIDO) */
+.border-pendente { border-left-color: var(--tm-black) !important; } .text-pendente { color: var(--tm-black) !important; }
+.border-resolvido { border-left-color: var(--tm-light-green) !important; } .text-resolvido { color: var(--tm-light-green) !important; }
+/* Mapeando Cancelado para o verde correto */
+.border-cancelado { border-left-color: var(--tm-dark-green) !important; } .text-cancelado { color: var(--tm-dark-green) !important; }
 
-/* Bolinhas de Status (Dots) */
+/* Bolinhas de Status (Dots) (CORRIGIDO) */
 .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
-.dot-pendente { background-color: #000000 !important; }
-.dot-resolvido { background-color: #b6d441 !important; }
-.dot-cancelado { background-color: #f07d35 !important; }
+.dot-pendente { background-color: var(--tm-black) !important; }
+.dot-resolvido { background-color: var(--tm-light-green) !important; }
+.dot-cancelado { background-color: var(--tm-dark-green) !important; }
 
 /* Gráficos */
 .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 25px; margin-bottom: 30px; }
@@ -187,26 +229,28 @@ main {
 .helpdesk-table th { background-color: #f8fafc; padding: 12px 15px; color: #000000; font-weight: 600; border-bottom: 2px solid #e2e8f0; }
 .helpdesk-table td { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
 
- /* ESTILIZAÇÃO RIGOROSA PIXEL TI */
+ /* ESTILIZAÇÃO RIGOROSA TECHXMICRO */
         .header-pixel {
-            background-color: #000000;
-            color: #b6d441;
+            background-color: var(--tm-black);
+            color: var(--tm-light-green); /* Verde Claro sobre Preto */
             padding: 20px;
             border-radius: 8px;
-            border-left: 5px solid #f07d35;
+            border-left: 5px solid var(--tm-brown); /* Destaque Marrom para logs */
             margin-bottom: 20px;
         }
         .subtitle-pixel { color: #aaaaaa; }
         
         /* Botões de Exportação baseados nas cores da empresa */
-        .btn-txt-pixel { background-color: #000000; color: #ffffff; border: 1px solid #333; }
+        .btn-txt-pixel { background-color: var(--tm-black); color: #ffffff; border: 1px solid #333; }
         .btn-txt-pixel:hover { background-color: #333333; color: #ffffff; }
         
-        .btn-json-pixel { background-color: #f07d35; color: #ffffff; font-weight: bold; border: none; }
-        .btn-json-pixel:hover { background-color: #d96a2b; color: #ffffff; }
+        /* Botão JSON usando Marrom da paleta */
+        .btn-json-pixel { background-color: var(--tm-brown); color: #ffffff; font-weight: bold; border: none; }
+        .btn-json-pixel:hover { background-color: #5d3a33; color: #ffffff; }
         
-        .btn-csv-pixel { background-color: #b6d441; color: #000000; font-weight: bold; border: none; }
-        .btn-csv-pixel:hover { background-color: #9cbd35; color: #000000; }
+        /* Botão CSV usando Verde Claro da paleta */
+        .btn-csv-pixel { background-color: var(--tm-light-green); color: var(--tm-black); font-weight: bold; border: none; }
+        .btn-csv-pixel:hover { background-color: #c5ffba; color: var(--tm-black); }
 
         /* Tabela de Logs */
         .card-log-pixel {
@@ -217,24 +261,24 @@ main {
             border: 1px solid #e0e0e0;
         }
         .card-header-log {
-            background-color: #000000;
-            color: #b6d441;
+            background-color: var(--tm-black);
+            color: var(--tm-light-green);
             padding: 15px 20px;
             font-weight: bold;
             font-size: 1.1rem;
-            border-bottom: 3px solid #f07d35;
+            border-bottom: 3px solid var(--tm-brown);
         }
         .table-logs { margin-bottom: 0; }
         .table-logs thead th {
             background-color: #f8f9fa;
             color: #000000;
             font-weight: 700;
-            border-bottom: 2px solid #b6d441;
+            border-bottom: 2px solid var(--tm-dark-green);
         }
         .table-logs tbody tr:nth-child(even) { background-color: #fbfbfb; }
-        .table-logs tbody tr:hover { background-color: rgba(182, 212, 65, 0.1); }
+        .table-logs tbody tr:hover { background-color: rgba(172, 254, 159, 0.1); }
         
-        /* Badges de Status (Cápsulas) */
+        /* Badges de Status (Cápsulas) - Logs (CORRIGIDO) */
         .badge-log-pixel {
             padding: 5px 10px;
             border-radius: 20px;
@@ -242,12 +286,13 @@ main {
             font-weight: bold;
             display: inline-block;
         }
-        .status-laranja { background-color: rgba(240, 125, 53, 0.2); color: #d96a2b; border: 1px solid #f07d35; }
-        .status-verde { background-color: rgba(182, 212, 65, 0.2); color: #7a9125; border: 1px solid #b6d441; }
-        .status-preto { background-color: #eeeeee; color: #000000; border: 1px solid #000000; }
+        /* Mapeando status de logs para as cores TechxMicro - Usando verde para cancelados (CORRIGIDO) */
+        .status-laranja { background-color: rgba(0, 132, 54, 0.2); color: var(--tm-dark-green); border: 1px solid var(--tm-dark-green); } /* Mapeado para verde */
+        .status-verde { background-color: rgba(0, 132, 54, 0.2); color: var(--tm-dark-green); border: 1px solid var(--tm-dark-green); }
+        .status-preto { background-color: #eeeeee; color: var(--tm-black); border: 1px solid var(--tm-black); }
 
 /* =========================================
-   PADRONIZAÇÃO DOS BADGES DE STATUS
+   PADRONIZAÇÃO DOS BADGES DE STATUS HELPDESK
    ========================================= */
 .status-badge {
     display: inline-block;
@@ -257,20 +302,21 @@ main {
     font-weight: bold;
     text-align: center;
     min-width: 105px; 
-    color: #ffffff !important;
     letter-spacing: 0.5px;
 }
 
-/* Cores específicas para cada status */
-.status-pendente { background-color: #000000 !important; }
-.status-resolvido { background-color: #b6d441 !important; }
-.status-cancelado { background-color: #f07d35 !important; }
+/* Cores específicas rigorosas TechxMicro para cada status */
+.status-pendente { background-color: var(--tm-black) !important; color: var(--tm-white) !important; }
+.status-resolvido { background-color: var(--tm-light-green) !important; color: var(--tm-black) !important; }
+.status-cancelado { background-color: var(--tm-dark-green) !important; color: var(--tm-white) !important; }
+.status-erro { background-color: var(--tm-brown) !important; color: var(--tm-white) !important; } /* Alerta Negativo */
 
-/* Botão Tabela Ação */
-.btn-action { background: #000000; border: none; padding: 6px 10px; border-radius: 6px; color: white; cursor: pointer; transition: 0.2s; }
-.btn-action:hover { background: #b6d441; color: white; }
+/* Botão Tabela Ação Padrão: Preto */
+.btn-action { background: var(--tm-black); border: none; padding: 6px 10px; border-radius: 6px; color: white; cursor: pointer; transition: 0.2s; }
+/* Hover da tabela usando Verde Escuro */
+.btn-action:hover { background: var(--tm-dark-green); color: white; }
 
-/* Efeito Zebrado Forçado - PIXEL TI */
+/* Efeito Zebrado Forçado - TECHXMICRO */
 table tbody tr:nth-child(even),
 table tbody tr:nth-child(even) td {
     background-color: #f8fafc !important; 
@@ -278,7 +324,7 @@ table tbody tr:nth-child(even) td {
 
 table tbody tr:hover,
 table tbody tr:hover td {
-    background-color: #e2e8f0 !important; 
+    background-color: rgba(172, 254, 159, 0.1) !important; /* Feedback visual em Verde Claro */
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
 }
@@ -289,18 +335,18 @@ table tbody tr:hover td {
 .categoria-badge {
     display: inline-block;
     padding: 6px 14px;
-    border-radius: 20px; /* Formato de cápsula perfeita */
+    border-radius: 20px; 
     font-size: 0.80rem;
     font-weight: 700;
     text-align: center;
-    color: #ffffff !important;
     white-space: nowrap;
 }
 
-/* Cores rigorosas da PIXEL TI */
-.categoria-ti { background-color: #b6d441 !important; } /* Verde PIXEL TI */
-.categoria-software { background-color: #000000 !important; } /* Preto */
-.categoria-vazia { background-color: #f07d35 !important; } /* Laranja (Antigos) */
+/* Cores rigorosas da TECHXMICRO */
+.categoria-ti { background-color: var(--tm-light-green) !important; color: var(--tm-black) !important; } /* Verde Claro */
+.categoria-software { background-color: var(--tm-black) !important; color: var(--tm-white) !important; } /* Preto */
+.categoria-infra { background-color: var(--tm-dark-green) !important; color: var(--tm-white) !important; } /* Verde Escuro */
+.categoria-vazia { background-color: #e2e8f0 !important; color: #64748b !important; } /* Cinza neutro para vazios */
 
 /* =========================================
    PADRONIZAÇÃO DOS BADGES DE URGÊNCIA
@@ -308,7 +354,7 @@ table tbody tr:hover td {
 .urgencia-badge {
     display: inline-block;
     padding: 4px 12px;
-    border-radius: 15px; /* Formato de cápsula */
+    border-radius: 15px; 
     font-size: 0.75rem;
     font-weight: bold;
     text-align: center;
@@ -318,10 +364,10 @@ table tbody tr:hover td {
     width: fit-content;
 }
 
-/* Cores rigorosas da PIXEL TI */
-.urgencia-alta { background-color: #f07d35 !important; }  /* Laranja */
-.urgencia-media { background-color: #000000 !important; } /* Preto */
-.urgencia-baixa { background-color: #b6d441 !important; } /* Verde PIXEL TI */
+/* Cores rigorosas da TECHXMICRO (CORRIGIDO) */
+.urgencia-alta { background-color: var(--tm-dark-green) !important; }  /* Verde Escuro (Cancelado/Urgente) */
+.urgencia-media { background-color: var(--tm-black) !important; } /* Preto */
+.urgencia-baixa { background-color: var(--tm-light-green) !important; color: var(--tm-black) !important; } /* Verde Claro */
 
 /* ============================================================
    FORMULÁRIOS HELPDESK E CADASTROS
@@ -334,15 +380,21 @@ table tbody tr:hover td {
     width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 8px; 
     font-size: 0.95rem; color: #1e293b; background-color: #f8fafc; transition: all 0.3s; 
 }
-.form-control:focus { outline: none; border-color: #b6d441; background-color: #fff; box-shadow: 0 0 0 3px rgba(182, 212, 65, 0.2); }
+/* Focus do input usando Verde Escuro TechxMicro */
+.form-control:focus { outline: none; border-color: var(--tm-dark-green); background-color: #fff; box-shadow: 0 0 0 3px rgba(0, 132, 54, 0.2); }
 textarea.form-control { resize: vertical; min-height: 120px; }
 select.form-control { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 12px auto; }
 
 .form-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 10px; border-top: 1px solid #eee; padding-top: 20px; }
-.btn-submit { background-color: #b6d441; color: white; padding: 12px 25px; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
-.btn-submit:hover { background-color: #a4c038; }
-.btn-cancel { background-color: #f07d35; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-size: 0.95rem; font-weight: 600; transition: 0.3s; }
-.btn-cancel:hover { background-color: #d66d2a; }
+
+/* Botão Submit padrão TechxMicro: Verde Escuro */
+.btn-submit { background-color: var(--tm-dark-green); color: white; padding: 12px 25px; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+/* Hover Submit: Verde Claro */
+.btn-submit:hover { background-color: var(--tm-light-green); color: var(--tm-black); }
+
+/* Botão Cancelar usando cor de alerta: Marrom */
+.btn-cancel { background-color: var(--tm-brown); color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-size: 0.95rem; font-weight: 600; transition: 0.3s; border: none; cursor: pointer; }
+.btn-cancel:hover { background-color: #5d3a33; color: white; }
 
 /* ============================================================
    TELA DE VISUALIZAÇÃO DE CHAMADO E CHAT (INTERAÇÕES)
@@ -353,7 +405,8 @@ select.form-control { cursor: pointer; appearance: none; background-image: url("
 .ticket-details { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 25px; }
 .ticket-header-info { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
 .ticket-subject { font-size: 1.3rem; color: #000000; margin-top: 10px; margin-bottom: 15px; font-weight: 700; }
-.ticket-desc-box { background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #b6d441; font-size: 0.9rem; line-height: 1.5; color: #000000; margin-bottom: 25px; }
+/* Destaque da descrição em Verde Claro */
+.ticket-desc-box { background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid var(--tm-light-green); font-size: 0.9rem; line-height: 1.5; color: #000000; margin-bottom: 25px; }
 .ticket-meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
 .meta-item { display: flex; flex-direction: column; }
 .meta-label { font-size: 0.75rem; color: #000000; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
@@ -371,49 +424,63 @@ select.form-control { cursor: pointer; appearance: none; background-image: url("
 .msg-author { font-size: 0.7rem; color: #000000; margin-bottom: 3px; margin-left: 5px; margin-right: 5px; font-weight: 600; }
 .msg-bubble { padding: 12px 16px; border-radius: 15px; font-size: 0.85rem; line-height: 1.4; position: relative; }
 .msg-wrapper.left .msg-bubble { background: #f1f5f9; color: #000000; border-bottom-left-radius: 2px; }
-.msg-wrapper.right .msg-bubble { background: #b6d441; color: white; border-bottom-right-radius: 2px; }
+/* Balão da direita (minhas mensagens) em Verde Escuro */
+.msg-wrapper.right .msg-bubble { background: var(--tm-dark-green); color: white; border-bottom-right-radius: 2px; }
 .msg-time { font-size: 0.65rem; color: #000000; margin-top: 3px; align-self: flex-end; }
 
 /* Input do Chat */
 .chat-input-area { padding: 15px; background: #fff; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; align-items: flex-end; }
 .chat-input-area textarea { flex: 1; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 0.85rem; resize: none; height: 60px; outline: none; transition: 0.3s; }
-.chat-input-area textarea:focus { border-color: #b6d441; }
-.btn-send { background: #b6d441; color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: 0.3s; }
-.btn-send:hover { background: #a4c038; transform: scale(1.05); }
+.chat-input-area textarea:focus { border-color: var(--tm-dark-green); }
 
-/* ========================================================= */
-        /* 2. DEVOLVENDO O EFEITO DE MOVIMENTO NOS CARDS */
-        /* ========================================================= */
-        
-        /* Define a transição suave para as propriedades de movimento e sombra */
-        .kpi-card {
-            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out !important;
-        }
-        
-        /* Aplica o efeito "ELEVADOR" ao passar o mouse */
-        .kpi-card:hover {
-            transform: translateY(-10px); /* Levanta o card em 10px */
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2) !important; /* Aumenta a sombra projetada */
-            cursor: pointer; /* Muda o cursor para mãozinha */
-        }
+/* Botão Enviar padrão: Verde Escuro */
+.btn-send { background: var(--tm-dark-green); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: 0.3s; }
+/* Hover Enviar: Verde Claro */
+.btn-send:hover { background: var(--tm-light-green); color: var(--tm-black); transform: scale(1.05); }
+
+/* ========================================= */
+/* EFEITO DE MOVIMENTO NOS CARDS HELPDESK */
+/* ========================================= */
+
+.kpi-card {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, border-color 0.3s ease-in-out !important;
+}
+
+.kpi-card:hover {
+    transform: translateY(-10px); 
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2) !important; 
+    cursor: pointer; 
+}
+
+/* Forçando o mapeamento semântico rigoroso no Hover para as bordas */
+.kpi-card.border-pendente:hover {
+    border-color: var(--tm-black) !important;
+}
+
+.kpi-card.border-resolvido:hover {
+    border-color: var(--tm-light-green) !important;
+}
+
+.kpi-card.border-cancelado:hover {
+    border-color: var(--tm-dark-green) !important; /* Fixa o Hover no Verde Escuro #008436 */
+}
 
 footer { 
-    background: #000000 !important; /* Aqui está o Preto absoluto! */
-    color: #ffffff !important; /* Texto branco para contrastar */
+    background: var(--tm-black) !important; /* Preto absoluto TechxMicro */
+    color: var(--tm-white) !important; /* Texto branco */
     text-align: center !important; 
-    padding: 10px 15px !important; /* Super fino na vertical (10px) */
+    padding: 10px 15px !important; 
     font-size: 0.9rem !important; 
     margin-top: auto !important; 
-    /* Removi o blur e a sombra do texto, pois no fundo preto puro fica melhor sem eles */
     text-shadow: none !important; 
+    border-top: 1px solid #333;
     
-    /* Força o alinhamento perfeito ao centro: */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
 }
 
-/* 🎯 MATADOR DE MARGENS: Remove a "gordura" invisível do Bootstrap e quebras de linha */
+/* MATADOR DE MARGENS */
 footer p, footer span, footer div {
     margin: 0 !important;
     padding: 0 !important;
@@ -429,18 +496,13 @@ footer br {
    ============================================================ */
 @media (display-mode: window-controls-overlay) {
     nav {
-        /* Puxa a barra para dentro da área do sistema operativo */
         padding-top: env(titlebar-area-y) !important;
         padding-left: env(titlebar-area-x, 20px) !important;
-        /* Protege o lado direito para não sobrepor os botões de Fechar/Minimizar do SO */
         padding-right: calc(env(titlebar-area-width, 150px) + 20px) !important;
         height: env(titlebar-area-height, 60px) !important;
-        
-        /* Transforma a sua navbar preta na área de arrastar a janela! */
         -webkit-app-region: drag; 
     }
     
-    /* Garante que os botões continuam a poder ser clicados (não arrastam a tela) */
     nav h1, nav .user-info, nav a, nav button, .btn-sair {
         -webkit-app-region: no-drag;
     }

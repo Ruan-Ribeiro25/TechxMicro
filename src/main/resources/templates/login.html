@@ -2,7 +2,7 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Login - PIXEL TI</title>
+    <title>Login - TechxMicro</title>
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -23,14 +23,22 @@
 </head>
 <body>
 
-    <nav style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: #000000; border-bottom: 2px solid #b6d441; -webkit-app-region: drag; z-index: 1000; position: relative;">
+    <nav style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: #000000; border-bottom: 2px solid #008436; -webkit-app-region: drag; z-index: 1000; position: relative;">
         
         <div class="logo" style="-webkit-app-region: no-drag;">
-            <img th:src="@{/img/LogoSite.V1.White.png}" alt="PIXEL TI" style="height: 35px;">
+            <a th:href="@{/home}" style="text-decoration: none;">
+                <img th:src="@{/img/LogoSite.png}" alt="TechxMicro" style="height: 35px;">
+            </a>
         </div>
         
-        <div style="color: #ffffff; font-weight: 600; font-size: 1rem; -webkit-app-region: no-drag;">
-            Olá, <span style="color: #f07d35;">Visitante</span>
+        <div style="display: flex; align-items: center; gap: 25px; -webkit-app-region: no-drag;">
+            <span style="color: #ffffff; font-size: 1rem; font-weight: 500;">
+                Olá, <strong style="color: #008436; font-weight: 800;">Visitante</strong>
+            </span>
+
+            <a th:href="@{/logout}" style="text-decoration: none; color: #ffffff; font-weight: 600; border: 1px solid #555; padding: 8px 25px; border-radius: 50px; transition: 0.3s; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;" onmouseover="this.style.borderColor='#008436'; this.style.backgroundColor='rgba(255,255,255,0.05)'" onmouseout="this.style.borderColor='#555'; this.style.backgroundColor='transparent'">
+                <i class="fas fa-sign-out-alt" style="color: #008436;"></i> Sair
+            </a>
         </div>
         
     </nav>
@@ -38,7 +46,7 @@
     <main class="main-center">
         <div class="login-container">
             <div class="login-header">
-                <center><img th:src="@{/img/LogoSite.V1.White.png}" alt="COPAMIR" style="height: 40px; margin-bottom: 10px;"></center>
+                <center><img th:src="@{/img/LogoSite.png}" alt="COPAMIR" style="height: 40px; margin-bottom: 10px;"></center>
                 <center><p>Sistema de Helpdesk V1.5</p></center>
             </div>
 
@@ -85,7 +93,7 @@
                 </div>
 
                <div class="forgot-wrapper">
-                    <center><a th:href="@{/forgot-password}" class="forgot-link" style="color: #b6d441; text-decoration: none; transition: 0.3s;">Esqueceu a senha?</a></center>
+                    <center><a th:href="@{/forgot-password}" class="forgot-link" style="color: #008436; text-decoration: none; transition: 0.3s;">Esqueceu a senha?</a></center>
                 </div>
                 
 				<br>
@@ -97,7 +105,7 @@
 
             <div class="login-footer" style="text-align: center; margin-top: 15px;">
                 <p style="margin-bottom: 10px;">Não possui acesso?</p>
-                <a th:href="@{/register}" style="display: inline-block; background-color: #b6d441; color: white; padding: 10px 30px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: 0.3s;">
+                <a th:href="@{/register}" style="display: inline-block; background-color: #ffffff; color: #000000; padding: 10px 30px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: 0.3s;">
                     Solicitar Cadastro
                 </a>
             </div>

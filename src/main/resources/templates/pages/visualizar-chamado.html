@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.4">
-    <title>Visualizar Chamado - PIXEL TI</title>
+    <title>Visualizar Chamado - TechxMicro</title>
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link rel="stylesheet" th:href="@{/css/global.css?v=1.2}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -38,7 +38,7 @@
                         <input type="hidden" name="status" value="RESOLVIDO" />
                         <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                         
-                        <button type="submit" th:if="${chamado.responsavel != null and chamado.status.name() == 'PENDENTE' and podeResponder}" style="padding: 8px 15px; cursor: pointer; background-color: #b6d441; color: white; border: none; border-radius: 4px; font-weight: 600;">
+                        <button type="submit" th:if="${chamado.responsavel != null and chamado.status.name() == 'PENDENTE' and podeResponder}" style="padding: 8px 15px; cursor: pointer; background-color: #008436; color: white; border: none; border-radius: 4px; font-weight: 600;">
                             <i class="fas fa-check"></i> Resolver Chamado
                         </button>
                     </form>
@@ -57,8 +57,8 @@
       th:text="${chamado.categoria.name() == 'TI' ? 'Suporte TI' : 'Software Helpdesk'}">Categoria</span>
                               
                         <div>
-                            <span class="dot" th:style="${chamado.status.name() == 'PENDENTE' ? 'background-color: #000000;' : (chamado.status.name() == 'CANCELADO' ? 'background-color: #f07d35;' : 'background-color: #b6d441;')}"></span> 
-                            <strong th:style="${chamado.status.name() == 'PENDENTE' ? 'color: #000000;' : (chamado.status.name() == 'CANCELADO' ? 'color: #f07d35;' : 'color: #b6d441;')}" th:text="${chamado.status}">Status</strong>
+                            <span class="dot" th:style="${chamado.status.name() == 'PENDENTE' ? 'background-color: #000000;' : (chamado.status.name() == 'CANCELADO' ? 'background-color: #008436;' : 'background-color: #b6d441;')}"></span> 
+                            <strong th:style="${chamado.status.name() == 'PENDENTE' ? 'color: #000000;' : (chamado.status.name() == 'CANCELADO' ? 'color: #008436;' : 'color: #b6d441;')}" th:text="${chamado.status}">Status</strong>
                         </div>
                     </div>
 
@@ -90,7 +90,7 @@
                 <div class="chat-box">
                     <div class="chat-header" style="display: flex; justify-content: space-between; align-items: center;">
                         <div><i class="far fa-comments" style="color: #000000;"></i> Diálogo do Atendimento</div>
-                        <div style="font-size: 0.7rem; color: #b6d441;"><i class="fas fa-circle blink-anim"></i> Online</div>
+                        <div style="font-size: 0.7rem; color: #008436;"><i class="fas fa-circle blink-anim"></i> Online</div>
                     </div>
                     
                     <div class="chat-messages" id="chatContainer" style="max-height: 350px; overflow-y: auto; padding-right: 10px;">
@@ -107,7 +107,7 @@
 						</div>
                     </div>
 
-                    <div th:if="${erroMensagem != null}" style="background-color: #fdecea; color: #f07d35; padding: 10px; margin-bottom: 15px; border-radius: 8px; border-left: 4px solid #f07d35; font-size: 0.9rem;" th:text="${erroMensagem}"></div>
+                    <div th:if="${erroMensagem != null}" style="background-color: #fdecea; color: #008436; padding: 10px; margin-bottom: 15px; border-radius: 8px; border-left: 4px solid #008436; font-size: 0.9rem;" th:text="${erroMensagem}"></div>
 
                     <th:block th:if="${podeResponder}">
                         <form th:action="@{/helpdesk/responder}" method="POST" class="chat-input-area" id="chatForm" th:if="${chamado.status.name() == 'PENDENTE'}">
@@ -123,13 +123,13 @@
                     </th:block>
 
                     <div th:if="${!podeResponder and chamado.status.name() == 'PENDENTE'}" class="chat-input-area" style="text-align: center; padding: 15px; color: #6c757d; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e9ecef; flex-direction: column;">
-                        <i class="fas fa-eye fa-2x mb-2" style="color: #b6d441;"></i>
+                        <i class="fas fa-eye fa-2x mb-2" style="color: #008436;"></i>
                         <p class="mb-0"><strong>Modo Espectador</strong></p>
                         <small>Apenas o solicitante e o técnico que assumiu este ticket podem interagir.</small>
                     </div>
                     
                     <div th:if="${chamado.status.name() != 'PENDENTE'}" style="text-align: center; padding: 15px; color: #000000; background-color: #f8fafc; border-radius: 8px; margin-top: 10px;">
-                        <i class="fas fa-lock" style="color: #f07d35;"></i> Este chamado está encerrado e não pode receber novas mensagens.
+                        <i class="fas fa-lock" style="color: #008436;"></i> Este chamado está encerrado e não pode receber novas mensagens.
                     </div>
                 </div>
             </div> 
@@ -184,7 +184,7 @@
                     }
                 }
             } catch (e) {
-                console.warn("PIXEL TI: Aguardando reconexão de rede...");
+                console.warn("TechxMicro: Aguardando reconexão de rede...");
             }
         }
 
@@ -225,7 +225,7 @@
                             alert("Falha ao enviar a mensagem. Tente novamente.");
                         }
                     } catch (err) {
-                        console.error("PIXEL TI Erro: ", err);
+                        console.error("TechxMicro Erro: ", err);
                     } finally {
                         // Restaura o botão
                         submitBtn.innerHTML = originalBtnHtml;

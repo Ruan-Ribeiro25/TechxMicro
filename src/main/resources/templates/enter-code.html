@@ -2,35 +2,206 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Verificar Código - Helpdesk PIXELTI</title>
+    <title>Verificar Código - TechxMicro</title>
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/global.css?v=1.2}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { display: flex; flex-direction: column; min-height: 100vh; margin: 0; background-color: #f4f7f6; }
-        main { flex: 1; display: flex; align-items: center; justify-content: center; }
+        /* --- Cabeçalho Fixo Isolado (Sem o botão Home) --- */
+        .custom-navbar {
+            background-color: #000000;
+            padding: 15px 30px;
+            border-bottom: 2px solid #008436;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-between; /* Mantém a logo na esquerda e a sessão na direita */
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+            position: relative;
+            z-index: 1000;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .custom-navbar .logo a {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Hover customizado para o botão sair */
+        .btn-logout-custom:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #008436 !important;
+        }
+
+        /* --- Layout da Página --- */
+        main { 
+            flex: 1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 40px 20px;
+        }
+
+        /* BLACK CARD PADRÃO TECHXMICO */
+        .login-container {
+            background: #000000 !important;
+            border-radius: 20px;
+            border-top: 5px solid var(--tm-dark-green);
+            border-left: 1px solid #333;
+            border-right: 1px solid #333;
+            border-bottom: 1px solid #333;
+            width: 100%;
+            max-width: 450px;
+            padding: 45px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            text-align: center;
+        }
+
+        .login-header h2 {
+            color: var(--tm-dark-green) !important;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .login-header p {
+            color: #bbbbbb;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        /* INPUT DE CÓDIGO ESTILIZADO */
+        .form-control-code {
+            width: 100%;
+            padding: 15px;
+            background: #111;
+            border: 2px solid #444;
+            border-radius: 10px;
+            color: var(--tm-light-green); /* Código brilha no escuro */
+            outline: none;
+            transition: 0.3s;
+            text-align: center;
+            font-size: 2rem;
+            letter-spacing: 12px;
+            font-weight: 800;
+        }
+
+        .form-control-code:focus {
+            border-color: var(--tm-light-green);
+            background: #000;
+            box-shadow: 0 0 15px rgba(172, 254, 159, 0.2);
+        }
+
+        .btn-verify {
+            background-color: var(--tm-dark-green);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 25px;
+            text-transform: uppercase;
+        }
+
+        .btn-verify:hover {
+            background-color: var(--tm-light-green);
+            color: var(--tm-black);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(172, 254, 159, 0.2);
+        }
+
+        .login-footer {
+            margin-top: 30px;
+            border-top: 1px solid #222;
+            padding-top: 20px;
+        }
+
+        .login-footer a {
+            color: var(--tm-light-green);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .login-footer a:hover {
+            color: white;
+            text-shadow: 0 0 5px var(--tm-light-green);
+        }
+
+        .icon-box {
+            background: rgba(172, 254, 159, 0.1);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+        }
     </style>
 </head>
-<body>
+<body style="background-color: #121212; color: #ffffff; display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
     
-    <div th:replace="~{fragments/header :: navbar}"></div>
+    <nav class="custom-navbar">
+        <div class="logo">
+            <a th:href="@{/home}">
+                <img th:src="@{/img/LogoSite.png}" alt="TechxMicro" style="height: 35px;">
+            </a>
+        </div>
+        
+        <div style="display: flex; align-items: center; gap: 25px;">
+            <span style="color: #ffffff; font-size: 1rem; font-weight: 500;">
+                Olá, <strong th:text="${(usuario != null and usuario.id != null) ? usuario.nome : ((paciente != null and paciente.id != null) ? paciente.nome : 'Visitante')}" style="color: #008436; font-weight: 800;">Visitante</strong>
+            </span>
+
+            <a th:href="@{/logout}" class="btn-logout-custom" style="text-decoration: none; color: #ffffff; font-weight: 600; border: 1px solid #555; padding: 8px 25px; border-radius: 50px; transition: 0.3s; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-sign-out-alt" style="color: #008436;"></i> Sair
+            </a>
+        </div>
+    </nav>
 
     <main>
-        <div class="login-container" style="max-width: 400px; padding: 30px; text-align: center;">
-            <div style="margin-bottom: 20px;">
-                <i class="fas fa-envelope-open-text" style="font-size: 3rem; color: #b6d441;"></i>
+        <div class="login-container">
+            <div class="icon-box">
+                <i class="fas fa-shield-alt" style="font-size: 2.5rem; color: var(--tm-light-green);"></i>
             </div>
-            <h2 style="color: #333;">Código de Segurança</h2>
-            <p style="color: #666; margin-bottom: 20px;">Digite o código de 6 dígitos enviado para o seu e-mail.</p>
+            
+            <div class="login-header">
+                <h2>Verificar Código</h2>
+                <p>
+                    Insira o token de segurança de 6 dígitos que enviamos para o seu e-mail corporativo.
+                </p>
+            </div>
 
-            <div th:if="${param.error}" class="alert-erro" style="color: orange; margin-bottom: 10px;">Código inválido ou expirado.</div>
+            <div th:if="${param.error}" class="alert-erro" style="background: rgba(62, 39, 35, 0.6); color: #ffccbc; padding: 12px; margin-bottom: 25px; text-align: center; border-radius: 8px; border: 1px solid var(--tm-brown); font-weight: 600; font-size: 0.85rem;">
+                <i class="fas fa-exclamation-triangle"></i> Token inválido ou expirado. Tente novamente.
+            </div>
 
             <form th:action="@{/verify-reset-code}" method="post">
-                <input type="text" name="token" class="form-control" placeholder="000000" style="text-align: center; font-size: 1.5rem; letter-spacing: 5px; width: 60%; margin: 0 auto;" required maxlength="6">
-                <button type="submit" class="btn-custom" style="width: 100%; margin-top: 20px; background-color: #b6d441; border: none; padding: 10px; color: white; border-radius: 5px; cursor: pointer;">
-                    Verificar
+                <div class="form-group">
+                    <input type="text" name="token" class="form-control-code" placeholder="000000" required maxlength="6" autocomplete="off">
+                </div>
+                
+                <button type="submit" class="btn-verify">
+                    Validar Acesso <i class="fas fa-unlock-alt"></i>
                 </button>
             </form>
+
+            <div class="login-footer">
+                <a th:href="@{/forgot-password}">
+                    <i class="fas fa-redo"></i> Não recebeu o código? Reenviar.
+                </a>
+            </div>
         </div>
     </main>
 

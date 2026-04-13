@@ -1,6 +1,6 @@
 {
-  "name": "PIXEL TI Helpdesk",
-  "short_name": "PIXEL TI",
+  "name": "TechxMicro Helpdesk",
+  "short_name": "TechxMicro",
   "start_url": "/login", 
   "display": "standalone",
   "display_override": ["window-controls-overlay"],
