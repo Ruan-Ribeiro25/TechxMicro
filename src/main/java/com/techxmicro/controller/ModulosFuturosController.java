@@ -2,12 +2,10 @@ package com.techxmicro.controller;
 
 import com.techxmicro.entity.Usuario;
 import com.techxmicro.repository.UsuarioRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
 import java.security.Principal;
 
 @Controller
@@ -16,7 +14,9 @@ public class ModulosFuturosController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    // Método blindado: Carrega o utilizador para o header não crachar (Erro 500)
+    /**
+     * Método blindado: Carrega o utilizador para o header não crashar (Erro 500)
+     */
     private void injetarUsuarioNoHeader(Model model, Principal principal) {
         if (principal != null) {
             Usuario usuario = usuarioRepository.findByUsernameOrEmail(principal.getName());
@@ -31,7 +31,8 @@ public class ModulosFuturosController {
         injetarUsuarioNoHeader(model, principal);
         model.addAttribute("moduloNome", "Agenda Corporativa");
         model.addAttribute("moduloIcone", "fa-calendar-alt");
-        model.addAttribute("moduloDesc", "Gerenciamento de compromissos e agendamentos oficiais da PIXEL TI.");
+        // CORRIGIDO: PIXEL TI -> TechxMicro
+        model.addAttribute("moduloDesc", "Gerenciamento de compromissos e agendamentos oficiais da TechxMicro.");
         return "pages/em-construcao"; 
     }
 
@@ -62,7 +63,8 @@ public class ModulosFuturosController {
         injetarUsuarioNoHeader(model, principal);
         model.addAttribute("moduloNome", "Marketing");
         model.addAttribute("moduloIcone", "fa-bullhorn");
-        model.addAttribute("moduloDesc", "Módulo focado em estratégias, campanhas e inteligência de mercado da PIXEL TI.");
+        // CORRIGIDO: PIXEL TI -> TechxMicro
+        model.addAttribute("moduloDesc", "Módulo focado em estratégias, campanhas e inteligência de mercado da TechxMicro.");
         return "pages/em-construcao"; 
     }
 
@@ -71,7 +73,8 @@ public class ModulosFuturosController {
         injetarUsuarioNoHeader(model, principal);
         model.addAttribute("moduloNome", "Pesquisa e Desenvolvimento (P&D)");
         model.addAttribute("moduloIcone", "fa-flask");
-        model.addAttribute("moduloDesc", "Núcleo de inovação, prototipagem e desenvolvimento de novas tecnologias da PIXEL TI.");
+        // CORRIGIDO: PIXEL TI -> TechxMicro
+        model.addAttribute("moduloDesc", "Núcleo de inovação, prototipagem e desenvolvimento de novas tecnologias da TechxMicro.");
         return "pages/em-construcao"; 
     }
 }
