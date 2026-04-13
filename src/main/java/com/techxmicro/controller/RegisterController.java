@@ -101,7 +101,8 @@ public class RegisterController {
 
         if (hospital == null) {
             hospital = new Polo();
-            hospital.setNome("Hospital VidaPlus " + cidade);
+            // REBRANDING: De 'Hospital VidaPlus' para 'Unidade TechxMicro'
+            hospital.setNome("Unidade TechxMicro - " + cidade);
             hospital.setCidade(cidade);
             hospital.setTipo("HOSPITAL");
             hospital.setCep(cep); 
@@ -120,7 +121,8 @@ public class RegisterController {
 
         if (clinica == null) {
             clinica = new Polo();
-            clinica.setNome("Clínica " + bairro);
+            // REBRANDING: De 'Clínica' para 'Clínica Techx'
+            clinica.setNome("Clínica Techx - " + bairro);
             clinica.setCidade(cidade);
             clinica.setBairro(bairro);
             clinica.setTipo("CLINICA");

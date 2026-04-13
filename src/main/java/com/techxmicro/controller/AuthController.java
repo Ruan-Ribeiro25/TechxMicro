@@ -50,7 +50,7 @@ public class AuthController {
     public String processarVerificacao(@RequestParam("codigo") String codigo, Model model) {
         Usuario usuario = usuarioRepository.findByCodigoVerificacao(codigo);
         if (usuario != null) {
-            usuario.setAtivo(true); // Ativando o usuário após verificação
+            usuario.setAtivo(true); 
             usuario.setCodigoVerificacao(null);
             usuarioRepository.save(usuario);
             return "redirect:/bem-vindo";
@@ -106,7 +106,7 @@ public class AuthController {
     }
 
     // =================================================================================
-    // 4. ESQUECI MINHA SENHA (FAXINA REBRANDING)
+    // 4. ESQUECI MINHA SENHA (DASHBOARD TECHXMICRO)
     // =================================================================================
 
     @GetMapping("/forgot-password")
@@ -120,14 +120,26 @@ public class AuthController {
             usuario.setTokenReset(token);
             usuarioRepository.save(usuario);
             
-            // Texto do e-mail atualizado para TechxMicro
-            String htmlTexto = "<div style='font-family: sans-serif; padding: 20px; color: #000;'>" +
-                               "<h2 style='color: #008436;'>Recuperação de Acesso TechxMicro</h2>" +
-                               "<p>Recebemos uma solicitação para redefinir sua senha no ecossistema de suporte TechxMicro.</p>" +
-                               "<p style='background: #f4f4f4; padding: 15px; border-radius: 8px; text-align: center;'>" +
-                               "Seu código de segurança é: <b style='font-size: 1.8rem; letter-spacing: 5px; color: #008436;'>" + token + "</b></p>" +
-                               "<p>Se você não solicitou esta alteração, por favor ignore este aviso.</p>" +
-                               "<hr><small>TechxMicro - Suporte em Infraestrutura e TI desde 2016.</small></div>";
+            // Texto do e-mail com Rodapé Profissional e Incentivo ao Helpdesk
+            String htmlTexto = 
+                "<div style='font-family: Arial, sans-serif; padding: 20px; color: #333;'>" +
+                "  <h2 style='color: #008436;'>🔑 Recuperação de Senha - TechxMicro</h2>" +
+                "  <p>Olá, <strong>" + usuario.getNome() + "</strong>,</p>" +
+                "  <p>Recebemos uma solicitação para redefinir sua senha no ecossistema <strong>TechxMicro</strong>.</p>" +
+                "  <div style='background: #f4f4f4; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #ddd;'>" +
+                "    <p style='margin: 0; font-size: 1rem;'>Seu código de segurança é:</p>" +
+                "    <b style='font-size: 2.2rem; letter-spacing: 6px; color: #008436;'>" + token + "</b>" +
+                "  </div>" +
+                "  <p style='margin-top: 25px;'><strong>🚀 Dica do Suporte:</strong></p>" +
+                "  <p>Sabia que você pode gerenciar todos os seus chamados em um só lugar? " +
+                "     Sempre que precisar de auxílio técnico em Software ou Infraestrutura, utilize nosso Helpdesk.</p>" +
+                "  <a href='https://techxmicro.com.br/helpdesk' style='display: inline-block; padding: 12px 20px; " +
+                "     background-color: #008436; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold;'>" +
+                "     Abrir Chamado no Helpdesk</a>" +
+                "  <p style='font-size: 0.85rem; color: #777; margin-top: 30px;'>" +
+                "     Se você não reconhece esta ação, por favor ignore este e-mail por segurança.<br>" +
+                "     <strong>TechxMicro - Soluções em TI e Desenvolvimento.</strong></p>" +
+                "</div>";
                                
             emailService.enviarEmail(usuario.getEmail(), "TechxMicro - Recuperação de Senha", htmlTexto);
             return "redirect:/enter-code";
