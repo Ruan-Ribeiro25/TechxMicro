@@ -2,7 +2,7 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>ERP - COMPELS | PIXEL TI</title>
+    <title>ERP - COMPELS | TechxMicro</title>
     
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link rel="stylesheet" th:href="@{/css/global.css}">
@@ -27,7 +27,7 @@
             padding: 15px 25px !important;
             margin-bottom: 0 !important;
             background-color: #f8f9fa !important;
-            border-bottom: 2px solid #b6d441 !important;
+            border-bottom: 2px solid #008436 !important;
         }
         
         .fullscreen-mode .erp-frame-fluid {
@@ -43,7 +43,7 @@
         
         /* Botão de Expansão e Nova Aba */
         .btn-expandir {
-            background-color: #b6d441;
+            background-color: #008436;
             color: #000000;
             border: none;
             padding: 10px 20px;
@@ -128,7 +128,7 @@
             if (container.classList.contains('fullscreen-mode')) {
                 icon.className = 'fas fa-compress';
                 text.innerText = 'Restaurar';
-                btn.style.backgroundColor = '#f07d35'; // Fica Laranja ao expandir
+                btn.style.backgroundColor = '#008436'; // Fica Laranja ao expandir
                 btn.style.color = '#ffffff';
                 btn.style.boxShadow = '0 4px 10px rgba(240, 125, 53, 0.3)';
             } else {

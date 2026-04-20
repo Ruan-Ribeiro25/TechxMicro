@@ -2,171 +2,200 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Gestão de Estoque - VidaPlus</title>
-    
+    <title>Gestão de Estoque - TechxMicro</title>
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/estoque.css}"> 
+    <link rel="stylesheet" th:href="@{/css/global.css}"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CABEÇALHO PADRÃO TECHXMICRO (Fundo Translúcido) */
+        .header-padrao { 
+            position: relative; z-index: 1050; 
+            background: rgba(0, 0, 0, 0.65); 
+            backdrop-filter: blur(8px); 
+            border-left: 5px solid #20c997; 
+            border-radius: 8px; 
+            padding: 15px 20px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .text-shadow-custom { text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
+    </style>
 </head>
 
 <body>
-
     <div th:replace="~{fragments/header :: navbar}"></div>
 
-    <main>
-        <div class="page-sheet">
-            
-            <div class="internal-header">
-                <div class="header-left">
-                    <a href="/home" class="btn-circle-back" title="Voltar"><i class="fas fa-arrow-left"></i></a>
-                    <div>
-                        <h2 style="margin:0;">Gestão de Estoque</h2>
-                        <span style="color:#94a3b8; font-size:0.9rem;">Hospital VidaPlus - Central Unificada</span>
-                    </div>
-                </div>
-                <div style="text-align:right;">
-                    <div style="background:#e0f2fe; color:#0284c7; padding:6px 15px; border-radius:20px; font-weight:600; font-size:0.85rem;">
-                        <i class="fas fa-user-circle me-1"></i> 
-                        Logado como: <span id="user-display" th:text="${#authentication != null ? #authentication.name : 'Visitante'}">Usuário</span>
-                    </div>
+    <main class="container-fluid mt-4">
+        
+        <div class="header-padrao">
+            <div class="d-flex align-items-center">
+                <a th:href="@{/admin/painel}" class="me-4 text-white" style="font-size: 1.4rem; text-decoration: none; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div>
+                    <h4 class="m-0 fw-bold text-white text-shadow-custom" style="font-size: 1.5rem;">
+                        <i class="fas fa-server" style="color: #20c997;"></i> Gestão de Ativos e Estoque TI
+                    </h4>
+                    <small class="text-light text-shadow-custom" style="font-size: 0.9rem;">
+                        TechxMicro - Matriz Corporativa T.I
+                    </small>
                 </div>
             </div>
+            <div class="d-flex gap-2">
+                <span class="badge bg-dark border border-secondary shadow-sm px-3 py-2 text-uppercase" style="font-size: 0.85rem; letter-spacing: 1px;">
+                    <i class="fas fa-user-circle me-1 text-primary"></i> <span id="user-display" th:text="${usuario != null ? usuario.nome : 'Visitante'}">Usuário</span>
+                </span>
+            </div>
+        </div>
 
-            <div class="kpi-container">
-                <div class="kpi-box" style="border-left: 4px solid var(--primary-color);">
-                    <div class="kpi-data"><h3 th:text="${#lists.size(produtos)}">0</h3><span>Itens Totais</span></div>
+        <div class="page-sheet">
+            <div class="kpi-container mb-4">
+                <div class="kpi-box shadow-sm" style="border-left: 4px solid var(--primary-color); border-radius: 8px;">
+                    <div class="kpi-data"><h3 th:text="${#lists.size(produtos)}">0</h3><span class="fw-bold text-secondary">Ativos Registrados</span></div>
                     <i class="fas fa-boxes kpi-icon-bg" style="color: var(--primary-color);"></i>
                 </div>
-                <div class="kpi-box" style="border-left: 4px solid #3498db;">
-                    <div class="kpi-data"><h3>R$ --</h3><span>Valor Patrimonial</span></div>
+                <div class="kpi-box shadow-sm" style="border-left: 4px solid #3498db; border-radius: 8px;">
+                    <div class="kpi-data"><h3>R$ --</h3><span class="fw-bold text-secondary">Valor Patrimonial</span></div>
                     <i class="fas fa-file-invoice-dollar kpi-icon-bg" style="color: #3498db;"></i>
                 </div>
-                <div class="kpi-box" style="border-left: 4px solid #f1c40f;">
-                    <div class="kpi-data"><h3 th:text="${#lists.size(produtos.?[quantidade <= quantidadeMinima])}">0</h3><span>Estoque Baixo</span></div>
+                <div class="kpi-box shadow-sm" style="border-left: 4px solid #f1c40f; border-radius: 8px;">
+                    <div class="kpi-data"><h3 th:text="${#lists.size(produtos.?[quantidade <= quantidadeMinima])}">0</h3><span class="fw-bold text-secondary">Estoque Baixo</span></div>
                     <i class="fas fa-exclamation-triangle kpi-icon-bg" style="color: #f1c40f;"></i>
                 </div>
-                <div class="kpi-box" style="border-left: 4px solid #e74c3c;">
-                    <div class="kpi-data"><h3 th:text="${#lists.size(produtos.?[quantidade == 0])}">0</h3><span>Crítico / Zerado</span></div>
+                <div class="kpi-box shadow-sm" style="border-left: 4px solid #e74c3c; border-radius: 8px;">
+                    <div class="kpi-data"><h3 th:text="${#lists.size(produtos.?[quantidade == 0])}">0</h3><span class="fw-bold text-secondary">Crítico / Zerado</span></div>
                     <i class="fas fa-ban kpi-icon-bg" style="color: #e74c3c;"></i>
                 </div>
             </div>
 
-            <div class="scanner-area">
+            <div class="scanner-area bg-light p-3 rounded-3 shadow-sm mb-4 border">
                 <div class="input-group-col col-grow">
-                    <label class="lbl-custom"><i class="fas fa-barcode text-muted"></i> Leitor de Código de Barras (EAN/QR)</label>
+                    <label class="lbl-custom fw-bold"><i class="fas fa-barcode text-primary me-1"></i> Leitor de Código de Barras (EAN/Patrimônio)</label>
                     <input type="text" id="barcode-input" class="inp-control" placeholder="Aguardando leitura do scanner..." autofocus autocomplete="off">
                 </div>
 
                 <div class="input-group-col col-fixed">
-                    <label class="lbl-custom"><i class="fas fa-times text-muted"></i> Mult.</label>
-                    <input type="number" id="multiplier-input" class="inp-control" style="text-align: center;" value="1" min="1">
+                    <label class="lbl-custom fw-bold"><i class="fas fa-times text-muted me-1"></i> Qtd.</label>
+                    <input type="number" id="multiplier-input" class="inp-control fw-bold text-center" value="1" min="1">
                 </div>
 
                 <div class="input-group-col">
-                    <button onclick="processarEntrada()" class="btn-control-stock btn-green">
-                        <i class="fas fa-plus-circle"></i> Entrada Rápida
+                    <button onclick="processarEntrada()" class="btn btn-success fw-bold h-100 px-4 w-100 d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                        <i class="fas fa-arrow-down"></i> Entrada
                     </button>
                 </div>
 
                 <div class="input-group-col">
-                    <button onclick="abrirModalRetirada()" class="btn-control-stock btn-red">
-                        <i class="fas fa-minus-circle"></i> Registrar Saída
+                    <button onclick="abrirModalRetirada()" class="btn btn-danger fw-bold h-100 px-4 w-100 d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                        <i class="fas fa-arrow-up"></i> Retirada
                     </button>
                 </div>
             </div>
 
-            <div class="filters-row">
-                <button class="filter-btn active" onclick="filtrarTabela('todos', this)"><i class="fas fa-list me-1"></i> Todos</button>
-                <button class="filter-btn" onclick="filtrarTabela('Farmacia', this)"><i class="fas fa-pills me-1"></i> Farmácia</button>
-                <button class="filter-btn" onclick="filtrarTabela('Almoxarifado', this)"><i class="fas fa-box-open me-1"></i> Almoxarifado</button>
-                <button class="filter-btn" onclick="filtrarTabela('EPI', this)"><i class="fas fa-head-side-mask me-1"></i> EPIs</button>
-                <button class="filter-btn" onclick="filtrarTabela('Cirurgico', this)"><i class="fas fa-scalpel me-1"></i> Cirúrgico</button>
-                <button class="filter-btn" onclick="filtrarTabela('Higiene', this)"><i class="fas fa-pump-soap me-1"></i> Higiene</button>
+            <div class="filters-row mb-3 d-flex gap-2">
+                <button class="btn btn-dark active fw-bold px-4 rounded-pill" onclick="filtrarTabela('todos', this)"><i class="fas fa-list me-1"></i> Todos os Ativos</button>
+                <button class="btn btn-outline-secondary fw-bold px-4 rounded-pill" onclick="filtrarTabela('Infraestrutura', this)"><i class="fas fa-network-wired me-1"></i> Infraestrutura (Redes)</button>
+                <button class="btn btn-outline-secondary fw-bold px-4 rounded-pill" onclick="filtrarTabela('Perifericos', this)"><i class="fas fa-keyboard me-1"></i> Periféricos</button>
+                <button class="btn btn-outline-secondary fw-bold px-4 rounded-pill" onclick="filtrarTabela('Computadores', this)"><i class="fas fa-laptop me-1"></i> Computadores</button>
+                <button class="btn btn-outline-secondary fw-bold px-4 rounded-pill" onclick="filtrarTabela('Suprimentos', this)"><i class="fas fa-print me-1"></i> Suprimentos</button>
             </div>
 
-            <div style="overflow-x:auto;">
-                <table class="table-stock-full" id="stock-table">
-                    <thead>
+            <div class="table-responsive bg-white rounded-3 shadow-sm border">
+                <table class="table table-hover align-middle mb-0" id="stock-table">
+                    <thead class="table-light">
                         <tr>
-                            <th>Cód. Barras</th>
-                            <th>Item / Descrição</th>
-                            <th>Categoria</th>
-                            <th>Lote / Validade</th>
-                            <th>Estoque Atual</th>
-                            <th>Status</th>
-                            <th>Ações</th>
+                            <th class="ps-3 text-uppercase text-secondary font-monospace" style="font-size: 0.8rem;">Cód. / Patrimônio</th>
+                            <th class="text-uppercase text-secondary font-monospace" style="font-size: 0.8rem;">Descrição do Ativo</th>
+                            <th class="text-uppercase text-secondary font-monospace" style="font-size: 0.8rem;">Categoria</th>
+                            <th class="text-uppercase text-secondary font-monospace" style="font-size: 0.8rem;">Localização / Lote</th>
+                            <th class="text-center text-uppercase text-secondary font-monospace" style="font-size: 0.8rem;">Estoque Atual</th>
+                            <th class="text-center text-uppercase text-secondary font-monospace" style="font-size: 0.8rem;">Status</th>
+                            <th class="text-center pe-3 text-uppercase text-secondary font-monospace" style="font-size: 0.8rem;">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="p : ${produtos}" th:data-cat="${p.categoria}" th:id="'row-' + ${p.ean}">
-                            <td style="font-family:monospace; font-weight:bold; color:#64748b;">
-                                <i class="fas fa-barcode"></i> <span th:text="${p.ean}">789...</span>
+                            <td class="ps-3">
+                                <div class="bg-light border rounded px-2 py-1 d-inline-block font-monospace fw-bold text-secondary" style="font-size: 0.9rem;">
+                                    <i class="fas fa-barcode me-1 text-primary"></i> <span th:text="${p.ean}"></span>
+                                </div>
                             </td>
                             <td>
-                                <strong th:text="${p.nome}">Nome Produto</strong>
-                                <br><small class="text-muted" th:text="${p.descricao}">Desc</small>
+                                <strong th:text="${p.nome}" class="text-dark d-block">Nome Produto</strong>
+                                <small class="text-muted" th:text="${p.descricao}">Desc</small>
                             </td>
                             <td>
-                                <span style="background:#f1f5f9; padding:4px 8px; border-radius:6px; font-size:0.8rem; font-weight:600; color:#475569;" th:text="${p.categoria}">CAT</span>
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary" th:text="${p.categoria}">CAT</span>
                             </td>
                             <td>
                                 <div style="line-height:1.2">
-                                    <small style="font-weight:bold;" th:text="${p.lote}">LOTE</small><br>
-                                    <small style="color:#94a3b8;" th:text="${p.dataValidade}">VAL</small>
+                                    <small class="fw-bold text-dark d-block">Patr: <span th:text="${p.lote}">N/A</span></small>
+                                    <small class="text-muted">Garantia: <span th:text="${p.dataValidade}">-</span></small>
                                 </div>
                             </td>
-                            <td class="text-center" style="font-size:1.1rem; font-weight:800; color:#333;">
-                                <span th:id="'qtd-' + ${p.ean}" th:text="${p.quantidade}">0</span>
+                            <td class="text-center">
+                                <span th:id="'qtd-' + ${p.ean}" th:text="${p.quantidade}" class="fs-5 fw-bold text-dark">0</span>
                             </td>
                             <td class="text-center">
-                                <span th:if="${p.quantidade <= 0}" class="badge-status b-crit">ZERADO</span>
-                                <span th:if="${p.quantidade > 0 and p.quantidade <= p.quantidadeMinima}" class="badge-status b-low">BAIXO</span>
-                                <span th:if="${p.quantidade > p.quantidadeMinima}" class="badge-status b-ok">NORMAL</span>
+                                <span th:if="${p.quantidade <= 0}" class="badge bg-danger rounded-pill px-3">ZERADO</span>
+                                <span th:if="${p.quantidade > 0 and p.quantidade <= p.quantidadeMinima}" class="badge bg-warning text-dark rounded-pill px-3">BAIXO</span>
+                                <span th:if="${p.quantidade > p.quantidadeMinima}" class="badge bg-success rounded-pill px-3">NORMAL</span>
                             </td>
-                            <td>
-                                <a href="#" style="color:#3498db; font-size:1.1rem;"><i class="fas fa-edit"></i></a>
+                            <td class="text-center pe-3 text-nowrap">
+                                <a href="#" class="btn-action-pro btn-pro-edit"><i class="fas fa-edit"></i></a>
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(produtos)}">
-                            <td colspan="7" style="text-align:center; padding: 30px; color: #999;">
-                                <i class="fas fa-box-open fa-2x"></i><br>Nenhum item encontrado.
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="fas fa-server fa-3x mb-3 opacity-25"></i><br>
+                                Nenhum ativo de tecnologia registrado.
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-
         </div>
     </main>
 
     <div th:replace="~{fragments/footer :: rodape}"></div>
 
-    <div id="modalRetirada" class="modal-backdrop-custom">
-        <div class="modal-window">
-            <h3 style="color:#e74c3c; margin-top:0;"><i class="fas fa-hand-holding me-2"></i> Saída de Material</h3>
-            
-            <div style="margin-top:20px;">
-                <label style="display:block; font-weight:700; margin-bottom:5px; color:#555;">Responsável</label>
-                <input type="text" id="responsavel-saida" class="inp-control" 
-                       th:value="${#authentication != null ? #authentication.name : 'Visitante'}" 
-                       readonly style="background:#f8fafc; border-color:#e2e8f0;">
-            </div>
+    <div id="modalRetirada" class="modal" tabindex="-1" style="background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 1060; display: none; align-items: center; justify-content: center;">
+        <div class="modal-dialog modal-dialog-centered" style="min-width: 400px;">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-share-square me-2"></i> Retirada de Ativo/Equipamento</h5>
+                    <button type="button" class="btn-close btn-close-white" onclick="fecharModalRetirada()"></button>
+                </div>
+                <div class="modal-body p-4 bg-light">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-secondary small">Técnico / Responsável</label>
+                        <input type="text" id="responsavel-saida" class="form-control bg-white fw-bold text-dark border-secondary" 
+                               th:value="${usuario != null ? usuario.nome : 'Visitante'}" readonly>
+                    </div>
 
-            <div style="margin-top:15px;">
-                <label style="display:block; font-weight:700; margin-bottom:5px; color:#555;">Código do Item</label>
-                <input type="text" id="retirada-barcode" class="inp-control" placeholder="Escaneie o item...">
-            </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-secondary small">Código / Patrimônio</label>
+                        <div class="input-group shadow-sm">
+                            <span class="input-group-text bg-white border-secondary"><i class="fas fa-barcode text-primary"></i></span>
+                            <input type="text" id="retirada-barcode" class="form-control border-secondary" placeholder="Escaneie o item...">
+                        </div>
+                    </div>
 
-            <div style="margin-top:15px; margin-bottom:25px;">
-                <label style="display:block; font-weight:700; margin-bottom:5px; color:#555;">Quantidade</label>
-                <input type="number" id="retirada-qtd" class="inp-control" value="1" min="1">
-            </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-secondary small">Quantidade a Retirar</label>
+                        <input type="number" id="retirada-qtd" class="form-control fw-bold border-secondary text-center shadow-sm" value="1" min="1">
+                    </div>
 
-            <div style="display:flex; gap:10px;">
-                <button onclick="fecharModalRetirada()" class="btn-control-stock" style="background:#94a3b8; flex:1;">Cancelar</button>
-                <button onclick="confirmarRetirada()" class="btn-control-stock btn-red" style="flex:1;">Confirmar</button>
+                    <div class="d-flex gap-2">
+                        <button onclick="fecharModalRetirada()" class="btn btn-outline-secondary fw-bold flex-grow-1">Cancelar</button>
+                        <button onclick="confirmarRetirada()" class="btn btn-danger fw-bold flex-grow-1 shadow-sm"><i class="fas fa-check me-1"></i> Confirmar Saída</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -185,7 +214,6 @@
         function processarEntrada() {
             const barcode = document.getElementById('barcode-input').value;
             const mult = document.getElementById('multiplier-input').value;
-
             if (!barcode) return;
 
             fetch('/admin/estoque/api/entrada', {
@@ -197,7 +225,6 @@
             .then(data => {
                 if (data.success) {
                     atualizarLinhaTabela(barcode, data.novaQuantidade);
-                    console.log("Entrada registrada!");
                 } else {
                     alert("Erro: " + (data.message || "Produto não encontrado."));
                 }
@@ -224,7 +251,6 @@
                 if (data.success) {
                     atualizarLinhaTabela(barcode, data.novaQuantidade);
                     fecharModalRetirada();
-                    console.log("Saída registrada!");
                 } else {
                     alert("Erro: " + data.message);
                 }
@@ -237,7 +263,7 @@
             if (spanQtd) {
                 spanQtd.innerText = novaQtd;
                 const row = spanQtd.closest('tr');
-                row.style.backgroundColor = "#d1fae5";
+                row.style.backgroundColor = "rgba(46, 204, 113, 0.2)";
                 setTimeout(() => row.style.backgroundColor = "", 1000);
             } else {
                 location.reload();
@@ -255,8 +281,13 @@
         }
 
         function filtrarTabela(categoria, btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            document.querySelectorAll('.filters-row .btn').forEach(b => {
+                b.classList.remove('btn-dark', 'active');
+                b.classList.add('btn-outline-secondary');
+            });
+            btn.classList.remove('btn-outline-secondary');
+            btn.classList.add('btn-dark', 'active');
+            
             const rows = document.querySelectorAll('#stock-table tbody tr');
             rows.forEach(row => {
                 if (categoria === 'todos' || row.getAttribute('data-cat') === categoria) {

@@ -49,7 +49,7 @@ body {
     background-color: #000000;
     
     /* Fundo Animado: Globo com Fluxo de Conexões IoT (Novo Link Giphy) */
-    background-image: url('https://images.unsplash.com/photo-1716703371653-ca74beaa7a4a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+    background-image: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
     
     /* Propriedades extras para o GIF se adaptar perfeitamente ao ecrã */
     background-size: cover;         

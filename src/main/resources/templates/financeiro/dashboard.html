@@ -2,13 +2,36 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Financeiro - Copamir</title>
+    <title>Financeiro - TechxMicro</title>
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block> 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/financeiro.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* CABEÇALHO PADRÃO TECHXMICRO */
+        .header-financeiro { 
+            position: relative; z-index: 1050; 
+            background: rgba(0, 0, 0, 0.65); 
+            backdrop-filter: blur(8px); 
+            border-left: 5px solid #20c997; 
+            border-radius: 8px; 
+            padding: 15px 20px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+        }
+        .text-shadow-custom { text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
+
+        /* PADRÃO DE BOTÕES IMPORTADO DO ADMIN */
+        .btn-action-pro {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 32px; height: 32px; border-radius: 6px; border: none;
+            color: #fff; background-color: #1c1c1c;
+            transition: all 0.2s ease-in-out; text-decoration: none; margin: 0 2px;
+        }
+        .btn-action-pro:hover { transform: scale(1.15); box-shadow: 0 4px 8px rgba(0,0,0,0.3); color: #fff; }
+        .btn-pro-eye:hover { background-color: #20c997; } /* Acende em Verde no hover */
+    </style>
 </head>
 <body>
 
@@ -16,40 +39,37 @@
 
     <main class="container-fluid mt-4 mb-5">
         
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 header-financeiro">
             <div class="d-flex align-items-center">
-                <a th:href="@{/admin/painel}" class="me-3" style="font-size: 1.2rem; text-decoration: none; color: #ffffff !important; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">
+                <a th:href="@{/admin/painel}" class="me-4 text-white" style="font-size: 1.4rem; text-decoration: none; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
                     <i class="fas fa-arrow-left"></i>
                 </a>
                 <div>
-                    <h4 class="m-0 fw-bold" style="font-size: 1.5rem; color: #ffffff !important; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">
-                        <i class="fas fa-chart-line"></i> Gestão Financeira
+                    <h4 class="m-0 fw-bold text-white text-shadow-custom" style="font-size: 1.5rem;">
+                        <i class="fas fa-chart-line" style="color: #20c997;"></i> Gestão Financeira
                     </h4>
-                    <small style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.9) !important; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">
-                        Fluxo de Caixa e Relatórios
-                    </small>
+                    <small class="text-light text-shadow-custom" style="font-size: 0.9rem;">Fluxo de Caixa e Relatórios</small>
                 </div>
             </div>
             
             <div class="d-flex gap-2">
-                <form th:action="@{/financeiro/gerar-teste}" method="post">
-                    <button type="submit" class="btn btn-warning shadow-sm d-flex align-items-center gap-2" 
-                            style="width: auto !important; display: inline-flex !important; padding: 6px 12px !important; font-size: 0.8rem !important; border-radius: 50px !important; color: #ffffff !important;">
-                        <i class="fas fa-magic"></i> <span>Gerar Dados Teste</span>
+                <div class="dropdown">
+                    <button class="btn btn-primary shadow d-flex align-items-center gap-2 rounded-pill px-4 py-2 fw-bold" type="button" data-bs-toggle="dropdown" style="font-size: 0.9rem;">
+                        <i class="fas fa-plus-circle"></i> <span>Novo Lançamento</span>
                     </button>
-                </form>
-
-                <button class="btn btn-danger shadow-sm d-flex align-items-center gap-2" 
-                        onclick="document.getElementById('modalDespesa').style.display='block'"
-                        style="width: auto !important; display: inline-flex !important; padding: 6px 16px !important; font-size: 0.9rem !important; border-radius: 50px !important;">
-                    <i class="fas fa-minus-circle"></i> <span>Nova Despesa</span>
-                </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2">
+                        <li><a class="dropdown-item text-success fw-bold py-2" href="#" onclick="abrirModalTransacao('RECEITA')"><i class="fas fa-arrow-up me-2"></i> Nova Entrada</a></li>
+                        <li><a class="dropdown-item text-danger fw-bold py-2" href="#" onclick="abrirModalTransacao('DESPESA')"><i class="fas fa-arrow-down me-2"></i> Nova Saída</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-warning fw-bold py-2" href="#" onclick="abrirModalTransacao('GASTO_FIXO')"><i class="fas fa-thumbtack me-2"></i> Registrar Gasto Fixo</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
 
         <div class="row mb-4">
             <div class="col-md-4">
-                <div class="card card-financeiro grad-green p-4">
+                <div class="card card-financeiro grad-green p-4 shadow-sm" style="position: relative; z-index: 1;">
                     <div style="position: relative; z-index: 2;">
                         <p class="mb-1 text-uppercase fw-bold text-white-force" style="font-size: 0.8rem;">Receitas</p>
                         <h2 class="fw-bold m-0 text-white-force" style="font-size: 2rem;" th:text="'R$ ' + ${#numbers.formatDecimal(totalReceitas, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</h2>
@@ -59,7 +79,7 @@
             </div>
 
             <div class="col-md-4">
-                <div class="card card-financeiro grad-red p-4">
+                <div class="card card-financeiro grad-red p-4 shadow-sm" style="position: relative; z-index: 1;">
                     <div style="position: relative; z-index: 2;">
                         <p class="mb-1 text-uppercase fw-bold text-white-force" style="font-size: 0.8rem;">Despesas</p>
                         <h2 class="fw-bold m-0 text-white-force" style="font-size: 2rem;" th:text="'R$ ' + ${#numbers.formatDecimal(totalDespesas, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</h2>
@@ -69,7 +89,7 @@
             </div>
 
             <div class="col-md-4">
-                <div class="card card-financeiro grad-blue p-4">
+                <div class="card card-financeiro grad-blue p-4 shadow-sm" style="position: relative; z-index: 1;">
                     <div style="position: relative; z-index: 2;">
                         <p class="mb-1 text-uppercase fw-bold text-white-force" style="font-size: 0.8rem;">Saldo Líquido</p>
                         <h2 class="fw-bold m-0 text-white-force" style="font-size: 2rem;" th:text="'R$ ' + ${#numbers.formatDecimal(saldoLiquido, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</h2>
@@ -83,12 +103,12 @@
             <div class="col-12">
                 <div class="card border-0 shadow-sm rounded-3">
                     <div class="card-header bg-white border-bottom-0 pt-3 px-4 d-flex justify-content-between align-items-center">
-                        <h5 class="fw-bold text-secondary m-0">Análise de Lucro</h5>
+                        <h5 class="fw-bold text-secondary m-0">Análise de Fluxo de Caixa</h5>
                         <ul class="nav nav-tabs card-header-tabs" id="financialTabs" style="font-size: 0.9rem;">
                             <li class="nav-item"><a class="nav-link" href="#" onclick="updateChart('diario', this); return false;">Diário</a></li>
                             <li class="nav-item"><a class="nav-link" href="#" onclick="updateChart('semanal', this); return false;">Semanal</a></li>
                             <li class="nav-item"><a class="nav-link active" href="#" onclick="updateChart('mensal', this); return false;">Mensal</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#" onclick="updateChart('anual', this); return false;">Anual</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#" onclick="updateChart('anual', this); return false;">5 Anos</a></li>
                             <li class="nav-item"><a class="nav-link" href="#" onclick="updateChart('decada', this); return false;">10 Anos</a></li>
                         </ul>
                     </div>
@@ -115,17 +135,15 @@
                                     <th>Categoria</th>
                                     <th>Vencimento</th>
                                     <th>Status</th>
-                                    <th class="text-end pe-4">Valor</th>
+                                    <th class="text-end">Valor</th>
+                                    <th class="text-center pe-4">Ação</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr th:each="t : ${transacoes}">
-                                    <td class="ps-4 fw-bold text-dark" th:text="${t.descricao}">Consulta</td>
-                                    
-                                    <td><span class="badge bg-light text-secondary border" th:text="${t.categoria}">CAT</span></td>
-                                    
-                                    <td class="text-muted" th:text="${#temporals.format(t.dataVencimento, 'dd/MM/yyyy')} ?: '-'">01/01/2026</td>
-                                    
+                                    <td class="ps-4 fw-bold text-dark" th:text="${t.descricao}"></td>
+                                    <td><span class="badge bg-light text-secondary border" th:text="${t.categoria}"></span></td>
+                                    <td class="text-muted" th:text="${#temporals.format(t.dataVencimento, 'dd/MM/yyyy')} ?: '-'"></td>
                                     <td>
                                         <span class="badge rounded-pill status-badge" 
                                               th:classappend="${t.status.name() == 'PAGO'} ? 'status-pago' : 
@@ -134,17 +152,30 @@
                                             
                                             <i class="fas" th:classappend="${t.status.name() == 'PAGO'} ? 'fa-check' : 
                                                                          (${t.status.name() == 'ATRASADO'} ? 'fa-exclamation-circle' : 'fa-clock')"></i>
-                                            <span th:text="${t.status}">PENDENTE</span>
+                                            <span th:text="${t.status}"></span>
                                         </span>
                                     </td>
-
-                                    <td class="text-end pe-4 fw-bold" 
+                                    <td class="text-end fw-bold" 
                                         th:classappend="${t.tipo.name() == 'RECEITA'} ? 'text-success' : 'text-danger'"
                                         th:text="${t.tipo.name() == 'DESPESA' ? '-' : '+'} + ' R$ ' + ${#numbers.formatDecimal(t.valor, 1, 'POINT', 2, 'COMMA')}">
                                     </td>
+                                    <td class="text-center pe-4">
+                                        <button class="btn-action-pro btn-pro-eye"
+                                                title="Visualizar e Alterar Status"
+                                                th:data-id="${t.id}"
+                                                th:data-desc="${t.descricao}"
+                                                th:data-cat="${t.categoria}"
+                                                th:data-venc="${#temporals.format(t.dataVencimento, 'dd/MM/yyyy')}"
+                                                th:data-status="${t.status.name()}"
+                                                th:data-valor="${#numbers.formatDecimal(t.valor, 1, 'POINT', 2, 'COMMA')}"
+                                                th:data-tipo="${t.tipo.name()}"
+                                                onclick="abrirModalVisualizacao(this)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                                 <tr th:if="${#lists.isEmpty(transacoes)}">
-                                    <td colspan="5" class="text-center py-4 text-muted">Nenhuma transação registrada.</td>
+                                    <td colspan="6" class="text-center py-4 text-muted">Nenhuma transação registrada.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -168,41 +199,44 @@
 
     </main>
 
-    <div id="modalDespesa" class="modal" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+    <div id="modalTransacao" class="modal" tabindex="-1" style="background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 9999;">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title fs-6"><i class="fas fa-file-invoice-dollar"></i> Nova Saída</h5>
-                    <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('modalDespesa').style.display='none'"></button>
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header text-white" id="modalTransacaoHeader">
+                    <h5 class="modal-title fs-6 fw-bold" id="modalTransacaoTitle"></h5>
+                    <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('modalTransacao').style.display='none'"></button>
                 </div>
-                <div class="modal-body">
-                    <form th:action="@{/financeiro/nova-despesa}" method="post">
+                <div class="modal-body bg-light">
+                    <form th:action="@{/financeiro/salvar-lancamento}" method="post" class="px-2 py-1">
+                        <input type="hidden" name="tipo" id="inputTipoTransacao">
+                        
                         <div class="mb-3">
-                            <label class="form-label small fw-bold">Descrição</label>
-                            <input type="text" name="descricao" class="form-control" required>
+                            <label class="form-label small fw-bold text-secondary">Descrição</label>
+                            <input type="text" name="descricao" class="form-control border-0 shadow-sm" required placeholder="Ex: Mensalidade, Compra de cabos...">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small fw-bold">Valor (R$)</label>
-                            <input type="number" name="valor" step="0.01" class="form-control" required>
+                            <label class="form-label small fw-bold text-secondary">Valor (R$)</label>
+                            <input type="number" name="valor" step="0.01" class="form-control border-0 shadow-sm" required placeholder="0.00">
                         </div>
                         <div class="row">
                             <div class="col-6 mb-3">
-                                <label class="form-label small fw-bold">Vencimento</label>
-                                <input type="date" name="dataVencimento" class="form-control">
+                                <label class="form-label small fw-bold text-secondary">Vencimento / Data</label>
+                                <input type="date" name="dataVencimento" class="form-control border-0 shadow-sm" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">
                             </div>
                             <div class="col-6 mb-3">
-                                <label class="form-label small fw-bold">Categoria</label>
-                                <select name="categoria" class="form-select" required>
-                                    <option value="INSUMOS">Insumos / Farmácia</option>
-                                    <option value="FOLHA_PAGAMENTO">Pagamento Func.</option>
-                                    <option value="MANUTENCAO">Manutenção</option>
-                                    <option value="CONTAS_CONSUMO">Contas (Água, Luz)</option>
-                                    <option value="OUTROS">Outros</option>
+                                <label class="form-label small fw-bold text-secondary">Status</label>
+                                <select name="status" class="form-select border-0 shadow-sm" required>
+                                    <option value="PAGO">Pago / Recebido</option>
+                                    <option value="PENDENTE">Pendente</option>
                                 </select>
                             </div>
                         </div>
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-secondary">Categoria</label>
+                            <select name="categoria" id="selectCategoria" class="form-select border-0 shadow-sm" required></select>
+                        </div>
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-danger btn-sm">Confirmar Lançamento</button>
+                            <button type="submit" class="btn btn-dark fw-bold py-2 shadow-sm" id="btnSubmitTransacao">Confirmar Lançamento</button>
                         </div>
                     </form>
                 </div>
@@ -210,6 +244,54 @@
         </div>
     </div>
 
+    <div id="modalVisualizarTransacao" class="modal" tabindex="-1" style="background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 9999;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fs-6 fw-bold"><i class="fas fa-search-dollar me-2"></i>Detalhes do Lançamento</h5>
+                    <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('modalVisualizarTransacao').style.display='none'"></button>
+                </div>
+                <div class="modal-body bg-light px-4 py-4">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body text-center">
+                            <h4 class="fw-bold mb-2" id="visDesc" style="color: #2c3e50;"></h4>
+                            <span class="badge bg-secondary mb-4 px-3 py-2" id="visCat"></span>
+                            
+                            <div class="row text-muted" style="font-size: 0.95rem;">
+                                <div class="col-6 border-end">
+                                    <i class="far fa-calendar-alt text-primary mb-1 fs-5"></i><br>
+                                    <strong class="text-dark">Vencimento</strong><br>
+                                    <span id="visVenc"></span>
+                                </div>
+                                <div class="col-6">
+                                    <i class="fas fa-coins text-warning mb-1 fs-5"></i><br>
+                                    <strong class="text-dark">Valor</strong><br>
+                                    <span id="visValor" class="fw-bold fs-5"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/financeiro/atualizar-status}" method="post" class="bg-white p-3 rounded shadow-sm">
+                        <input type="hidden" name="idTransacao" id="visId">
+                        
+                        <label class="form-label small fw-bold text-secondary mb-2"><i class="fas fa-sync-alt me-1"></i> Atualizar Status de Pagamento:</label>
+                        <div class="input-group">
+                            <select name="novoStatus" id="visStatus" class="form-select bg-light border-0">
+                                <option value="PENDENTE">Aguardando (Pendente)</option>
+                                <option value="PAGO">Pagamento Realizado (Pago)</option>
+                                <option value="ATRASADO">Atrasado</option>
+                                <option value="CANCELADO">Cancelado</option>
+                            </select>
+                            <button type="submit" class="btn btn-success fw-bold px-4"><i class="fas fa-check me-1"></i> Salvar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <div th:replace="~{fragments/footer :: rodape}"></div>
 
     <script th:inline="javascript">
@@ -232,32 +314,34 @@
         const ctxFluxo = document.getElementById('graficoFluxo').getContext('2d');
         let chartFluxoInstance = null;
         
-        // DADOS SIMULADOS PARA GRÁFICO (DEPOIS CONECTAREMOS NO BACKEND)
-        const dbData = {
-            diario: { labels: ['08h', '10h', '12h', '14h', '16h', '18h'], lucro: [50, 120, 80, 150, 200, 100], despesa: [10, 20, 15, 30, 40, 20] },
-            semanal: { labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'], lucro: [3000, 4500, 3200, 5000, 6000, 4000, 1000], despesa: [1000, 1200, 1100, 1500, 2000, 1800, 500] },
-            mensal: { labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'], lucro: [12000, 19000, 15000, 25000, 22000, 30000, 28000, 35000, 33000, 40000, 42000, 45000], despesa: [8000, 9000, 8500, 10000, 9500, 11000, 10500, 12000, 11500, 13000, 12500, 14000] },
-            anual: { labels: ['2023', '2024', '2025', '2026'], lucro: [150000, 200000, 250000, 320000], despesa: [100000, 120000, 140000, 160000] },
-            decada: { labels: ['2020', '2022', '2024', '2026', '2028', '2030'], lucro: [50000, 100000, 200000, 320000, 450000, 600000], despesa: [40000, 80000, 120000, 160000, 200000, 250000] }
-        };
-
-        function renderChart(tipo) {
+        async function renderChart(periodo) {
             if (chartFluxoInstance) chartFluxoInstance.destroy();
-            let gradient = ctxFluxo.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(32, 201, 151, 0.4)');
-            gradient.addColorStop(1, 'rgba(32, 201, 151, 0.0)');
 
-            chartFluxoInstance = new Chart(ctxFluxo, {
-                type: 'line',
-                data: {
-                    labels: dbData[tipo].labels,
-                    datasets: [
-                        { label: 'Lucro', data: dbData[tipo].lucro, backgroundColor: gradient, borderColor: '#20c997', borderWidth: 2, fill: true, tension: 0.4 },
-                        { label: 'Despesa', data: dbData[tipo].despesa, borderColor: '#e74c3c', borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.4 }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false } }, y: { grid: { borderDash: [2, 4], color: '#f0f0f0' }, ticks: { callback: v => 'R$ ' + v } } } }
-            });
+            try {
+                const response = await fetch(`/financeiro/api/grafico-fluxo?periodo=${periodo}`);
+                if (!response.ok) throw new Error('Erro na API');
+                
+                const dataReais = await response.json();
+
+                let gradient = ctxFluxo.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, 'rgba(32, 201, 151, 0.4)');
+                gradient.addColorStop(1, 'rgba(32, 201, 151, 0.0)');
+
+                chartFluxoInstance = new Chart(ctxFluxo, {
+                    type: 'line',
+                    data: {
+                        labels: dataReais.labels,
+                        datasets: [
+                            { label: 'Lucro (Receitas)', data: dataReais.lucro, backgroundColor: gradient, borderColor: '#20c997', borderWidth: 2, fill: true, tension: 0.4 },
+                            { label: 'Despesas', data: dataReais.despesa, borderColor: '#e74c3c', borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.4 },
+                            { label: 'Saldo Líquido', data: dataReais.saldo, borderColor: '#3498db', borderWidth: 3, fill: false, tension: 0.4 }
+                        ]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false } }, y: { grid: { borderDash: [2, 4], color: '#f0f0f0' }, ticks: { callback: v => 'R$ ' + v } } } }
+                });
+            } catch (error) {
+                console.error("Erro ao carregar gráfico:", error);
+            }
         }
 
         window.updateChart = function(periodo, element) {
@@ -265,6 +349,69 @@
             element.classList.add('active');
             renderChart(periodo);
         };
+
+        function abrirModalTransacao(tipo) {
+            const modal = document.getElementById('modalTransacao');
+            const title = document.getElementById('modalTransacaoTitle');
+            const header = document.getElementById('modalTransacaoHeader');
+            const inputTipo = document.getElementById('inputTipoTransacao');
+            const selectCat = document.getElementById('selectCategoria');
+            const btnSubmit = document.getElementById('btnSubmitTransacao');
+
+            selectCat.innerHTML = ''; 
+
+            if (tipo === 'RECEITA') {
+                title.innerHTML = '<i class="fas fa-arrow-up"></i> Nova Entrada (Receita)';
+                header.className = 'modal-header bg-success text-white';
+                btnSubmit.className = 'btn btn-success fw-bold py-2 shadow-sm';
+                inputTipo.value = 'RECEITA';
+                selectCat.innerHTML += '<option value="SERVICOS">Serviços Prestados</option><option value="VENDAS">Venda de Equipamentos</option><option value="OUTROS">Outras Entradas</option>';
+            } else if (tipo === 'GASTO_FIXO') {
+                title.innerHTML = '<i class="fas fa-thumbtack"></i> Registrar Gasto Fixo';
+                header.className = 'modal-header bg-warning text-dark';
+                btnSubmit.className = 'btn btn-warning fw-bold py-2 text-dark shadow-sm';
+                inputTipo.value = 'DESPESA'; 
+                
+                selectCat.innerHTML += '<option value="ALUGUEL" selected>Aluguel e Condomínio</option>';
+                selectCat.innerHTML += '<option value="CONTAS_CONSUMO">Contas Fixas (Água, Luz, Internet)</option>';
+                selectCat.innerHTML += '<option value="FOLHA_PAGAMENTO">Folha de Pagamento</option>';
+                selectCat.innerHTML += '<option value="OUTROS">Outros Fixos</option>';
+            } else {
+                title.innerHTML = '<i class="fas fa-arrow-down"></i> Nova Saída (Despesa Variável)';
+                header.className = 'modal-header bg-danger text-white';
+                btnSubmit.className = 'btn btn-danger fw-bold py-2 shadow-sm';
+                inputTipo.value = 'DESPESA';
+                
+                selectCat.innerHTML += '<option value="INSUMOS">Insumos Diversos</option>';
+                selectCat.innerHTML += '<option value="MANUTENCAO">Manutenção / Reparos</option>';
+                selectCat.innerHTML += '<option value="OUTROS">Outras Saídas</option>';
+            }
+
+            modal.style.display = 'block';
+        }
+
+        function abrirModalVisualizacao(btn) {
+            document.getElementById('visId').value = btn.getAttribute('data-id');
+            document.getElementById('visDesc').textContent = btn.getAttribute('data-desc');
+            document.getElementById('visCat').textContent = btn.getAttribute('data-cat');
+            document.getElementById('visVenc').textContent = btn.getAttribute('data-venc') || '-';
+            
+            let tipoTransacao = btn.getAttribute('data-tipo');
+            let valorFormatado = btn.getAttribute('data-valor');
+            let elValor = document.getElementById('visValor');
+            
+            if(tipoTransacao === 'RECEITA') {
+                elValor.textContent = '+ R$ ' + valorFormatado;
+                elValor.className = 'fw-bold fs-5 text-success';
+            } else {
+                elValor.textContent = '- R$ ' + valorFormatado;
+                elValor.className = 'fw-bold fs-5 text-danger';
+            }
+            
+            document.getElementById('visStatus').value = btn.getAttribute('data-status');
+            
+            document.getElementById('modalVisualizarTransacao').style.display = 'block';
+        }
 
         document.addEventListener("DOMContentLoaded", function() { renderChart('mensal'); });
         /*]]>*/

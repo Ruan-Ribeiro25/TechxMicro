@@ -2,13 +2,42 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Administração - PIXEL TI</title> 
+    <title>Administração - TechxMicro</title> 
     <th:block th:replace="~{fragments/favicon :: icone}"></th:block>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/admin.css}">
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* CABEÇALHO PADRÃO TECHXMICRO (Fundo Translúcido) */
+        .header-admin { 
+            position: relative; z-index: 1050; 
+            background: rgba(0, 0, 0, 0.65); 
+            backdrop-filter: blur(8px); 
+            border-left: 5px solid #20c997; 
+            border-radius: 8px; 
+            padding: 15px 20px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+        }
+        .text-shadow-custom { text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
+
+        /* NOVO PADRÃO DE BOTÕES DE AÇÃO (TABELA E OLHO) */
+        .btn-action-pro {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 32px; height: 32px; border-radius: 6px; border: none;
+            color: #fff; background-color: #1c1c1c;
+            transition: all 0.2s ease-in-out; text-decoration: none; margin: 0 2px;
+        }
+        .btn-action-pro:hover { transform: scale(1.15); box-shadow: 0 4px 8px rgba(0,0,0,0.3); color: #fff; }
+        
+        /* Cores semânticas perfeitas no Hover */
+        .btn-pro-eye:hover { background-color: #20c997; } /* Verde TechxMicro */
+        .btn-pro-trash:hover { background-color: #e74c3c; } /* Vermelho Lixeira */
+        .btn-pro-block:hover { background-color: #f39c12; color: #000; } /* Amarelo Bloqueio */
+        .btn-pro-approve:hover { background-color: #20c997; } /* Verde Aprovar */
+        .btn-pro-edit:hover { background-color: #3498db; } /* Azul Edição */
+    </style>
 </head>
 <body>
 
@@ -16,20 +45,20 @@
 
     <main class="container-fluid mt-4">
         
-        <div class="page-header mb-4 d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-center mb-4 header-admin">
             <div class="d-flex align-items-center">
                 
-                <a th:href="@{/home}" title="Voltar para Home" class="me-4 text-white" style="font-size: 1.5rem; text-decoration: none; text-shadow: 0 2px 4px rgba(0,0,0,0.5); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                <a th:href="@{/home}" title="Voltar para Home" class="me-4 text-white" style="font-size: 1.5rem; text-decoration: none; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
                     <i class="fas fa-arrow-left"></i>
                 </a>
 
                 <div class="position-relative me-3">
                     <img th:src="${usuario.fotoPerfil != null} ? 'data:image/jpeg;base64,' + ${usuario.fotoPerfil} : '/img/avatar-default.png'" 
-                         class="profile-pic-header" alt="Perfil">
+                         class="profile-pic-header shadow" alt="Perfil" style="border: 2px solid #20c997;">
                     
                     <form th:action="@{/perfil/upload-foto}" method="post" enctype="multipart/form-data" class="position-absolute" style="bottom: -2px; right: -5px;">
-                        <label class="btn-upload-icon mb-0 shadow-sm" title="Alterar Foto" 
-                               style="cursor: pointer; background-color: #ffffff !important; color: #20c997 !important; border: 2px solid #fff !important; width: 22px !important; height: 22px !important; font-size: 10px !important; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                        <label class="btn-upload-icon mb-0 shadow" title="Alterar Foto" 
+                               style="cursor: pointer; background-color: #20c997; color: #000; border: 2px solid #000; width: 24px; height: 24px; font-size: 11px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: transform 0.2s;">
                             <i class="fas fa-camera"></i>
                             <input type="file" name="image" onchange="this.form.submit()" style="display: none;">
                         </label>
@@ -37,17 +66,17 @@
                 </div>
 
                 <div>
-                    <h2 class="mb-0" style="color: #ffffff !important; text-shadow: 0 2px 5px rgba(0,0,0,0.8); font-weight: 700;">
-                        <i class="fas fa-user-shield"></i> Painel Administrativo
-                    </h2>
-                    <small style="color: #f0f0f0 !important; text-shadow: 0 1px 3px rgba(0,0,0,0.8); font-size: 0.95rem;">
-                        Bem-vindo(a), <span th:text="${usuario.nome}" style="font-weight: bold;">Admin</span>
+                    <h4 class="m-0 fw-bold text-white text-shadow-custom" style="font-size: 1.5rem;">
+                        <i class="fas fa-user-shield" style="color: #20c997;"></i> Painel Administrativo
+                    </h4>
+                    <small class="text-light text-shadow-custom" style="font-size: 0.95rem;">
+                        Bem-vindo(a), <span th:text="${usuario.nome}" style="font-weight: bold; color: #20c997;">Admin</span>
                     </small>
                 </div>
             </div>
 
             <div class="user-info">
-                <span class="badge bg-dark border border-light">ADMIN MASTER</span>
+                <span class="badge bg-dark border border-secondary shadow-sm px-3 py-2" style="font-size: 0.85rem; letter-spacing: 1px;">ADMIN MASTER</span>
             </div>
         </div>
         
@@ -64,13 +93,13 @@
             
             <a th:href="@{/financeiro}" class="card-refined card-financeiro" style="text-decoration: none; color: inherit;">
                 <div>
-                    <div class="refined-value">R$ <span th:text="${faturamentoMensal}">1.2M</span></div>
-                    <div class="refined-label">Faturamento Mensal</div>
+                    <div class="refined-value">R$ <span th:text="${saldoLiquidoAdmin != null ? #numbers.formatDecimal(saldoLiquidoAdmin, 1, 'POINT', 2, 'COMMA') : '0,00'}">0,00</span></div>
+                    <div class="refined-label">Saldo Líquido</div>
                 </div>
                 <div class="refined-subtext">
-                    <i class="fas fa-arrow-up text-success"></i> <span class="text-success fw-bold" th:text="${crescimentoFinanceiro}">15</span>% de crescimento
+                    <i class="fas fa-wallet text-success"></i> <span class="text-success fw-bold">Gestão</span> de Caixa
                 </div>
-                <i class="fas fa-hand-holding-usd refined-icon-bg" style="color: #20c997;"></i>
+                <i class="fas fa-balance-scale refined-icon-bg" style="color: #20c997;"></i>
             </a>
 
             <a th:href="@{/admin/estoque}" class="card-refined card-estoque">
@@ -89,8 +118,8 @@
 
             <div class="kpi-card-pro card-polo">
                 <a th:href="@{/admin/detalhes/POLOS}" class="card-link">
-                    <div><div class="kpi-value-pro" th:text="${totalPolos}">0</div><div class="kpi-label-pro">Registro / Geolocalização</div></div>
-                    <i class="fas fa-hospital kpi-icon-bg icon-theme"></i>
+                    <div><div class="kpi-value-pro" th:text="${totalPolos}">0</div><div class="kpi-label-pro">Registro / Matriz & Filiais</div></div>
+                    <i class="fas fa-network-wired kpi-icon-bg icon-theme"></i>
                 </a>
             </div>
 
@@ -210,24 +239,25 @@
                                 <td th:text="${u.cidade} ?: 'N/I'">Cidade</td>
                                 <td><span th:if="${u.ativo}" class="badge bg-success">Ativo</span><span th:unless="${u.ativo}" class="badge bg-danger">Bloqueado</span></td>
                                <td class="text-nowrap">
-                                    <button type="button" class="btn-action btn-eye" data-bs-toggle="modal" th:data-bs-target="'#modalInfo' + ${u.id}" title="Ver Ficha"><i class="fas fa-eye"></i></button>
+                                    
+                                    <button type="button" class="btn-action-pro btn-pro-eye" data-bs-toggle="modal" th:data-bs-target="'#modalInfo' + ${u.id}" title="Ver Ficha"><i class="fas fa-eye"></i></button>
                                     
                                     <form th:if="${u.ativo}" th:action="@{/admin/bloquear-usuario}" method="post" class="d-inline">
                                         <input type="hidden" name="idUsuario" th:value="${u.id}">
-                                        <button type="submit" class="btn-action btn-block" title="Bloquear"><i class="fas fa-ban"></i></button>
+                                        <button type="submit" class="btn-action-pro btn-pro-block" title="Bloquear"><i class="fas fa-ban"></i></button>
                                     </form>
                                     
                                     <form th:unless="${u.ativo}" th:action="@{/admin/aprovar-profissional}" method="post" class="d-inline">
                                         <input type="hidden" name="idUsuario" th:value="${u.id}">
-                                        <button type="submit" class="btn-action btn-approve" title="Reativar"><i class="fas fa-check-circle"></i></button>
+                                        <button type="submit" class="btn-action-pro btn-pro-approve" title="Reativar"><i class="fas fa-check-circle"></i></button>
                                     </form>
 
-                                    <a href="#" class="btn-action btn-delete" title="Excluir Colaborador" data-bs-toggle="modal" th:attr="data-bs-target='#modalExcluir' + ${u.id}">
+                                    <a href="#" class="btn-action-pro btn-pro-trash" title="Excluir Colaborador" data-bs-toggle="modal" th:attr="data-bs-target='#modalExcluir' + ${u.id}">
                                         <i class="fas fa-trash"></i>
                                     </a>
 
-                                    <button type="button" class="btn-action btn-warning" data-bs-toggle="modal" th:data-bs-target="'#modalEspecialidade' + ${u.id}" title="Alterar Especialidade / Cargo"><i class="fas fa-user-tag"></i></button>
-                                </td>
+                                    <button type="button" class="btn-action-pro btn-pro-edit" data-bs-toggle="modal" th:data-bs-target="'#modalEspecialidade' + ${u.id}" title="Alterar Especialidade / Cargo"><i class="fas fa-user-tag"></i></button>
+                                    </td>
                             </tr>
                         </tbody>
                     </table>
@@ -339,14 +369,20 @@
     <div th:replace="~{fragments/footer :: rodape}"></div>    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script th:inline="javascript">
-        var labels = [
-            'Usuários Comuns', 'Médicos', 'Enfermeiros', 'Admins', 
-            'Polos', 'Excluídos', 'Motoristas', 'Técnicos', 
-            'Clínicas', 'Laboratórios', 'Sv. Gerais', 'Ambulâncias',
-            'Recepcionistas' 
-        ];
         
+        // Puxando as labels dinâmicas direto do Spring Boot Controller para evitar erro!
+        var labels = /*[[${graficoLabels}]]*/ [];
         var dados = /*[[${graficoDados}]]*/ [];
+
+        // Fallback caso a lista venha vazia
+        if (!labels || labels.length === 0) {
+            labels = [
+                'Usuários Comuns', 'Suporte TI', 'Desenvolvedores', 'Admins', 
+                'Matriz', 'Excluídos', 'Motoristas', 'Técnicos', 
+                'Filiais', 'Data Centers', 'Sv. Gerais', 'Frota/Veículos',
+                'Recepcionistas' 
+            ];
+        }
 
         document.addEventListener("DOMContentLoaded", function() {
             var ctx = document.getElementById('chartUsuarios');
@@ -358,29 +394,14 @@
                         datasets: [{
                             data: dados,
                             backgroundColor: [
-                                '#20c997', // Usuários Comuns
-                                '#0d47a1', // Médicos
-                                '#3498db', // Enfermeiros
-                                '#34495e', // Admins
-                                '#9b59b6', // Polos
-                                '#e74c3c', // Excluídos
-                                '#f1c40f', // Motoristas
-                                '#1abc9c', // Técnicos
-                                '#6610f2', // Clínicas
-                                '#d63384', // Laboratórios
-                                '#95a5a6', // Sv. Gerais
-                                '#0dcaf0', // Ambulâncias
-                                '#fd7e14'  // Recepcionistas
+                                '#20c997', '#0d47a1', '#3498db', '#34495e', 
+                                '#9b59b6', '#e74c3c', '#f1c40f', '#1abc9c', 
+                                '#6610f2', '#d63384', '#95a5a6', '#0dcaf0', '#fd7e14'
                             ],
                             borderWidth: 0
                         }]
                     },
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false, 
-                        plugins: { legend: { position: 'right' } },
-                        cutout: '70%'
-                    }
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } }, cutout: '70%' }
                 });
             }
         });

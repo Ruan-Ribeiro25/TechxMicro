@@ -3,12 +3,9 @@
    DESCRIÇÃO: Consolidação do Global + Lógica Admin 3x3
    ============================================================ */
 
-/* ============================================================
-   1. FUNDAMENTOS E VARIÁVEIS (Herdado do Global)
-   ============================================================ */
 :root {
-    --primary-color: #20c997;       /* Verde Médico */
-    --secondary-color: #3498db;     /* Azul Enfermeiro */
+    --primary-color: #20c997;       
+    --secondary-color: #3498db;     
     --text-color: #333;
     --danger-color: #e74c3c;
     --warning-color: #f1c40f;
@@ -20,29 +17,18 @@
     --light-gray: #f8f9fa;
 }
 
-/* RESET E BASE */
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-
 html, body { height: 100%; margin: 0; padding: 0; }
 
 body {
-    /* --- 1. CONFIGURAÇÃO DE LAYOUT --- */
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     margin: 0;
-    font-family: sans-serif; /* Adicione sua fonte aqui se tiver */
+    font-family: sans-serif;
     color: var(--text-color, #333);
-
-/* 2. DEFINIÇÃO DA IMAGEM E COR */
-    
-    /* Cor de fundo escura de segurança */
     background-color: #000000;
-    
-    /* Fundo Animado: Globo com Fluxo de Conexões IoT (Novo Link Giphy) */
-    background-image: url('https://images.unsplash.com/photo-1555496710-2660a86c4557?q=80&w=1991&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
-    
-    /* Propriedades extras para o GIF se adaptar perfeitamente ao ecrã */
+    background-image: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
     background-size: cover;         
     background-position: center;    
     background-repeat: no-repeat;   
@@ -53,11 +39,8 @@ ul { list-style: none; }
 a { text-decoration: none; color: inherit; }
 img { max-width: 100%; height: auto; }
 
-/* ============================================================
-   2. BARRA DE NAVEGAÇÃO
-   ============================================================ */
 nav {
-    background: rgba(32, 201, 151, 0.95); /* Leve transparência */
+    background: rgba(32, 201, 151, 0.95); 
     color: white;
     padding: 15px 40px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -84,22 +67,14 @@ nav h1 { font-size: 1.6rem; font-weight: 700; margin: 0; letter-spacing: 0.5px; 
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* ============================================================
-   3. O GRID 3x3 PERFEITO (LÓGICA NOVA)
-   ============================================================ */
-/* Define a estrutura principal do Dashboard Admin */
 .grid-refined {
     display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important; /* 3 Colunas IGUAIS OBRIGATÓRIAS */
+    grid-template-columns: repeat(3, 1fr) !important;
     gap: 30px !important;
     width: 100%;
     margin-bottom: 40px;
 }
 
-/* ============================================================
-   4. CARDS UNIFICADOS (FUSÃO: .card-refined + .kpi-card-pro)
-   ============================================================ */
-/* Aqui garantimos que tanto os links <a> quanto as divs <div> fiquem IDÊNTICOS */
 .card-refined, .kpi-card-pro {
     background: rgba(255, 255, 255, 0.95) !important;
     border-radius: 16px !important;
@@ -110,26 +85,21 @@ nav h1 { font-size: 1.6rem; font-weight: 700; margin: 0; letter-spacing: 0.5px; 
     border-bottom-width: 5px !important;
     border-bottom-style: solid !important;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-    
-    /* Layout Interno Flexbox */
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    
-    height: 100% !important;        /* Ocupa altura total do Grid */
-    min-height: 180px !important;   /* Altura mínima visual */
+    height: 100% !important;
+    min-height: 180px !important;
     text-decoration: none !important;
     color: inherit !important;
     cursor: pointer;
 }
 
-/* EFEITO HOVER (GLOW) */
 .card-refined:hover, .kpi-card-pro:hover {
     transform: translateY(-8px) !important;
     box-shadow: 0 15px 35px rgba(0,0,0,0.2) !important;
 }
 
-/* TIPOGRAFIA INTERNA DOS CARDS */
 .refined-label, .kpi-label-pro {
     font-size: 0.85rem !important;
     text-transform: uppercase;
@@ -156,7 +126,6 @@ nav h1 { font-size: 1.6rem; font-weight: 700; margin: 0; letter-spacing: 0.5px; 
     z-index: 2; position: relative;
 }
 
-/* ÍCONES DE FUNDO (MARCA D'ÁGUA) */
 .refined-icon-bg, .kpi-icon-bg {
     position: absolute !important;
     right: -20px !important;
@@ -174,61 +143,42 @@ nav h1 { font-size: 1.6rem; font-weight: 700; margin: 0; letter-spacing: 0.5px; 
     opacity: 0.08 !important;
 }
 
-/* CORES ESPECÍFICAS (Mapeamento de Temas) */
-/* Financeiro (Verde) */
 .card-financeiro { border-bottom-color: var(--primary-color) !important; }
 .card-financeiro .refined-value { color: var(--primary-color) !important; }
 .card-financeiro .refined-icon-bg { color: var(--primary-color) !important; }
 
-/* Ambulancia (Ciano) */
 .card-ambulancia { border-bottom-color: var(--info-cyan) !important; }
 .card-ambulancia .refined-value { color: var(--info-cyan) !important; }
 .card-ambulancia .refined-icon-bg { color: var(--info-cyan) !important; }
 
-/* Leitos (Azul) */
 .card-leitos { border-bottom-color: var(--secondary-color) !important; }
 .card-leitos .refined-value { color: var(--secondary-color) !important; }
 .card-leitos .refined-icon-bg { color: var(--secondary-color) !important; }
 
-/* Estoque (Amarelo) */
 .card-estoque { border-bottom-color: var(--warning-color) !important; }
 .card-estoque .refined-value { color: #f39c12 !important; }
 .card-estoque .refined-icon-bg { color: #f39c12 !important; }
 
-/* Polos/Unidades (Roxo) */
 .card-polo, .card-unidades { border-bottom-color: var(--purple-color) !important; }
 .card-polo .kpi-value-pro { color: var(--purple-color) !important; }
 .card-polo .kpi-icon-bg { color: var(--purple-color) !important; }
 
-/* Excluídos (Vermelho) */
 .card-excluido { border-bottom-color: var(--danger-color) !important; }
 .card-excluido .kpi-value-pro { color: var(--danger-color) !important; }
 .card-excluido .kpi-icon-bg { color: var(--danger-color) !important; }
 
-/* Logs (Laranja) */
 .card-logs { border-bottom-color: var(--log-orange) !important; }
 .card-logs .kpi-value-pro { color: var(--log-orange) !important; }
 .card-logs .kpi-icon-bg { color: var(--log-orange) !important; }
 
-/* Volume/Tráfego (Verde Escuro ou Padrão) */
 .card-volume { border-bottom-color: var(--dark-blue) !important; }
 .card-volume .kpi-value-pro { color: var(--dark-blue) !important; }
 .card-volume .kpi-icon-bg { color: var(--dark-blue) !important; }
 
-/* ============================================================
-   5. TABELAS E COMPONENTES GERAIS (Recuperado do Global)
-   ============================================================ */
-/* Títulos de Página */
 .page-header h2 { text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
-/* Inputs de Busca (Arredondados) */
-.input-search-admin {
-    border-radius: 50px !important;
-    padding-left: 20px;
-    border: 1px solid #ddd;
-}
+.input-search-admin { border-radius: 50px !important; padding-left: 20px; border: 1px solid #ddd; }
 
-/* Tabela Admin Refinada */
 .table-hover tbody tr:hover {
     background-color: #f1f8ff !important;
     transform: scale(1.005);
@@ -245,139 +195,64 @@ nav h1 { font-size: 1.6rem; font-weight: 700; margin: 0; letter-spacing: 0.5px; 
     border-bottom: 2px solid #eee;
 }
 
-/* Badges e Status */
 .badge { font-weight: 600; letter-spacing: 0.5px; padding: 6px 10px; border-radius: 4px; }
 
-/* Botões de Ação na Tabela */
-.btn-action { background: none; border: none; font-size: 1.1rem; margin: 0 5px; transition: 0.2s; }
-.btn-action:hover { transform: scale(1.2); }
-.btn-eye { color: var(--secondary-color); }
-.btn-block { color: var(--danger-color); }
-.btn-approve { color: var(--primary-color); }
-.btn-delete { color: #666; } .btn-delete:hover { color: var(--danger-color); }
-
-/* Modais (Bordas arredondadas e sombra) */
-.modal-content {
-    border-radius: 15px;
-    border: none;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-}
-.modal-header-admin {
-    background-color: var(--primary-color);
-    color: white;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-}
+.modal-content { border-radius: 15px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+.modal-header-admin { background-color: var(--primary-color); color: white; border-top-left-radius: 15px; border-top-right-radius: 15px; }
 .info-label { font-size: 0.8rem; color: #888; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
 .info-value { font-size: 1rem; color: #333; font-weight: 500; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
 
- /* 1. FIX DA TABELA TREMENDO (MANTER IMÓVEL) */
-        /* ========================================================= */
-        
-        /* Trava a barra de rolagem vertical da página */
-        html { overflow-y: scroll !important; }
-        
-        /* Trava a largura EXATA da Célula de ações na tabela */
-        .table th:last-child, .table td.text-nowrap { 
-            min-width: 260px !important; 
-            width: 260px !important;
-            max-width: 260px !important;
-        }
-        
-        /* Mata a barra de rolagem horizontal fantasma na div responsiva */
-        .table-responsive { 
-            overflow-x: hidden !important; 
-            padding-bottom: 5px;
-        }
+html { overflow-y: scroll !important; }
 
-        /* ========================================================= */
-        /* 2. DEVOLVENDO O EFEITO DE MOVIMENTO NOS CARDS */
-        /* ========================================================= */
-        
-        /* Define a transição suave para as propriedades de movimento e sombra */
-        .dashboard-cards .card {
-            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out !important;
-            border: none !important; /* Estetica: remove bordas antigas */
-        }
-        
-        /* Aplica o efeito "ELEVADOR" ao passar o mouse */
-        .dashboard-cards .card:hover {
-            transform: translateY(-10px); /* Levanta o card em 10px */
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2) !important; /* Aumenta a sombra projetada */
-            cursor: pointer; /* Muda o cursor para mãozinha */
-        }
-        
+.table th:last-child, .table td.text-nowrap { 
+    min-width: 260px !important; width: 260px !important; max-width: 260px !important;
+}
+
+.table-responsive { overflow-x: hidden !important; padding-bottom: 5px; }
+
+.dashboard-cards .card {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out !important;
+    border: none !important; 
+}
+
+.dashboard-cards .card:hover {
+    transform: translateY(-10px); 
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2) !important; 
+    cursor: pointer; 
+}
+
 footer { 
-    background: #000000 !important; /* Aqui está o Preto absoluto! */
-    color: #ffffff !important; /* Texto branco para contrastar */
+    background: #000000 !important; 
+    color: #ffffff !important; 
     text-align: center !important; 
-    padding: 10px 15px !important; /* Super fino na vertical (10px) */
+    padding: 10px 15px !important; 
     font-size: 0.9rem !important; 
     margin-top: auto !important; 
-    /* Removi o blur e a sombra do texto, pois no fundo preto puro fica melhor sem eles */
     text-shadow: none !important; 
-    
-    /* Força o alinhamento perfeito ao centro: */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
 }
 
-/* 🎯 MATADOR DE MARGENS: Remove a "gordura" invisível do Bootstrap e quebras de linha */
-footer p, footer span, footer div {
-    margin: 0 !important;
-    padding: 0 !important;
-    line-height: 1 !important;
-}
+footer p, footer span, footer div { margin: 0 !important; padding: 0 !important; line-height: 1 !important; }
+footer br { display: none !important; }
 
-footer br {
-    display: none !important;
-}
+@media (max-width: 1280px) { .grid-refined { grid-template-columns: repeat(2, 1fr) !important; } }
 
-/* ============================================================
-   6. RESPONSIVIDADE (CRÍTICO PARA NÃO QUEBRAR)
-   ============================================================ */
-/* Notebooks menores (1280px ou menos) -> Cai para 2 colunas */
-@media (max-width: 1280px) {
-    .grid-refined {
-        grid-template-columns: repeat(2, 1fr) !important;
-    }
-}
-
-/* Tablets e Mobile (768px ou menos) -> Cai para 1 coluna */
 @media (max-width: 768px) {
-    .grid-refined {
-        grid-template-columns: 1fr !important;
-        gap: 20px !important;
-    }
-    
+    .grid-refined { grid-template-columns: 1fr !important; gap: 20px !important; }
     nav { flex-direction: column; gap: 10px; padding: 15px; text-align: center; }
     .page-header { flex-direction: column; align-items: center; text-align: center; gap: 15px; }
     .d-flex { flex-wrap: wrap; justify-content: center; }
 }
 
-/* ============================================================
-   FIX: CENTRALIZAÇÃO (EFEITO FOLHA NO MEIO / HOME)
-   ============================================================ */
-/* Forçamos o main (que tem container-fluid) a se comportar 
-   como um container centralizado e limitado */
 main.container-fluid {
-    max-width: 1280px !important;   /* Trava a largura (padrão HD/Home) */
-    width: 95% !important;          /* Garante margem em mobile */
-    margin-left: auto !important;   /* Centraliza Esq */
-    margin-right: auto !important;  /* Centraliza Dir */
+    max-width: 1280px !important;   
+    width: 95% !important;          
+    margin-left: auto !important;   
+    margin-right: auto !important;  
     padding-left: 15px !important;
     padding-right: 15px !important;
-    
-    /* Opcional: Se quiser fundo branco atrás de TODO o conteúdo central
-       descomente a linha abaixo (efeito folha de papel real): */
-    /* background: rgba(255,255,255,0.5); border-radius: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.1); */
 }
 
-/* Garante que o Grid respeite esse novo limite */
-.grid-refined {
-    width: 100% !important;
-    margin: 0 auto 40px auto !important;
-}
-
-/* Ajuste fino na Navbar para alinhar com o conteúdo centralizado (Opcional) */
+.grid-refined { width: 100% !important; margin: 0 auto 40px auto !important; }

@@ -39,7 +39,6 @@ public class PoloAccessController {
         String cidadeAtual = local.get("cidade");
         String bairroAtual = local.get("bairro");
 
-        // CORREÇÃO: Usando o método findByUsernameOrEmail (1 parâmetro)
         Usuario usuario = usuarioRepository.findByUsernameOrEmail(principal.getName());
 
         if (usuario == null) return ResponseEntity.status(404).body("Usuário não encontrado.");
@@ -72,45 +71,45 @@ public class PoloAccessController {
             if (!users.isEmpty()) responsavelPadrao = users.get(0);
         }
 
-        // A. Busca/Cria Hospital (Pai)
-        Polo hospital = poloRepository.findByPoloPaiIsNull().stream()
-                .filter(p -> p.getCidade().equalsIgnoreCase(cidade) && "HOSPITAL".equalsIgnoreCase(p.getTipo()))
+        // A. Busca/Cria MATRIZ (Polo Principal - Substitui o 'Hospital')
+        Polo matriz = poloRepository.findByPoloPaiIsNull().stream()
+                .filter(p -> p.getCidade().equalsIgnoreCase(cidade) && "MATRIZ".equalsIgnoreCase(p.getTipo()))
                 .findFirst().orElse(null);
 
-        if (hospital == null) {
-            hospital = new Polo();
-            hospital.setNome("Hospital VidaPlus " + cidade);
-            hospital.setCidade(cidade);
-            hospital.setTipo("HOSPITAL");
-            hospital.setCep(cep);
-            hospital.setHorarioFuncionamento("24 Horas");
-            hospital.setAtivo(true);
-            hospital.setDataInauguracao(LocalDate.now());
-            hospital.setResponsavel(responsavelPadrao);
-            hospital = poloRepository.save(hospital);
+        if (matriz == null) {
+            matriz = new Polo();
+            matriz.setNome("Polo Central " + cidade);
+            matriz.setCidade(cidade);
+            matriz.setTipo("MATRIZ");
+            matriz.setCep(cep);
+            matriz.setHorarioFuncionamento("24 Horas");
+            matriz.setAtivo(true);
+            matriz.setDataInauguracao(LocalDate.now());
+            matriz.setResponsavel(responsavelPadrao);
+            matriz = poloRepository.save(matriz);
         }
 
-        // B. Busca/Cria Clínica (Filho)
-        Polo finalHospital = hospital;
-        Polo clinica = poloRepository.findByPoloPai_Id(hospital.getId()).stream()
+        // B. Busca/Cria FILIAL (Polo Secundário - Substitui a 'Clinica')
+        Polo finalMatriz = matriz;
+        Polo filial = poloRepository.findByPoloPai_Id(matriz.getId()).stream()
                 .filter(p -> p.getBairro() != null && p.getBairro().equalsIgnoreCase(bairro))
                 .findFirst().orElse(null);
 
-        if (clinica == null) {
-            clinica = new Polo();
-            clinica.setNome("Clínica " + bairro);
-            clinica.setCidade(cidade);
-            clinica.setBairro(bairro);
-            clinica.setTipo("CLINICA");
-            clinica.setPoloPai(finalHospital);
-            clinica.setCep(cep);
-            clinica.setHorarioFuncionamento("08:00 às 18:00");
-            clinica.setAtivo(true);
-            clinica.setDataInauguracao(LocalDate.now());
-            clinica.setResponsavel(responsavelPadrao);
-            clinica.setLogradouro(bairro + ", " + cidade);
-            clinica = poloRepository.save(clinica);
+        if (filial == null) {
+            filial = new Polo();
+            filial.setNome("Filial " + bairro);
+            filial.setCidade(cidade);
+            filial.setBairro(bairro);
+            filial.setTipo("FILIAL");
+            filial.setPoloPai(finalMatriz);
+            filial.setCep(cep);
+            filial.setHorarioFuncionamento("08:00 às 18:00");
+            filial.setAtivo(true);
+            filial.setDataInauguracao(LocalDate.now());
+            filial.setResponsavel(responsavelPadrao);
+            filial.setLogradouro(bairro + ", " + cidade);
+            filial = poloRepository.save(filial);
         }
-        return clinica;
+        return filial;
     }
 }

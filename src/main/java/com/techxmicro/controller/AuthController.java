@@ -50,7 +50,9 @@ public class AuthController {
     public String processarVerificacao(@RequestParam("codigo") String codigo, Model model) {
         Usuario usuario = usuarioRepository.findByCodigoVerificacao(codigo);
         if (usuario != null) {
-            usuario.setAtivo(true); 
+            // CORREÇÃO DA REGRA DE NEGÓCIO: 
+            // Apenas o e-mail é validado aqui. O usuário NÃO é ativado automaticamente.
+            // Ele permanecerá pendente aguardando a aprovação do Administrador no painel.
             usuario.setCodigoVerificacao(null);
             usuarioRepository.save(usuario);
             return "redirect:/bem-vindo";
@@ -132,13 +134,13 @@ public class AuthController {
                 "  </div>" +
                 "  <p style='margin-top: 25px;'><strong>🚀 Dica do Suporte:</strong></p>" +
                 "  <p>Sabia que você pode gerenciar todos os seus chamados em um só lugar? " +
-                "     Sempre que precisar de auxílio técnico em Software ou Infraestrutura, utilize nosso Helpdesk.</p>" +
+                "      Sempre que precisar de auxílio técnico em Software ou Infraestrutura, utilize nosso Helpdesk.</p>" +
                 "  <a href='https://techxmicro.com.br/helpdesk' style='display: inline-block; padding: 12px 20px; " +
-                "     background-color: #008436; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold;'>" +
-                "     Abrir Chamado no Helpdesk</a>" +
+                "      background-color: #008436; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold;'>" +
+                "      Abrir Chamado no Helpdesk</a>" +
                 "  <p style='font-size: 0.85rem; color: #777; margin-top: 30px;'>" +
-                "     Se você não reconhece esta ação, por favor ignore este e-mail por segurança.<br>" +
-                "     <strong>TechxMicro - Soluções em TI e Desenvolvimento.</strong></p>" +
+                "      Se você não reconhece esta ação, por favor ignore este e-mail por segurança.<br>" +
+                "      <strong>TechxMicro - Soluções em TI e Desenvolvimento.</strong></p>" +
                 "</div>";
                                
             emailService.enviarEmail(usuario.getEmail(), "TechxMicro - Recuperação de Senha", htmlTexto);

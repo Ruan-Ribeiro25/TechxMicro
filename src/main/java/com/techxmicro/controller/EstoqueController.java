@@ -1,14 +1,17 @@
 package com.techxmicro.controller;
 
 import com.techxmicro.entity.Produto;
+import com.techxmicro.entity.Usuario;
 import com.techxmicro.repository.ProdutoRepository;
+import com.techxmicro.repository.UsuarioRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity; // Necessário para a API
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -19,22 +22,31 @@ public class EstoqueController {
 
     @Autowired
     private ProdutoRepository produtoRepository;
+    
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     // --- 1. MÉTODOS VISUAIS (O que carrega a página) ---
 
     @GetMapping
-    public String listarEstoque(Model model) {
-        // Carrega a lista do banco para preencher a tabela inicial
+    public String listarEstoque(Model model, Principal principal) {
+        
+        // CORREÇÃO: Injeta o usuário real logado para que o Thymeleaf 
+        // e o Javascript parem de exibir "Visitante" na saída de materiais.
+        if (principal != null) {
+            Usuario adminLogado = usuarioRepository.findByUsernameOrEmail(principal.getName());
+            model.addAttribute("usuario", adminLogado);
+        }
+
         model.addAttribute("produtos", produtoRepository.findAll());
-        model.addAttribute("produto", new Produto()); // Objeto vazio para o modal de novo cadastro
-        return "admin/estoque"; // Nome do arquivo HTML
+        model.addAttribute("produto", new Produto()); 
+        
+        return "admin/estoque"; 
     }
 
     @PostMapping("/salvar")
     public String salvarProduto(Produto produto) {
-        // Garante que não salve nulo na quantidade
         if (produto.getQuantidade() == null) produto.setQuantidade(0);
-        
         produtoRepository.save(produto);
         return "redirect:/admin/estoque?msg=salvo";
     }
@@ -46,28 +58,23 @@ public class EstoqueController {
     }
 
     // --- 2. API DO SCANNER (O "Cérebro" que faz o estoque ser Real) ---
-    // Estes métodos respondem ao JavaScript do leitor de código de barras
 
     @PostMapping("/api/entrada")
-    @ResponseBody // Indica que a resposta é dados (JSON), não uma página HTML
+    @ResponseBody 
     public ResponseEntity<?> entradaRapida(@RequestParam String ean, @RequestParam int quantidade) {
-        // Busca o produto pelo código de barras (EAN)
         Optional<Produto> produtoOpt = produtoRepository.findByEan(ean);
 
         if (produtoOpt.isPresent()) {
             Produto produto = produtoOpt.get();
-            // Lógica de Soma no Banco
             produto.setQuantidade(produto.getQuantidade() + quantidade);
             produtoRepository.save(produto);
             
-            // Retorna os dados novos para atualizar a tela sem recarregar
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("nome", produto.getNome());
             response.put("novaQuantidade", produto.getQuantidade());
             return ResponseEntity.ok(response);
         } else {
-            // Se não achar o produto
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Produto não encontrado! Cadastre-o primeiro."));
         }
     }
@@ -80,13 +87,9 @@ public class EstoqueController {
         if (produtoOpt.isPresent()) {
             Produto produto = produtoOpt.get();
             
-            // Verifica se tem saldo suficiente
             if (produto.getQuantidade() >= quantidade) {
-                // Lógica de Subtração no Banco
                 produto.setQuantidade(produto.getQuantidade() - quantidade);
                 produtoRepository.save(produto);
-                
-                // (Opcional) Aqui você poderia salvar um log de "Quem retirou" em outra tabela
                 
                 Map<String, Object> response = new HashMap<>();
                 response.put("success", true);
