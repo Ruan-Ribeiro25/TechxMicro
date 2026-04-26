@@ -1,12 +1,18 @@
 package com.techxmicro.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.techxmicro.dto.GraficoFluxoDTO;
 import com.techxmicro.entity.TransacaoFinanceira;
 import com.techxmicro.entity.TransacaoFinanceira.*;
 import com.techxmicro.repository.TransacaoFinanceiraRepository;
 import com.techxmicro.service.FinanceiroService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -60,7 +67,7 @@ public class FinanceiroController {
         return ResponseEntity.ok(dados);
     }
 
-    // --- NOVO ENDPOINT: ATUALIZAR STATUS DE PAGAMENTO (MODAL OLHO) ---
+    // --- ENDPOINT: ATUALIZAR STATUS DE PAGAMENTO RÁPIDO (MODAL OLHO) ---
     @PostMapping("/atualizar-status")
     public String atualizarStatusTransacao(@RequestParam Long idTransacao, @RequestParam StatusPagamento novoStatus) {
         
@@ -78,5 +85,105 @@ public class FinanceiroController {
         }
         
         return "redirect:/financeiro";
+    }
+
+    // --- NOVO ENDPOINT: EXCLUIR LANÇAMENTO (LIXEIRA) ---
+    @PostMapping("/excluir-lancamento")
+    public String excluirLancamento(@RequestParam Long idTransacao) {
+        transacaoFinanceiraRepository.deleteById(idTransacao);
+        return "redirect:/financeiro";
+    }
+
+    // --- NOVO ENDPOINT: EDITAR LANÇAMENTO COMPLETO (LÁPIS) ---
+    @PostMapping("/editar-lancamento")
+    public String editarLancamento(@RequestParam Long idTransacao, 
+                                   @RequestParam String descricao,
+                                   @RequestParam BigDecimal valor,
+                                   @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataVencimento,
+                                   @RequestParam StatusPagamento status) {
+        
+        TransacaoFinanceira transacao = transacaoFinanceiraRepository.findById(idTransacao).orElse(null);
+        
+        if(transacao != null) {
+            transacao.setDescricao(descricao);
+            transacao.setValor(valor);
+            transacao.setDataVencimento(dataVencimento);
+            transacao.setStatus(status);
+            
+            // Re-aplicando a lógica inteligente no momento da edição
+            if(status == StatusPagamento.PAGO && transacao.getDataPagamento() == null) {
+                transacao.setDataPagamento(LocalDate.now());
+            }
+            
+            transacaoFinanceiraRepository.save(transacao);
+        }
+        
+        return "redirect:/financeiro";
+    }
+
+    // ==========================================
+    // NOVO ENDPOINT: EXPORTAÇÃO DE RELATÓRIOS
+    // ==========================================
+    @GetMapping("/download-relatorio/{formato}")
+    public ResponseEntity<ByteArrayResource> downloadRelatorioFinanceiro(@PathVariable String formato) {
+        String conteudo = ""; 
+        String filename = "relatorio_financeiro_" + System.currentTimeMillis(); 
+        MediaType mediaType = MediaType.TEXT_PLAIN;
+        
+        try {
+            // Busca todas as transações cadastradas
+            List<TransacaoFinanceira> dados = transacaoFinanceiraRepository.findAll();
+            
+            if ("JSON".equalsIgnoreCase(formato)) {
+                ObjectMapper mapper = new ObjectMapper(); 
+                mapper.registerModule(new JavaTimeModule()); 
+                mapper.enable(SerializationFeature.INDENT_OUTPUT);
+                
+                conteudo = mapper.writeValueAsString(dados);
+                filename += ".json"; 
+                mediaType = MediaType.APPLICATION_JSON;
+                
+            } else if ("CSV".equalsIgnoreCase(formato)) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("ID;DESCRICAO;VALOR;TIPO;CATEGORIA;VENCIMENTO;STATUS\n");
+                
+                for (TransacaoFinanceira t : dados) { 
+                    sb.append(t.getId()).append(";")
+                      .append(t.getDescricao()).append(";")
+                      .append(t.getValor()).append(";")
+                      .append(t.getTipo()).append(";")
+                      .append(t.getCategoria()).append(";")
+                      .append(t.getDataVencimento()).append(";")
+                      .append(t.getStatus()).append("\n"); 
+                }
+                conteudo = sb.toString(); 
+                filename += ".csv"; 
+                mediaType = MediaType.parseMediaType("text/csv");
+                
+            } else { // TXT Padrão
+                StringBuilder sb = new StringBuilder("=== RELATÓRIO FINANCEIRO TECHXMICRO ===\n");
+                sb.append("Gerado em: ").append(LocalDate.now()).append("\n");
+                sb.append("Total de Registros: ").append(dados.size()).append("\n");
+                sb.append("=========================================\n\n");
+                
+                for (TransacaoFinanceira t : dados) { 
+                    sb.append("--------------------------------------------------\n");
+                    sb.append("DESCRIÇÃO: ").append(t.getDescricao()).append(" (ID: ").append(t.getId()).append(")\n");
+                    sb.append("VALOR: R$ ").append(t.getValor()).append(" | TIPO: ").append(t.getTipo()).append("\n");
+                    sb.append("VENCIMENTO: ").append(t.getDataVencimento()).append(" | STATUS: ").append(t.getStatus()).append("\n"); 
+                }
+                conteudo = sb.toString(); 
+                filename += ".txt";
+            }
+        } catch (Exception e) { 
+            conteudo = "Erro ao gerar relatório: " + e.getMessage(); 
+        }
+        
+        ByteArrayResource resource = new ByteArrayResource(conteudo.getBytes());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + filename)
+                .contentType(mediaType)
+                .contentLength(resource.contentLength())
+                .body(resource);
     }
 }

@@ -22,7 +22,7 @@
         }
         .text-shadow-custom { text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
 
-        /* PADRÃO DE BOTÕES IMPORTADO DO ADMIN */
+        /* PADRÃO DE BOTÕES PRO */
         .btn-action-pro {
             display: inline-flex; align-items: center; justify-content: center;
             width: 32px; height: 32px; border-radius: 6px; border: none;
@@ -30,7 +30,35 @@
             transition: all 0.2s ease-in-out; text-decoration: none; margin: 0 2px;
         }
         .btn-action-pro:hover { transform: scale(1.15); box-shadow: 0 4px 8px rgba(0,0,0,0.3); color: #fff; }
-        .btn-pro-eye:hover { background-color: #20c997; } /* Acende em Verde no hover */
+        .btn-pro-eye:hover { background-color: #20c997; } 
+        .btn-pro-edit:hover { background-color: #3498db; } 
+        .btn-pro-trash:hover { background-color: #e74c3c; }
+
+        /* SCROLL INTERNO DA TABELA E CÁPSULAS DE FILTRO CORRIGIDAS */
+        .table-scroll-container {
+            max-height: 450px;
+            overflow-y: auto;
+        }
+        .table-scroll-container::-webkit-scrollbar { width: 6px; }
+        .table-scroll-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .table-scroll-container::-webkit-scrollbar-track { background: #f8fafc; }
+
+        .capsules-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .capsule-btn {
+            display: inline-block !important;
+            width: auto !important;
+            flex: 0 0 auto !important;
+            border-radius: 20px; font-size: 0.75rem; font-weight: 700; padding: 5px 16px; 
+            transition: 0.2s; border: 1px solid #cbd5e1; background: #fff; color: #475569;
+            cursor: pointer;
+        }
+        .capsule-btn:hover { background: #f1f5f9; color: #1e293b; }
+        .capsule-btn.active { background: #20c997; color: #fff; border-color: #20c997; box-shadow: 0 2px 5px rgba(32, 201, 151, 0.4); }
     </style>
 </head>
 <body>
@@ -39,7 +67,7 @@
 
     <main class="container-fluid mt-4 mb-5">
         
-        <div class="d-flex justify-content-between align-items-center mb-4 header-financeiro">
+        <div class="d-flex justify-content-between align-items-center mb-4 header-financeiro flex-wrap gap-3">
             <div class="d-flex align-items-center">
                 <a th:href="@{/admin/painel}" class="me-4 text-white" style="font-size: 1.4rem; text-decoration: none; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
                     <i class="fas fa-arrow-left"></i>
@@ -52,7 +80,20 @@
                 </div>
             </div>
             
-            <div class="d-flex gap-2">
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                
+                <div class="btn-group shadow-sm">
+                    <a th:href="@{/financeiro/download-relatorio/TXT}" class="btn fw-bold border-0" style="background-color: #000000 !important; color: #ffffff !important;" title="Baixar TXT">
+                        <i class="fas fa-file-alt me-1"></i> TXT
+                    </a>
+                    <a th:href="@{/financeiro/download-relatorio/JSON}" class="btn fw-bold border-0" style="background-color: #3E2723 !important; color: #ffffff !important;" title="Baixar JSON">
+                        <i class="fas fa-code me-1"></i> JSON
+                    </a>
+                    <a th:href="@{/financeiro/download-relatorio/CSV}" class="btn fw-bold border-0" style="background-color: #008436 !important; color: #ffffff !important;" title="Baixar CSV">
+                        <i class="fas fa-file-csv me-1"></i> CSV
+                    </a>
+                </div>
+
                 <div class="dropdown">
                     <button class="btn btn-primary shadow d-flex align-items-center gap-2 rounded-pill px-4 py-2 fw-bold" type="button" data-bs-toggle="dropdown" style="font-size: 0.9rem;">
                         <i class="fas fa-plus-circle"></i> <span>Novo Lançamento</span>
@@ -125,22 +166,57 @@
             <div class="col-lg-8 mb-4">
                 <div class="card border-0 shadow-sm rounded-3 h-100">
                     <div class="card-header bg-white border-0 py-3">
-                        <h6 class="m-0 fw-bold text-secondary">Últimas Movimentações</h6>
+                        <h6 class="m-0 fw-bold text-secondary mb-3">Últimas Movimentações</h6>
+                        
+                        <div class="bg-light p-3 rounded border">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="small fw-bold text-muted me-3" style="min-width: 45px;"><i class="far fa-calendar-alt"></i> ANO:</span>
+                                <div class="capsules-wrapper" id="container-anos">
+                                    <button class="capsule-btn btn-ano active" data-year="all">Todos</button>
+                                </div>
+                            </div>
+                            <hr class="my-2 border-secondary opacity-25">
+                            <div class="d-flex align-items-center">
+                                <span class="small fw-bold text-muted me-3" style="min-width: 45px;"><i class="far fa-calendar-check"></i> MÊS:</span>
+                                <div class="capsules-wrapper" id="container-meses">
+                                    <button class="capsule-btn btn-mes active" data-month="all">Todos</button>
+                                    <button class="capsule-btn btn-mes" data-month="01">Jan</button>
+                                    <button class="capsule-btn btn-mes" data-month="02">Fev</button>
+                                    <button class="capsule-btn btn-mes" data-month="03">Mar</button>
+                                    <button class="capsule-btn btn-mes" data-month="04">Abr</button>
+                                    <button class="capsule-btn btn-mes" data-month="05">Mai</button>
+                                    <button class="capsule-btn btn-mes" data-month="06">Jun</button>
+                                    <button class="capsule-btn btn-mes" data-month="07">Jul</button>
+                                    <button class="capsule-btn btn-mes" data-month="08">Ago</button>
+                                    <button class="capsule-btn btn-mes" data-month="09">Set</button>
+                                    <button class="capsule-btn btn-mes" data-month="10">Out</button>
+                                    <button class="capsule-btn btn-mes" data-month="11">Nov</button>
+                                    <button class="capsule-btn btn-mes" data-month="12">Dez</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body p-0 table-responsive">
-                        <table class="table table-hover align-middle mb-0" style="font-size: 0.9rem;">
-                            <thead class="bg-light text-secondary">
+
+                    <div class="card-body p-0 table-scroll-container">
+                        <table class="table table-hover align-middle mb-0" style="font-size: 0.9rem;" id="tabela-transacoes">
+                            <thead class="bg-light text-secondary" style="position: sticky; top: 0; z-index: 5;">
                                 <tr>
                                     <th class="ps-4">Descrição</th>
                                     <th>Categoria</th>
                                     <th>Vencimento</th>
                                     <th>Status</th>
-                                    <th class="text-end">Valor</th>
+                                    <th class="text-end pe-3">Valor</th>
                                     <th class="text-center pe-4">Ação</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="t : ${transacoes}">
+                                <tr th:each="t : ${transacoes}" class="tr-transacao"
+                                    th:data-year="${t.dataVencimento != null ? #temporals.format(t.dataVencimento, 'yyyy') : ''}"
+                                    th:data-month="${t.dataVencimento != null ? #temporals.format(t.dataVencimento, 'MM') : ''}"
+                                    th:data-tipo="${t.tipo.name()}"
+                                    th:data-categoria="${t.categoria}"
+                                    th:data-valor="${t.valor}">
+                                    
                                     <td class="ps-4 fw-bold text-dark" th:text="${t.descricao}"></td>
                                     <td><span class="badge bg-light text-secondary border" th:text="${t.categoria}"></span></td>
                                     <td class="text-muted" th:text="${#temporals.format(t.dataVencimento, 'dd/MM/yyyy')} ?: '-'"></td>
@@ -155,27 +231,44 @@
                                             <span th:text="${t.status}"></span>
                                         </span>
                                     </td>
-                                    <td class="text-end fw-bold" 
+                                    <td class="text-end fw-bold pe-3" 
                                         th:classappend="${t.tipo.name() == 'RECEITA'} ? 'text-success' : 'text-danger'"
                                         th:text="${t.tipo.name() == 'DESPESA' ? '-' : '+'} + ' R$ ' + ${#numbers.formatDecimal(t.valor, 1, 'POINT', 2, 'COMMA')}">
                                     </td>
+                                    
                                     <td class="text-center pe-4">
-                                        <button class="btn-action-pro btn-pro-eye"
-                                                title="Visualizar e Alterar Status"
-                                                th:data-id="${t.id}"
-                                                th:data-desc="${t.descricao}"
-                                                th:data-cat="${t.categoria}"
-                                                th:data-venc="${#temporals.format(t.dataVencimento, 'dd/MM/yyyy')}"
-                                                th:data-status="${t.status.name()}"
-                                                th:data-valor="${#numbers.formatDecimal(t.valor, 1, 'POINT', 2, 'COMMA')}"
-                                                th:data-tipo="${t.tipo.name()}"
-                                                onclick="abrirModalVisualizacao(this)">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
+                                        <div class="d-flex justify-content-center gap-1">
+                                            <button class="btn-action-pro btn-pro-eye"
+                                                    title="Visualizar e Alterar Status"
+                                                    th:data-id="${t.id}" th:data-desc="${t.descricao}" th:data-cat="${t.categoria}"
+                                                    th:data-venc="${#temporals.format(t.dataVencimento, 'dd/MM/yyyy')}"
+                                                    th:data-status="${t.status.name()}" th:data-tipo="${t.tipo.name()}"
+                                                    th:data-valor="${#numbers.formatDecimal(t.valor, 1, 'POINT', 2, 'COMMA')}"
+                                                    onclick="abrirModalVisualizacao(this)">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            
+                                            <button class="btn-action-pro btn-pro-edit"
+                                                    title="Editar Lançamento"
+                                                    th:data-id="${t.id}" th:data-desc="${t.descricao}" th:data-cat="${t.categoria}"
+                                                    th:data-venc="${t.dataVencimento}" th:data-status="${t.status.name()}" 
+                                                    th:data-valor="${t.valor}" th:data-tipo="${t.tipo.name()}"
+                                                    onclick="abrirModalEdicao(this)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+
+                                            <form th:action="@{/financeiro/excluir-lancamento}" method="post" class="m-0 p-0" onsubmit="return confirm('ATENÇÃO: Deseja realmente excluir este lançamento financeiro permanentemente?');">
+                                                <input type="hidden" name="idTransacao" th:value="${t.id}">
+                                                <button type="submit" class="btn-action-pro btn-pro-trash" title="Excluir"><i class="fas fa-trash"></i></button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
+                                <tr id="msg-nenhum-filtro" style="display: none;">
+                                    <td colspan="6" class="text-center py-5 text-muted">Nenhum lançamento encontrado para este período.</td>
+                                </tr>
                                 <tr th:if="${#lists.isEmpty(transacoes)}">
-                                    <td colspan="6" class="text-center py-4 text-muted">Nenhuma transação registrada.</td>
+                                    <td colspan="6" class="text-center py-5 text-muted">Nenhuma transação registrada no sistema.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -186,7 +279,7 @@
             <div class="col-lg-4 mb-4">
                 <div class="card border-0 shadow-sm rounded-3 h-100">
                     <div class="card-header bg-white border-0 py-3">
-                        <h6 class="m-0 fw-bold text-secondary">Despesas por Categoria</h6>
+                        <h6 class="m-0 fw-bold text-secondary">Despesas do Período (<span id="texto-periodo-pizza">Todos</span>)</h6>
                     </div>
                     <div class="card-body d-flex justify-content-center align-items-center">
                         <div style="height: 250px; width: 100%;">
@@ -209,7 +302,6 @@
                 <div class="modal-body bg-light">
                     <form th:action="@{/financeiro/salvar-lancamento}" method="post" class="px-2 py-1">
                         <input type="hidden" name="tipo" id="inputTipoTransacao">
-                        
                         <div class="mb-3">
                             <label class="form-label small fw-bold text-secondary">Descrição</label>
                             <input type="text" name="descricao" class="form-control border-0 shadow-sm" required placeholder="Ex: Mensalidade, Compra de cabos...">
@@ -237,6 +329,48 @@
                         </div>
                         <div class="d-grid">
                             <button type="submit" class="btn btn-dark fw-bold py-2 shadow-sm" id="btnSubmitTransacao">Confirmar Lançamento</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalEditarTransacao" class="modal" tabindex="-1" style="background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 9999;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fs-6 fw-bold"><i class="fas fa-edit me-2"></i> Editar Lançamento</h5>
+                    <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('modalEditarTransacao').style.display='none'"></button>
+                </div>
+                <div class="modal-body bg-light">
+                    <form th:action="@{/financeiro/editar-lancamento}" method="post" class="px-2 py-1">
+                        <input type="hidden" name="idTransacao" id="editId">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary">Descrição</label>
+                            <input type="text" name="descricao" id="editDesc" class="form-control border-0 shadow-sm" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary">Valor Original (R$)</label>
+                            <input type="number" name="valor" id="editValor" step="0.01" class="form-control border-0 shadow-sm" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label small fw-bold text-secondary">Vencimento / Data</label>
+                                <input type="date" name="dataVencimento" id="editVenc" class="form-control border-0 shadow-sm" required>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label small fw-bold text-secondary">Status</label>
+                                <select name="status" id="editStatus" class="form-select border-0 shadow-sm" required>
+                                    <option value="PAGO">Pago / Recebido</option>
+                                    <option value="PENDENTE">Pendente</option>
+                                    <option value="ATRASADO">Atrasado</option>
+                                    <option value="CANCELADO">Cancelado</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary fw-bold py-2 shadow-sm"><i class="fas fa-save me-1"></i> Salvar Alterações</button>
                         </div>
                     </form>
                 </div>
@@ -275,7 +409,7 @@
                     <form th:action="@{/financeiro/atualizar-status}" method="post" class="bg-white p-3 rounded shadow-sm">
                         <input type="hidden" name="idTransacao" id="visId">
                         
-                        <label class="form-label small fw-bold text-secondary mb-2"><i class="fas fa-sync-alt me-1"></i> Atualizar Status de Pagamento:</label>
+                        <label class="form-label small fw-bold text-secondary mb-2"><i class="fas fa-sync-alt me-1"></i> Mudar Status Rápido:</label>
                         <div class="input-group">
                             <select name="novoStatus" id="visStatus" class="form-select bg-light border-0">
                                 <option value="PENDENTE">Aguardando (Pendente)</option>
@@ -296,19 +430,117 @@
 
     <script th:inline="javascript">
         /*<![CDATA[*/
-        const labelsCat = /*[[${labelsGrafico}]]*/ [];
-        const valuesCat = /*[[${valoresGrafico}]]*/ [];
-        const ctxPie = document.getElementById('graficoDespesas');
         
-        if (ctxPie && labelsCat.length > 0) {
-            new Chart(ctxPie.getContext('2d'), {
-                type: 'doughnut',
-                data: {
-                    labels: labelsCat,
-                    datasets: [{ data: valuesCat, backgroundColor: ['#e74c3c', '#f1c40f', '#9b59b6', '#34495e', '#95a5a6'], borderWidth: 0 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, cutout: '70%' }
+        let filtroAnoSelecionado = 'all';
+        let filtroMesSelecionado = 'all';
+
+        function extrairAnosDaTabela() {
+            const linhas = document.querySelectorAll('.tr-transacao');
+            const anos = new Set();
+            
+            linhas.forEach(linha => {
+                const ano = linha.getAttribute('data-year');
+                if (ano) anos.add(ano);
             });
+            
+            if(anos.size === 0) anos.add(new Date().getFullYear().toString());
+            
+            const containerAnos = document.getElementById('container-anos');
+            const anosOrdenados = Array.from(anos).sort((a,b) => a - b); 
+            
+            anosOrdenados.forEach(ano => {
+                const btn = document.createElement('button');
+                btn.className = 'capsule-btn btn-ano';
+                btn.setAttribute('data-year', ano);
+                btn.innerText = ano;
+                btn.onclick = () => aplicarFiltro('year', ano, btn);
+                containerAnos.appendChild(btn);
+            });
+        }
+
+        function aplicarFiltro(tipo, valor, elemento) {
+            if (tipo === 'year') {
+                document.querySelectorAll('.btn-ano').forEach(b => b.classList.remove('active'));
+                filtroAnoSelecionado = valor;
+            } else {
+                document.querySelectorAll('.btn-mes').forEach(b => b.classList.remove('active'));
+                filtroMesSelecionado = valor;
+            }
+            elemento.classList.add('active');
+
+            let textoPeriodo = (filtroMesSelecionado === 'all' ? 'Todos os meses' : 'Mês ' + filtroMesSelecionado);
+            textoPeriodo += (filtroAnoSelecionado === 'all' ? ' / Todos os anos' : ' de ' + filtroAnoSelecionado);
+            if(filtroMesSelecionado === 'all' && filtroAnoSelecionado === 'all') textoPeriodo = 'Todos os Lançamentos';
+            document.getElementById('texto-periodo-pizza').innerText = textoPeriodo;
+
+            const linhas = document.querySelectorAll('.tr-transacao');
+            let visiveis = 0;
+
+            linhas.forEach(linha => {
+                const linhaAno = linha.getAttribute('data-year');
+                const linhaMes = linha.getAttribute('data-month');
+                
+                const matchAno = (filtroAnoSelecionado === 'all' || filtroAnoSelecionado === linhaAno);
+                const matchMes = (filtroMesSelecionado === 'all' || filtroMesSelecionado === linhaMes);
+
+                if (matchAno && matchMes) {
+                    linha.style.display = '';
+                    visiveis++;
+                } else {
+                    linha.style.display = 'none';
+                }
+            });
+
+            document.getElementById('msg-nenhum-filtro').style.display = (visiveis === 0 && linhas.length > 0) ? '' : 'none';
+            atualizarGraficoPizza();
+        }
+
+        let donutChart = null;
+
+        function inicializarGraficoPizza() {
+            const ctxPie = document.getElementById('graficoDespesas');
+            if (ctxPie) {
+                donutChart = new Chart(ctxPie.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: [],
+                        datasets: [{ 
+                            data: [], 
+                            backgroundColor: ['#e74c3c', '#f1c40f', '#9b59b6', '#34495e', '#95a5a6', '#20c997', '#e67e22'], 
+                            borderWidth: 0 
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, cutout: '70%' }
+                });
+                atualizarGraficoPizza();
+            }
+        }
+
+        function atualizarGraficoPizza() {
+            if(!donutChart) return;
+            
+            const linhas = document.querySelectorAll('.tr-transacao');
+            const totaisPorCategoria = {};
+
+            linhas.forEach(linha => {
+                if (linha.style.display !== 'none' && linha.getAttribute('data-tipo') === 'DESPESA') {
+                    const categoria = linha.getAttribute('data-categoria');
+                    const valorStr = linha.getAttribute('data-valor');
+                    const valorFloat = parseFloat(valorStr);
+                    
+                    if (!isNaN(valorFloat)) {
+                        if (totaisPorCategoria[categoria]) {
+                            totaisPorCategoria[categoria] += valorFloat;
+                        } else {
+                            totaisPorCategoria[categoria] = valorFloat;
+                        }
+                    }
+                }
+            });
+
+            donutChart.data.labels = Object.keys(totaisPorCategoria);
+            donutChart.data.datasets[0].data = Object.values(totaisPorCategoria);
+            donutChart.update();
         }
 
         const ctxFluxo = document.getElementById('graficoFluxo').getContext('2d');
@@ -316,17 +548,15 @@
         
         async function renderChart(periodo) {
             if (chartFluxoInstance) chartFluxoInstance.destroy();
-
             try {
                 const response = await fetch(`/financeiro/api/grafico-fluxo?periodo=${periodo}`);
                 if (!response.ok) throw new Error('Erro na API');
-                
                 const dataReais = await response.json();
-
+                
                 let gradient = ctxFluxo.createLinearGradient(0, 0, 0, 400);
                 gradient.addColorStop(0, 'rgba(32, 201, 151, 0.4)');
                 gradient.addColorStop(1, 'rgba(32, 201, 151, 0.0)');
-
+                
                 chartFluxoInstance = new Chart(ctxFluxo, {
                     type: 'line',
                     data: {
@@ -339,9 +569,7 @@
                     },
                     options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false } }, y: { grid: { borderDash: [2, 4], color: '#f0f0f0' }, ticks: { callback: v => 'R$ ' + v } } } }
                 });
-            } catch (error) {
-                console.error("Erro ao carregar gráfico:", error);
-            }
+            } catch (error) { console.error("Erro ao carregar gráfico:", error); }
         }
 
         window.updateChart = function(periodo, element) {
@@ -350,6 +578,17 @@
             renderChart(periodo);
         };
 
+        document.addEventListener("DOMContentLoaded", function() { 
+            extrairAnosDaTabela();
+            inicializarGraficoPizza();
+            renderChart('mensal'); 
+
+            document.querySelectorAll('.btn-mes').forEach(btn => {
+                btn.onclick = () => aplicarFiltro('month', btn.getAttribute('data-month'), btn);
+            });
+            document.querySelector('.btn-ano[data-year="all"]').onclick = function() { aplicarFiltro('year', 'all', this); };
+        });
+
         function abrirModalTransacao(tipo) {
             const modal = document.getElementById('modalTransacao');
             const title = document.getElementById('modalTransacaoTitle');
@@ -357,9 +596,7 @@
             const inputTipo = document.getElementById('inputTipoTransacao');
             const selectCat = document.getElementById('selectCategoria');
             const btnSubmit = document.getElementById('btnSubmitTransacao');
-
             selectCat.innerHTML = ''; 
-
             if (tipo === 'RECEITA') {
                 title.innerHTML = '<i class="fas fa-arrow-up"></i> Nova Entrada (Receita)';
                 header.className = 'modal-header bg-success text-white';
@@ -371,22 +608,14 @@
                 header.className = 'modal-header bg-warning text-dark';
                 btnSubmit.className = 'btn btn-warning fw-bold py-2 text-dark shadow-sm';
                 inputTipo.value = 'DESPESA'; 
-                
-                selectCat.innerHTML += '<option value="ALUGUEL" selected>Aluguel e Condomínio</option>';
-                selectCat.innerHTML += '<option value="CONTAS_CONSUMO">Contas Fixas (Água, Luz, Internet)</option>';
-                selectCat.innerHTML += '<option value="FOLHA_PAGAMENTO">Folha de Pagamento</option>';
-                selectCat.innerHTML += '<option value="OUTROS">Outros Fixos</option>';
+                selectCat.innerHTML += '<option value="ALUGUEL" selected>Aluguel e Condomínio</option><option value="CONTAS_CONSUMO">Contas Fixas (Água, Luz, Internet)</option><option value="FOLHA_PAGAMENTO">Folha de Pagamento</option><option value="OUTROS">Outros Fixos</option>';
             } else {
                 title.innerHTML = '<i class="fas fa-arrow-down"></i> Nova Saída (Despesa Variável)';
                 header.className = 'modal-header bg-danger text-white';
                 btnSubmit.className = 'btn btn-danger fw-bold py-2 shadow-sm';
                 inputTipo.value = 'DESPESA';
-                
-                selectCat.innerHTML += '<option value="INSUMOS">Insumos Diversos</option>';
-                selectCat.innerHTML += '<option value="MANUTENCAO">Manutenção / Reparos</option>';
-                selectCat.innerHTML += '<option value="OUTROS">Outras Saídas</option>';
+                selectCat.innerHTML += '<option value="INSUMOS">Insumos Diversos</option><option value="MANUTENCAO">Manutenção / Reparos</option><option value="OUTROS">Outras Saídas</option>';
             }
-
             modal.style.display = 'block';
         }
 
@@ -395,25 +624,27 @@
             document.getElementById('visDesc').textContent = btn.getAttribute('data-desc');
             document.getElementById('visCat').textContent = btn.getAttribute('data-cat');
             document.getElementById('visVenc').textContent = btn.getAttribute('data-venc') || '-';
-            
             let tipoTransacao = btn.getAttribute('data-tipo');
-            let valorFormatado = btn.getAttribute('data-valor');
             let elValor = document.getElementById('visValor');
-            
             if(tipoTransacao === 'RECEITA') {
-                elValor.textContent = '+ R$ ' + valorFormatado;
+                elValor.textContent = '+ R$ ' + btn.getAttribute('data-valor');
                 elValor.className = 'fw-bold fs-5 text-success';
             } else {
-                elValor.textContent = '- R$ ' + valorFormatado;
+                elValor.textContent = '- R$ ' + btn.getAttribute('data-valor');
                 elValor.className = 'fw-bold fs-5 text-danger';
             }
-            
             document.getElementById('visStatus').value = btn.getAttribute('data-status');
-            
             document.getElementById('modalVisualizarTransacao').style.display = 'block';
         }
 
-        document.addEventListener("DOMContentLoaded", function() { renderChart('mensal'); });
+        function abrirModalEdicao(btn) {
+            document.getElementById('editId').value = btn.getAttribute('data-id');
+            document.getElementById('editDesc').value = btn.getAttribute('data-desc');
+            document.getElementById('editValor').value = btn.getAttribute('data-valor').replace('.','').replace(',','.');
+            document.getElementById('editVenc').value = btn.getAttribute('data-venc');
+            document.getElementById('editStatus').value = btn.getAttribute('data-status');
+            document.getElementById('modalEditarTransacao').style.display = 'block';
+        }
         /*]]>*/
     </script>
 </body>
