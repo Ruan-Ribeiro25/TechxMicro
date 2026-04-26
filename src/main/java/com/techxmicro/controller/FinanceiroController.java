@@ -39,7 +39,18 @@ public class FinanceiroController {
         model.addAttribute("totalReceitas", financeiroService.calcularTotalReceitas());
         model.addAttribute("totalDespesas", financeiroService.calcularTotalDespesas());
         model.addAttribute("saldoLiquido", financeiroService.calcularSaldoLiquido());
-        model.addAttribute("transacoes", financeiroService.listarUltimasTransacoes());
+        
+        // CORREÇÃO CRÍTICA: Buscar TODAS as transações para que o filtro e o scroll funcionem corretamente.
+        // Isso impede que lançamentos antigos "sumam" da tela quando novos são cadastrados.
+        List<TransacaoFinanceira> todasTransacoes = transacaoFinanceiraRepository.findAll();
+        
+        // Opcional: Ordenar da mais recente para a mais antiga (se o findAll não estiver ordenando)
+        todasTransacoes.sort((t1, t2) -> {
+            if (t1.getDataVencimento() == null || t2.getDataVencimento() == null) return 0;
+            return t2.getDataVencimento().compareTo(t1.getDataVencimento());
+        });
+        
+        model.addAttribute("transacoes", todasTransacoes);
 
         Map<String, BigDecimal> dadosGraficoDonut = financeiroService.obterDadosDespesasPorCategoria();
         model.addAttribute("labelsGrafico", dadosGraficoDonut.keySet());
@@ -134,6 +145,12 @@ public class FinanceiroController {
             // Busca todas as transações cadastradas
             List<TransacaoFinanceira> dados = transacaoFinanceiraRepository.findAll();
             
+            // Ordenação para o CSV e TXT (Opcional, mas recomendado)
+            dados.sort((t1, t2) -> {
+                if (t1.getDataVencimento() == null || t2.getDataVencimento() == null) return 0;
+                return t2.getDataVencimento().compareTo(t1.getDataVencimento());
+            });
+
             if ("JSON".equalsIgnoreCase(formato)) {
                 ObjectMapper mapper = new ObjectMapper(); 
                 mapper.registerModule(new JavaTimeModule()); 
